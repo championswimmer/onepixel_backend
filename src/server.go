@@ -13,7 +13,10 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	api.Users(app.Group("/api/users"))
+	apiV1 := app.Group("/api/v1")
+
+	apiV1.Route("/users", api.UsersRoute)
+	apiV1.Route("/urls", api.UrlsRoute)
 
 	log.Fatal(app.Listen(":3000"))
 }
