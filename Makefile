@@ -1,11 +1,11 @@
 BINARY_NAME := "onepixel"
 
-ARCH := $(shell uname -m)
-OS := $(shell uname)
+ARCH := $(or $(GOARCH),$(shell uname -m))
+OS := $(or $(GOOS),$(shell uname))
 
-ifeq ($(OS),Darwin)
+ifneq (,$(filter $(OS),Darwin darwin MacOS macos))
 	OS := darwin
-else ifeq ($(OS),Linux)
+else ifneq (,$(filter $(OS),Linux linux))
 	OS := linux
 else
 	OS := windows
@@ -19,7 +19,7 @@ endif
 
 build:
 	@echo "Building $(OS) $(ARCH) binary..."
-	@GOOS=$(OS) GOARCH=$(ARCH) go build -o "bin/$(BINARY_NAME)-$(OS)-$(ARCH)" src/server.go
+	@GOOS=$(OS) GOARCH=$(ARCH) go build -o "bin/$(BINARY_NAME)" src/server.go
 
 build_all:
 	@echo "Building linux amd64 binary..."
