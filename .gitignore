@@ -181,3 +181,6 @@ fabric.properties
 
 # Built files
 /bin/
+
+# Postgres Data Files 
+/data/

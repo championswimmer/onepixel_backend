@@ -1,0 +1,35 @@
+version: "3.0"
+
+networks:
+  onepixel:
+    driver: bridge
+    internal: true
+
+
+services:
+  onepixel:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - onepixel
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: onepixel
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    networks:
+      - onepixel

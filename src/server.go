@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"log"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/routes/api"
 )
 
@@ -17,6 +18,13 @@ func main() {
 
 	apiV1.Route("/users", api.UsersRoute)
 	apiV1.Route("/urls", api.UrlsRoute)
+
+	// Initialize the database
+	_, err := db.InitDB()
+
+	if err != nil {
+		return
+	}
 
 	log.Fatal(app.Listen(":3000"))
 }
