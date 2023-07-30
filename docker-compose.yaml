@@ -8,18 +8,23 @@ networks:
 
 services:
   onepixel:
+    container_name: onepixel
     build:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    networks:
-      - onepixel
+    expose:
+      - "3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     links:
       - postgres
+    networks:
+      - onepixel
 
   postgres:
+    container_name: postgres
     image: postgres:15-alpine
     volumes:
       - ./data:/var/lib/postgresql/data
@@ -27,6 +32,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: onepixel
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 3
     expose:
       - "5432"
     ports:
