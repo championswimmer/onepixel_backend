@@ -1,11 +1,5 @@
 version: "3.0"
 
-networks:
-  onepixel:
-    driver: bridge
-    internal: true
-
-
 services:
   onepixel:
     container_name: onepixel
@@ -20,8 +14,6 @@ services:
         condition: service_healthy
     links:
       - postgres
-    networks:
-      - onepixel
 
   postgres:
     container_name: postgres
@@ -41,5 +33,3 @@ services:
       - "5432"
     ports:
       - "5432:5432"
-    networks:
-      - onepixel
