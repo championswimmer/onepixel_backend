@@ -19,17 +19,17 @@ endif
 
 build:
 	@echo "Building $(OS) $(ARCH) binary..."
-	@GOOS=$(OS) GOARCH=$(ARCH) go build -o "bin/$(BINARY_NAME)" src/server.go
+	@GOOS=$(OS) GOARCH=$(ARCH) go build -o "bin/$(BINARY_NAME)" src/main.go
 
 build_all:
 	@echo "Building linux amd64 binary..."
-	@GOOS=linux GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-linux-amd64" src/server.go
+	@GOOS=linux GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-linux-amd64" src/main.go
 	@echo "Building darwin amd64 binary..."
-	@GOOS=darwin GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-darwin-amd64" src/server.go
+	@GOOS=darwin GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-darwin-amd64" src/main.go
 	@echo "Building darwin arm64 binary..."
-	@GOOS=darwin GOARCH=arm64 go build -o "bin/$(BINARY_NAME)-darwin-arm64" src/server.go
+	@GOOS=darwin GOARCH=arm64 go build -o "bin/$(BINARY_NAME)-darwin-arm64" src/main.go
 	@echo "Building windows amd64 binary..."
-	@GOOS=windows GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-windows-amd64.exe" src/server.go
+	@GOOS=windows GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-windows-amd64.exe" src/main.go
 
 clean:
 	@echo "Cleaning..."

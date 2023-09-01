@@ -23,4 +23,4 @@ We will use docker to run an instance of database, but we will run the project u
 
 > Note[1] This is because the server is configured to connect to `host=postgres` for the database.
 
-> Note[2]: you can also run `go run src/server.go` but it will not reload on changes
+> Note[2]: you can also run `go run src/main.go` but it will not reload on changes

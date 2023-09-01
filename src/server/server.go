@@ -1,15 +1,11 @@
-package main
+package server
 
 import (
-	"log"
-	"onepixel_backend/src/db"
-	"onepixel_backend/src/routes/api"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
+	"onepixel_backend/src/routes/api"
 )
 
-func main() {
+func CreateApp() *fiber.App {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -21,8 +17,5 @@ func main() {
 	apiV1.Route("/users", api.UsersRoute)
 	apiV1.Route("/urls", api.UrlsRoute)
 
-	// Initialize the database
-	lo.Must(db.InitDB())
-
-	log.Fatal(app.Listen(":3000"))
+	return app
 }

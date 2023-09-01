@@ -1,14 +1,22 @@
 package api
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
+	"onepixel_backend/src/models"
+)
 
+// UsersRoute is a route for /api/v1/users
 func UsersRoute(router fiber.Router) {
 	router.Get("/", getAllUsers)
-	router.Post("/register", registerUser)
+	router.Post("/", registerUser)
 	router.Post("/login", loginUser)
 }
 
 func registerUser(ctx *fiber.Ctx) error {
+	var u = new(models.CreateUserRequest)
+	lo.Must0(ctx.BodyParser(u))
+
 	return ctx.SendString("RegisterUser")
 }
 
