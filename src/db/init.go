@@ -1,6 +1,8 @@
 package db
 
 import (
+	"onepixel_backend/src/models"
+
 	"github.com/samber/lo"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,7 +16,7 @@ func InitDB() (*gorm.DB, error) {
 
 	db := lo.Must(gorm.Open(postgres.Open(dsn), config))
 
-	lo.Must0(db.AutoMigrate(&User{}))
+	lo.Must0(db.AutoMigrate(&models.User{}))
 
 	return db, nil
 }

@@ -1,9 +1,10 @@
 package api
 
 import (
+	"onepixel_backend/src/dtos"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
-	"onepixel_backend/src/models"
 )
 
 // UsersRoute /api/v1/users
@@ -14,7 +15,7 @@ func UsersRoute(router fiber.Router) {
 }
 
 func registerUser(ctx *fiber.Ctx) error {
-	var u = new(models.CreateUserRequest)
+	var u = new(dtos.CreateUserRequest)
 	lo.Must0(ctx.BodyParser(u))
 
 	return ctx.SendString("RegisterUser")
