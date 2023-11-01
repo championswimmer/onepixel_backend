@@ -1,4 +1,4 @@
-package models
+package dtos
 
 type CreateUserRequest struct {
 	Email    string `json:"email"`

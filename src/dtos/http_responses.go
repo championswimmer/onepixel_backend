@@ -1,4 +1,4 @@
-package models
+package dtos
 
 type UserResponse struct {
 	ID    uint   `json:"id"`

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"onepixel_backend/src/db"
+	"onepixel_backend/src/models"
 
 	"gorm.io/gorm"
 )
@@ -19,7 +19,7 @@ func NewUsersController(db *gorm.DB) *UsersController {
 
 // Create new user
 func (c *UsersController) Create(email string, password string) error {
-	user := &db.User{
+	user := &models.User{
 		Email:    email,
 		Password: password,
 	}
