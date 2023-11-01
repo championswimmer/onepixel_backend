@@ -6,7 +6,7 @@ import (
 	"onepixel_backend/src/models"
 )
 
-// UsersRoute is a route for /api/v1/users
+// UsersRoute /api/v1/users
 func UsersRoute(router fiber.Router) {
 	router.Get("/", getAllUsers)
 	router.Post("/", registerUser)

@@ -1,107 +1,315 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
-  title: Onepixel
-  description: 1px.li Backend API
-  version: 1.0.0
+  version: '1.0'
+  title: onepixel
+  summary: 1px.li URL Shortner API
+  description: 1px.li URL Shortner API
+  contact:
+    name: Arnav Gupta
+    url: 'https://arnav.tech'
+    email: dev@championswimmer.in
 servers:
-  - url: 'https://1px.li'
-    description: Production server
   - url: 'http://localhost:3000'
-    description: Development server
+    description: dev
+  - url: 'https://1px.li'
+    description: prod
+paths:
+  '/{shorturl}':
+    get:
+      tags:
+        - url
+      summary: redirect to long url
+      operationId: get-shorturl
+      parameters:
+        - $ref: '#/components/parameters/shorturl'
+      responses:
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: The original long URL
+        '404':
+          description: Not Found
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+  /api/v1/users:
+    post:
+      tags:
+        - user
+      summary: create user
+      description: create a new user
+      operationId: post-api-v1-users
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+          application/xml:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          $ref: '#/components/responses/user-with-token'
+      security: []
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+  /api/v1/users/login:
+    post:
+      tags:
+        - user
+      summary: login user
+      operationId: post-api-v1-users-login
+      requestBody:
+        $ref: '#/components/requestBodies/login-user-request'
+      responses:
+        '200':
+          $ref: '#/components/responses/user-with-token'
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+  '/api/v1/users/{userid}':
+    get:
+      tags:
+        - user
+      summary: get user info
+      description: get info about a user (needs to be self-authenticated)
+      operationId: get-api-v1-users-userid
+      parameters:
+        - $ref: '#/components/parameters/userid'
+      responses:
+        '200':
+          $ref: '#/components/responses/user-with-token'
+        '401':
+          $ref: '#/components/responses/401-unathorized'
+        '403':
+          $ref: '#/components/responses/403-forbidden'
+      security:
+        - bearerToken: []
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+    patch:
+      tags:
+        - user
+      summary: update user
+      description: update user info (needs to be self-authenticated)
+      operationId: patch-api-v1-users-userid
+      parameters:
+        - $ref: '#/components/parameters/userid'
+      requestBody:
+        $ref: '#/components/requestBodies/login-user-request'
+      responses:
+        '200':
+          $ref: '#/components/responses/user-with-token'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '403':
+          $ref: '#/components/responses/403-forbidden'
+      security:
+        - bearerToken: []
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+  /api/v1/urls:
+    post:
+      tags:
+        - url
+      summary: create new short url
+      operationId: post-api-v1-urls
+      requestBody:
+        $ref: '#/components/requestBodies/create-url-request'
+      responses:
+        '201':
+          $ref: '#/components/responses/url-details'
+      security:
+        - bearerToken: []
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+  '/api/v1/urls/{shorturl}':
+    get:
+      tags:
+        - url
+      summary: get url details
+      operationId: get-api-v1-urls-shorturl
+      parameters:
+        - $ref: '#/components/parameters/shorturl'
+      responses:
+        '200':
+          $ref: '#/components/responses/url-details'
+      security:
+        - bearerToken: []
+      servers:
+        - url: 'http://localhost:3000'
+          description: dev
+        - url: 'https://1px.li'
+          description: prod
+tags:
+  - name: url
+    description: things related to urls
+  - name: user
+    description: things related to users
 components:
+  parameters:
+    userid:
+      name: userid
+      in: path
+      required: true
+      schema:
+        type: integer
+    shorturl:
+      name: shorturl
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Za-z-_]+'
+        maxLength: 10
+  requestBodies:
+    login-user-request:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+                format: password
+    create-url-request:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              longUrl:
+                type: string
+                format: uri
+              groupId:
+                type:
+                  - integer
+                  - 'null'
+                format: int64
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer
+  responses:
+    401-unathorized:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          examples:
+            Example 1:
+              value:
+                code: 401
+                message: unauthorised - please send bearer token
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/error'
+    403-forbidden:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          examples:
+            Example 1:
+              value:
+                code: 403
+                message: forbidden - this resource is not available for current user
+    user-with-token:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/user'
+              - type: object
+                properties:
+                  token:
+                    type: string
+                    format: jwt
+                    pattern: '^[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*$'
+                    readOnly: true
+    url-details:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/url'
   schemas:
-    User:
-      title: User
+    user:
       type: object
+      title: user
+      description: users of the project
       properties:
         id:
           type: integer
-          format: int32
+          format: int64
+          readOnly: true
         email:
           type: string
           format: email
         password:
           type: string
           format: password
+          minLength: 8
           writeOnly: true
-    Url:
-      title: URL
+    error:
       type: object
+      title: error
+      description: error
       properties:
-        id:
-          type: string
-    Error:
-      title: Error
-      type: object
-      properties:
-        message:
-          type: string
         code:
           type: integer
           format: int32
-
-paths:
-  "/api/v1/users":
-    post:
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-  "/api/v1/users/{id}":
-    get:
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    patch:
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-    delete:
-      responses:
-        '204':
-          description: No Content
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          readOnly: true
+        message:
+          type: string
+    url:
+      type: object
+      title: url
+      description: the shortened url and the original URL is points to
+      properties:
+        id:
+          type: string
+          pattern: '[A-Za-z0-9-_]+'
+          maxLength: 10
+        longUrl:
+          type: string
+        groupId:
+          type:
+            - integer
+            - 'null'
+          format: int64
+        creator:
+          $ref: '#/components/schemas/user'

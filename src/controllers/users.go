@@ -6,20 +6,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// type UsersController
 type UsersController struct {
 	// db
 	db *gorm.DB
 }
 
-// Create new UsersController
 func NewUsersController(db *gorm.DB) *UsersController {
 	return &UsersController{
 		db: db,
 	}
 }
 
-// create new user
+// Create new user
 func (c *UsersController) Create(email string, password string) error {
 	user := &db.User{
 		Email:    email,
