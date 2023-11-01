@@ -17,6 +17,7 @@ func InitDB() (*gorm.DB, error) {
 	db := lo.Must(gorm.Open(postgres.Open(dsn), config))
 
 	lo.Must0(db.AutoMigrate(&models.User{}))
+	lo.Must0(db.AutoMigrate(&models.Url{}))
 
 	return db, nil
 }
