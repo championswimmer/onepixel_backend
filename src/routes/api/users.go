@@ -1,25 +1,44 @@
 package api
 
 import (
+	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
 )
 
 // UsersRoute /api/v1/users
-func UsersRoute(router fiber.Router) {
+func UsersRoute(router fiber.Router, usersController *controllers.UsersController) {
 	router.Get("/", getAllUsers)
-	router.Post("/", registerUser)
+	router.Post("/", func(c *fiber.Ctx) error {
+        return registerUser(c, usersController)
+    })
 	router.Post("/login", loginUser)
 }
 
-func registerUser(ctx *fiber.Ctx) error {
-	var u = new(dtos.CreateUserRequest)
-	lo.Must0(ctx.BodyParser(u))
+func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) error {
+    var u = new(dtos.CreateUserRequest)
 
-	return ctx.SendString("RegisterUser")
+    // Parse incoming JSON request
+    if err := ctx.BodyParser(u); err != nil {
+        return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+    }
+
+    // Attempt to create a new user
+    err := usersController.Create(u.Email, u.Password)
+    if err != nil {
+        // Check if the email is already registered
+        if err.Error() == "email already registered" {
+            return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Email already registered"})
+        }
+        // Return 500 for all other errors
+        return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+    }
+
+    // Successfully created a new user
+    return ctx.JSON(fiber.Map{"status": "success"})
 }
+
 
 func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
