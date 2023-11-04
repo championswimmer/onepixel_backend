@@ -8,10 +8,11 @@ import (
 )
 
 func main() {
-	app := server.CreateApp()
-
 	// Initialize the database
-	lo.Must(db.InitDB())
+	db := lo.Must(db.InitDB())
+
+	// Create the app
+	app := server.CreateApp(db)
 
 	log.Fatal(app.Listen(":3000"))
 }

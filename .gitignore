@@ -8,6 +8,8 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/**/detekt.xml
+.idea/**/swagger-settings.xml
 
 # AWS User-specific
 .idea/**/aws.xml

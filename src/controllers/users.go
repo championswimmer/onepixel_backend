@@ -18,14 +18,14 @@ func NewUsersController(db *gorm.DB) *UsersController {
 }
 
 // Create new user
-func (c *UsersController) Create(email string, password string) error {
+func (c *UsersController) Create(email string, password string) (*models.User, error) {
 	user := &models.User{
 		Email:    email,
-		Password: password,
+		Password: password, // TODO: hash password
 	}
 	res := c.db.Create(user)
 	if res.Error != nil {
-		return res.Error
+		return nil, res.Error
 	}
-	return nil
+	return user, nil
 }

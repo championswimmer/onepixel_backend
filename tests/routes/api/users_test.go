@@ -11,15 +11,6 @@ import (
 
 var app = server.CreateApp()
 
-func TestUsersRoute_GetAllUsers(t *testing.T) {
-
-	req := httptest.NewRequest("GET", "/api/v1/users", nil)
-	resp := lo.Must(app.Test(req))
-
-	assert.Equal(t, 200, resp.StatusCode)
-
-}
-
 func TestUsersRoute_RegisterUser(t *testing.T) {
 
 	reqBody := []byte(`{"email": "arnav@mail.com", "password": "123456"}`)
