@@ -2,11 +2,11 @@ package server
 
 import (
 	"onepixel_backend/src/controllers"
-	"gorm.io/gorm"
 	"onepixel_backend/src/routes/api"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func CreateApp(dbConn *gorm.DB) *fiber.App {
