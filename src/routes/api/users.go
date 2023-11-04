@@ -37,7 +37,7 @@ func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) 
     }
 
     // Successfully created a new user
-    return ctx.JSON(fiber.Map{"status": "success"})
+    return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success"})
 }
 
 
