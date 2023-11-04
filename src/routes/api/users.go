@@ -9,11 +9,12 @@ import (
 
 // UsersRoute /api/v1/users
 func UsersRoute(router fiber.Router, usersController *controllers.UsersController) {
-	router.Get("/", getAllUsers)
 	router.Post("/", func(c *fiber.Ctx) error {
         return registerUser(c, usersController)
     })
 	router.Post("/login", loginUser)
+	router.Get("/:id", getUserInfo)
+	router.Patch("/:id", updateUserInfo)
 }
 
 func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) error {
@@ -44,6 +45,10 @@ func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
 }
 
-func getAllUsers(ctx *fiber.Ctx) error {
-	return ctx.SendString("GetAllUsers")
+func getUserInfo(ctx *fiber.Ctx) error {
+	return ctx.SendString("GetUserInfo")
+}
+
+func updateUserInfo(ctx *fiber.Ctx) error {
+	return ctx.SendString("UpdateUserInfo")
 }

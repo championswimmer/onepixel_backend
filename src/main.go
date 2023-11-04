@@ -4,17 +4,16 @@ import (
 	"log"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/server"
+
+	"github.com/samber/lo"
 )
 
 func main() {
 	// Initialize the database
-	dbConnection, err := db.InitDB()
-	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
-	}
+	db := lo.Must(db.InitDB(false))
 
-	// Pass the dbConnection to CreateApp
-	app := server.CreateApp(dbConnection)
+	// Create the app
+	app := server.CreateApp(db)
 
 	// Start the application
 	if err := app.Listen(":3000"); err != nil {

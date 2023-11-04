@@ -2,6 +2,7 @@ package server
 
 import (
 	"onepixel_backend/src/controllers"
+	"gorm.io/gorm"
 	"onepixel_backend/src/routes/api"
 
 	"github.com/gofiber/fiber/v2"

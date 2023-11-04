@@ -5,20 +5,12 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/server"
 	"testing"
 )
 
-var app = server.CreateApp()
-
-func TestUsersRoute_GetAllUsers(t *testing.T) {
-
-	req := httptest.NewRequest("GET", "/api/v1/users", nil)
-	resp := lo.Must(app.Test(req))
-
-	assert.Equal(t, 200, resp.StatusCode)
-
-}
+var app = server.CreateApp(lo.Must(db.InitDB(true)))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
 
@@ -29,6 +21,6 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 
 	resp := lo.Must(app.Test(req))
 
-	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, 201, resp.StatusCode)
 
 }
