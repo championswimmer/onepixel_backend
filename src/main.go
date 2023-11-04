@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Initialize the database
-	db := lo.Must(db.InitDB())
+	db := lo.Must(db.InitDB(false))
 
 	// Create the app
 	app := server.CreateApp(db)
