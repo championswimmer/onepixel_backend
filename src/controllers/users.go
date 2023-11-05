@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"errors"
 	"onepixel_backend/src/models"
 
+	"github.com/samber/lo"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -19,14 +22,31 @@ func NewUsersController(db *gorm.DB) *UsersController {
 
 // Create new user
 func (c *UsersController) Create(email string, password string) (*models.User, error) {
+	// Check if email is already registered
+	existingUser, err := c.FindUserByEmail(email)
+	if err == nil && existingUser.ID != 0 {
+		// User exists and ID is populated, hence email is already registered
+		return nil, errors.New("email already registered")
+	}
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		// There was an actual error in looking up the user
+		return nil, err
+	}
+
+	// Hash the password
+	hashedPassword := lo.Must(bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost))
+
 	user := &models.User{
 		Email:    email,
-		Password: password, // TODO: hash password
+		Password: string(hashedPassword),
 	}
+
+	// Save the user to the database
 	res := c.db.Create(user)
 	if res.Error != nil {
 		return nil, res.Error
 	}
+
 	return user, nil
 }
 

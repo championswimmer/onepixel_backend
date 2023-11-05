@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"errors"
-	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"log"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db"
 	"testing"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 var userController = controllers.NewUsersController(lo.Must(db.InitDBTest()))
@@ -22,6 +23,7 @@ func TestUsersController_Create(t *testing.T) {
 func TestUsersController_CreateDuplicateFail(t *testing.T) {
 	user, err := userController.Create("user134534@test.com", "123456")
 	assert.Nil(t, err)
+	assert.NotNil(t, user)
 	user, err = userController.Create("user134534@test.com", "123456")
 	assert.NotNil(t, err)
 	assert.Nil(t, user)
@@ -33,6 +35,7 @@ func TestUsersController_FindUserByEmail(t *testing.T) {
 	assert.Nil(t, err)
 	user2, err := userController.FindUserByEmail("user103439@test.com")
 	assert.NotNil(t, user2)
+	assert.Nil(t, err)
 	log.Println("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
