@@ -1,9 +1,6 @@
 package api
 
 import (
-
-	"errors"
-	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 
@@ -12,12 +9,11 @@ import (
 
 // UsersRoute /api/v1/users
 func UsersRoute(router fiber.Router, usersController *controllers.UsersController) {
+	router.Get("/", getAllUsers)
 	router.Post("/", func(c *fiber.Ctx) error {
         return registerUser(c, usersController)
     })
 	router.Post("/login", loginUser)
-	router.Get("/:id", getUserInfo)
-	router.Patch("/:id", updateUserInfo)
 }
 
 func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) error {
@@ -29,7 +25,7 @@ func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) 
     }
 
     // Attempt to create a new user
-    err := usersController.Create(u.Email, u.Password)
+    newUser, err := usersController.Create(u.Email, u.Password)
     if err != nil {
         // Check if the email is already registered
         if err.Error() == "email already registered" {
@@ -40,7 +36,14 @@ func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) 
     }
 
     // Successfully created a new user
-    return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success"})
+    return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+        "status": "success",
+        "message": "Registration successful!",
+        "user": fiber.Map{
+            "id":    newUser.ID,
+            "email": newUser.Email,
+        },
+    })
 }
 
 
@@ -48,10 +51,6 @@ func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
 }
 
-func getUserInfo(ctx *fiber.Ctx) error {
-	return ctx.SendString("GetUserInfo")
-}
-
-func updateUserInfo(ctx *fiber.Ctx) error {
-	return ctx.SendString("UpdateUserInfo")
+func getAllUsers(ctx *fiber.Ctx) error {
+	return ctx.SendString("GetAllUsers")
 }

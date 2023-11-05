@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"errors"
-	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"log"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db"
 	"testing"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 var userController = controllers.NewUsersController(lo.Must(db.InitDBTest()))
