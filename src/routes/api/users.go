@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"gorm.io/gorm"
+	"onepixel_backend/src/auth"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 
@@ -18,8 +19,8 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	return func(router fiber.Router) {
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
-		router.Get("/:id", getUserInfo)
-		router.Patch("/:id", updateUserInfo)
+		router.Get("/:id", auth.MandatoryAuthMiddleware, getUserInfo)
+		router.Patch("/:id", auth.MandatoryAuthMiddleware, updateUserInfo)
 	}
 }
 
