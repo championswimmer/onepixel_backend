@@ -21,9 +21,9 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 		// Public Routes
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
-		router.Get("/:id", getUserInfo)
 
 		// Private Routes
+		router.Get("/:id", auth.MandatoryAuthMiddleware, getUserInfo)
 		router.Patch("/:id", auth.MandatoryAuthMiddleware, updateUserInfo)
 	}
 }
