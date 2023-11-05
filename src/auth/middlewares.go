@@ -17,6 +17,7 @@ func MandatoryAuthMiddleware(c *fiber.Ctx) error {
 		})
 	}
 	c.Locals("user", user)
+	c.Locals("user_id", user.ID)
 	return c.Next()
 }
 
