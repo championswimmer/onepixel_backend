@@ -20,9 +20,7 @@ func CreateApp(dbConn *gorm.DB) *fiber.App {
 
 	apiV1 := app.Group("/api/v1")
 
-	apiV1.Route("/users", func(router fiber.Router) {
-        api.UsersRoute(router, usersController)
-    })
+	api.UsersRoute(apiV1.Group("/users"), usersController)
 
 	apiV1.Route("/urls", api.UrlsRoute)
 
