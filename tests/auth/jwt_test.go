@@ -27,8 +27,8 @@ func TestJwt_ParseToken(t *testing.T) {
 	log.Info("jwt: ", jwt)
 	assert.NotNil(t, jwt)
 
-	userID, err := auth.ValidateJWT(jwt)
+	user, err := auth.ValidateJWT(jwt)
 	assert.Nil(t, err)
-	assert.NotNil(t, userID)
-	assert.Equal(t, testUser.ID, *userID)
+	assert.NotNil(t, user)
+	assert.Equal(t, testUser.ID, user.ID)
 }

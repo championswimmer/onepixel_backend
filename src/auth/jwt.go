@@ -23,7 +23,7 @@ func CreateJWTFromUser(u *models.User) string {
 	return lo.Must(token.SignedString([]byte(JWT_KEY)))
 }
 
-func ValidateJWT(t string) (*uint, error) {
+func ValidateJWT(t string) (*models.User, error) {
 	claims := jwt.MapClaims{}
 	_, err := jwt.ParseWithClaims(t, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(JWT_KEY), nil
@@ -36,5 +36,5 @@ func ValidateJWT(t string) (*uint, error) {
 	if exp.Before(time.Now()) {
 		return nil, jwt.ErrTokenExpired
 	}
-	return &sub, nil
+	return &models.User{ID: sub}, nil
 }
