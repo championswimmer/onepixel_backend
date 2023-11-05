@@ -30,6 +30,17 @@ func (c *UsersController) Create(email string, password string) (*models.User, e
 	return user, nil
 }
 
+// Update user details
+func (c *UsersController) Update(password string) (*models.User, error) {
+	user := c.Locals("users")
+	user.password = password
+	res := c.db.Save(&user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return user, nil
+}
+
 // FindUserByEmail find user by email
 func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
 	user := &models.User{

@@ -51,5 +51,21 @@ func getUserInfo(ctx *fiber.Ctx) error {
 }
 
 func updateUserInfo(ctx *fiber.Ctx) error {
-	return ctx.SendString("UpdateUserInfo")
+	var u = new(dtos.UpdateUserRequest)
+	lo.Must0(ctx.BodyParser(u))
+
+	if c.Locals("user").id != c.Params["id"] {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "You are not allowed to perform this action",
+		})
+	}
+
+	savedUser, err := usersController.Update(u.Password)
+	if err != nil {
+		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"message": err,
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.UserResponseFromUser(savedUser))
 }
