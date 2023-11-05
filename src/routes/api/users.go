@@ -15,11 +15,6 @@ import (
 var usersController *controllers.UsersController
 
 // UsersRoute /api/v1/users
-/*
-	Header structure for withAuthRouter routes
-
-	Authorization: Bearer <jwt_token>
-*/
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController = controllers.NewUsersController(db)
 	return func(withoutAuthRouter fiber.Router) {
