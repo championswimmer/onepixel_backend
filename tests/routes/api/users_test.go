@@ -38,6 +38,19 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 	assert.Equal(t, 409, resp.StatusCode)
 }
 
+func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
+	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
+	resp := lo.Must(app.Test(req))
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
+func TestUsersRoute_GetUserInfoUnauthorizedInvalidJWT(t *testing.T) {
+	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
+	req.Header.Set("Authorization", "xxxxxxxx")
+	resp := lo.Must(app.Test(req))
+	assert.Equal(t, 401, resp.StatusCode)
+}
+
 func TestUsersRoute_GetUserInfo(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
 	jwt := auth.CreateJWTFromUser(&models.User{ID: 1})
