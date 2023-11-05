@@ -35,7 +35,7 @@ func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
 	user := &models.User{
 		Email: email,
 	}
-	res := c.db.First(user)
+	res := c.db.Where(user).First(user)
 	if res.Error != nil {
 		return nil, res.Error
 	}

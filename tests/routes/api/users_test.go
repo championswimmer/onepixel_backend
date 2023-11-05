@@ -14,7 +14,7 @@ var app = server.CreateApp(lo.Must(db.InitDBTest()))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
 
-	reqBody := []byte(`{"email": "arnav@mail.com", "password": "123456"}`)
+	reqBody := []byte(`{"email": "user1461134@test.com", "password": "123456"}`)
 
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
@@ -26,7 +26,7 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 }
 
 func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
-	reqBody := []byte(`{"email": "user1@test.com", "password": "123456"}`)
+	reqBody := []byte(`{"email": "user14641522@test.com", "password": "123456"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	resp := lo.Must(app.Test(req))
