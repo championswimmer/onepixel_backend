@@ -6,7 +6,7 @@ import "gorm.io/gorm"
 type Url struct {
 	gorm.Model
 	ID        uint64 `gorm:"primaryKey;autoIncrement:false"`
-	ShortURL  string `gorm:"unique,not null"`
+	ShortURL  string `gorm:"uniqueIndex,not null"`
 	LongURL   string `gorm:"not null"`
 	CreatorID uint
 	Creator   User `gorm:"foreignKey:CreatorID"`
