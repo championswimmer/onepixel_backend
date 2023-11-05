@@ -17,13 +17,14 @@ var usersController *controllers.UsersController
 // UsersRoute /api/v1/users
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController = controllers.NewUsersController(db)
-	return func(withoutAuthRouter fiber.Router) {
-		withoutAuthRouter.Post("/", registerUser)
-		withoutAuthRouter.Post("/login", loginUser)
-		withoutAuthRouter.Get("/:id", getUserInfo)
+	return func(router fiber.Router) {
+		// Public Routes
+		router.Post("/", registerUser)
+		router.Post("/login", loginUser)
+		router.Get("/:id", getUserInfo)
 
-		withAuthRouter := withoutAuthRouter.Group("/auth", auth.MandatoryAuthMiddleware)
-		withAuthRouter.Patch("/:id", updateUserInfo)
+		// Private Routes
+		router.Patch("/:id", auth.MandatoryAuthMiddleware, updateUserInfo)
 	}
 }
 
