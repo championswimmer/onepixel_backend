@@ -1,13 +1,16 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"onepixel_backend/src/routes/api"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"gorm.io/gorm"
 )
 
 func CreateApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
+	app.Use(recover.New())
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
