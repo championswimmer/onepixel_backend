@@ -2,6 +2,10 @@
 
 Backend code for the 1px.li URL shortener service.
 
+#### Status Badges 
+[![codecov](https://codecov.io/gh/championswimmer/onepixel_backend/graph/badge.svg?token=DL3DR6CS40)](https://codecov.io/gh/championswimmer/onepixel_backend)
+[![Build and test](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml/badge.svg)](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml)
+
 ## Development 
 
 ### Deploy everything (with Docker)

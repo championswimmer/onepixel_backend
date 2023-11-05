@@ -32,11 +32,6 @@ paths:
               description: The original long URL
         '404':
           description: Not Found
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
   /api/v1/users:
     post:
       tags:
@@ -60,11 +55,6 @@ paths:
         '201':
           $ref: '#/components/responses/user-with-token'
       security: []
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
   /api/v1/users/login:
     post:
       tags:
@@ -76,11 +66,6 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/user-with-token'
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
   '/api/v1/users/{userid}':
     get:
       tags:
@@ -99,11 +84,6 @@ paths:
           $ref: '#/components/responses/403-forbidden'
       security:
         - bearerToken: []
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
     patch:
       tags:
         - user
@@ -127,11 +107,6 @@ paths:
           $ref: '#/components/responses/403-forbidden'
       security:
         - bearerToken: []
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
   /api/v1/urls:
     post:
       tags:
@@ -145,11 +120,6 @@ paths:
           $ref: '#/components/responses/url-details'
       security:
         - bearerToken: []
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
   '/api/v1/urls/{shorturl}':
     get:
       tags:
@@ -163,11 +133,6 @@ paths:
           $ref: '#/components/responses/url-details'
       security:
         - bearerToken: []
-      servers:
-        - url: 'http://localhost:3000'
-          description: dev
-        - url: 'https://1px.li'
-          description: prod
 tags:
   - name: url
     description: things related to urls

@@ -18,10 +18,9 @@ func NewUsersController(db *gorm.DB) *UsersController {
 }
 
 // Get User
-func (c *UsersController) Get(email string, password string) (*models.User, error) {
+func (c *UsersController) Get(email string) (*models.User, error) {
 	user := &models.User{
-		Email:    email,
-		Password: password, // TODO: hash password
+		Email: email,
 	}
 	res := c.db.First(user)
 	if res.Error != nil {
@@ -37,6 +36,18 @@ func (c *UsersController) Create(email string, password string) (*models.User, e
 		Password: password, // TODO: hash password
 	}
 	res := c.db.Create(user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return user, nil
+}
+
+// FindUserByEmail find user by email
+func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
+	user := &models.User{
+		Email: email,
+	}
+	res := c.db.Where(user).First(user)
 	if res.Error != nil {
 		return nil, res.Error
 	}
