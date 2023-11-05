@@ -1,6 +1,9 @@
 package api
 
 import (
+
+	"errors"
+	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 

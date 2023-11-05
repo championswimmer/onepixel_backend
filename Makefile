@@ -19,7 +19,7 @@ endif
 
 build:
 	@echo "Building $(OS) $(ARCH) binary..."
-	@GOOS=$(OS) GOARCH=$(ARCH) go build -o "bin/$(BINARY_NAME)" src/main.go
+	@GOOS=$(OS) GOARCH=$(ARCH) go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
 
 build_all:
 	@echo "Building linux amd64 binary..."
