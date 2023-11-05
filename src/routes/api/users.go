@@ -1,6 +1,9 @@
 package api
 
 import (
+	"errors"
+	"gorm.io/gorm"
+	"onepixel_backend/src/auth"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 
@@ -14,6 +17,8 @@ func UsersRoute(router fiber.Router, usersController *controllers.UsersControlle
         return registerUser(c, usersController)
     })
 	router.Post("/login", loginUser)
+  router.Get("/:id", auth.MandatoryAuthMiddleware, getUserInfo)
+	router.Patch("/:id", auth.MandatoryAuthMiddleware, updateUserInfo)
 }
 
 func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) error {
