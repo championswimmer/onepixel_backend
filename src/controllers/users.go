@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"onepixel_backend/src/models"
+	"onepixel_backend/src/utils"
 
 	"gorm.io/gorm"
 )
@@ -19,9 +20,16 @@ func NewUsersController(db *gorm.DB) *UsersController {
 
 // Create new user
 func (c *UsersController) Create(email string, password string) (*models.User, error) {
+
+	hashedPassword, err := utils.HashPassword(password)
+
+	if err != nil {
+		return nil, err
+	}
+
 	user := &models.User{
 		Email:    email,
-		Password: password, // TODO: hash password
+		Password: hashedPassword,
 	}
 	res := c.db.Create(user)
 	if res.Error != nil {
