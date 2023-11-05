@@ -25,7 +25,7 @@ jobs:
       run: go get ./...
 
     - name: Build
-      run: go build -v ./...
+      run: make build ARGS="-v"
       
   test:
     runs-on: ubuntu-latest
@@ -43,5 +43,10 @@ jobs:
       run: go get ./...
 
     - name: Test
-      run: go test -v ./...
+      run: go test -coverprofile=coverage.txt -race -covermode=atomic -v -coverpkg=./src/...  ./tests/...
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       

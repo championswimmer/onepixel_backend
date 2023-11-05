@@ -5,6 +5,7 @@ services:
     container_name: onepixel
     build:
       dockerfile: Dockerfile
+      context: .
     ports:
       - "3000:3000"
     expose:

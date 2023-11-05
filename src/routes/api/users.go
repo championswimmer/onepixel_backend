@@ -1,6 +1,7 @@
 package api
 
 import (
+  "errors"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/middleware"
@@ -39,8 +40,15 @@ func registerUser(ctx *fiber.Ctx) error {
 	// TODO: handle error and show Bad-Request to client
 	lo.Must0(ctx.BodyParser(u))
 
-	// TODO: handle the case of existing email and show to client
-	savedUser := lo.Must(usersController.Create(u.Email, u.Password))
+	savedUser, err := usersController.Create(u.Email, u.Password)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			// TODO: make a Error response DTO
+			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+				"message": "User with this email already exists",
+			})
+		}
+	}
 
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.UserResponseFromUser(savedUser))
 }
