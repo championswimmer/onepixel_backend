@@ -29,3 +29,15 @@ func (c *UsersController) Create(email string, password string) (*models.User, e
 	}
 	return user, nil
 }
+
+// FindUserByEmail find user by email
+func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
+	user := &models.User{
+		Email: email,
+	}
+	res := c.db.First(user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return user, nil
+}

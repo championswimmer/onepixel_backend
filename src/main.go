@@ -9,10 +9,10 @@ import (
 
 func main() {
 	// Initialize the database
-	db := lo.Must(db.InitDB(false))
+	db := lo.Must(db.InitDBProd())
 
 	// Create the app
 	app := server.CreateApp(db)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":3000")) // TODO: move port to external YAML config
 }

@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var app = server.CreateApp(lo.Must(db.InitDB(true)))
+var app = server.CreateApp(lo.Must(db.InitDBTest()))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
 
