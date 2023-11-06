@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/samber/lo"
 	"onepixel_backend/src/models"
 	"strconv"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/samber/lo"
 )
 
 // TODO: pick JWT_KEY from config

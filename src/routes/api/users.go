@@ -49,7 +49,7 @@ func registerUser(ctx *fiber.Ctx) error {
 func loginUser(ctx *fiber.Ctx) error {
 	var u = new(dtos.CreateUserRequest)
 	lo.Must0(ctx.BodyParser(u))
-	savedUser := lo.Must(usersController.Get(u.Email))
+	savedUser := lo.Must(usersController.FindUserByEmail(u.Email))
 
 	if u.Password != savedUser.Password {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.ErrorResponseFromServer("Incorrect credentials"))

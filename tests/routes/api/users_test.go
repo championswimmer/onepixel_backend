@@ -51,7 +51,7 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 
 	user, err := auth.ValidateJWT(responseStruct.Token)
 	assert.Equal(t, err, nil)
-	assert.NotEqual(t, user.Email, USER_EMAIL)
+	assert.Equal(t, user.ID, uint(1))
 }
 
 func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {

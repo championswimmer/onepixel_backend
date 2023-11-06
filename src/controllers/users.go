@@ -17,18 +17,6 @@ func NewUsersController(db *gorm.DB) *UsersController {
 	}
 }
 
-// Get User
-func (c *UsersController) Get(email string) (*models.User, error) {
-	user := &models.User{
-		Email: email,
-	}
-	res := c.db.First(user)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	return user, nil
-}
-
 // Create new user
 func (c *UsersController) Create(email string, password string) (*models.User, error) {
 	user := &models.User{
@@ -48,6 +36,18 @@ func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
 		Email: email,
 	}
 	res := c.db.Where(user).First(user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return user, nil
+}
+
+// Get user by ID
+func (c *UsersController) FindUserById(id uint) (*models.User, error) {
+	user := &models.User{
+		ID: id,
+	}
+	res := c.db.First(user)
 	if res.Error != nil {
 		return nil, res.Error
 	}
