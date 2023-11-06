@@ -6,6 +6,7 @@ import (
 	"onepixel_backend/src/dtos"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // UsersRoute /api/v1/users
@@ -31,7 +32,7 @@ func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) 
 	newUser, err := usersController.Create(u.Email, u.Password)
 	if err != nil {
 		// Check if the email is already registered
-		if err.Error() == "email already registered" {
+		if err == gorm.ErrDuplicatedKey {
 			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Email already registered"})
 		}
 		// Return 500 for all other errors
