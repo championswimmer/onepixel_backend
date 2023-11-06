@@ -13,7 +13,7 @@ func CreateApp(dbConn *gorm.DB) *fiber.App {
 	app := fiber.New()
 
 	usersController := controllers.NewUsersController(dbConn)
-	
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
 	})

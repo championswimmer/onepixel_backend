@@ -43,18 +43,18 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 }
 
 func TestUsersController_CreateBadJSON(t *testing.T) {
-    // Simulate a request with bad JSON
-    req := httptest.NewRequest("POST", "/api/v1/users", strings.NewReader("{bad json"))
-    req.Header.Set("Content-Type", "application/json")
+	// Simulate a request with bad JSON
+	req := httptest.NewRequest("POST", "/api/v1/users", strings.NewReader("{bad json"))
+	req.Header.Set("Content-Type", "application/json")
 
-    resp, _ := app.Test(req, -1)
+	resp, _ := app.Test(req, -1)
 
-    assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 
-    var responseBody map[string]string
-    json.NewDecoder(resp.Body).Decode(&responseBody)
+	var responseBody map[string]string
+	json.NewDecoder(resp.Body).Decode(&responseBody)
 
-    assert.Contains(t, responseBody["error"], "Cannot parse JSON")
+	assert.Contains(t, responseBody["error"], "Cannot parse JSON")
 }
 
 func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
