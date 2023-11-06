@@ -26,7 +26,7 @@ func (c *UsersController) Create(email string, password string) (*models.User, e
 	existingUser, err := c.FindUserByEmail(email)
 	if err == nil && existingUser.ID != 0 {
 		// User exists and ID is populated, hence email is already registered
-		return nil, errors.New("email already registered")
+		return nil, gorm.ErrDuplicatedKey
 	}
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		// There was an actual error in looking up the user
