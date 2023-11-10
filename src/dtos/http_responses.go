@@ -7,9 +7,21 @@ type UserResponse struct {
 	Email string `json:"email"`
 }
 
-func UserResponseFromUser(user *models.User) UserResponse {
+type ErrorResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+func CreateUserResponseFromUser(user *models.User) UserResponse {
 	return UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
+	}
+}
+
+func CreateErrorResponse(status int, message string) ErrorResponse {
+	return ErrorResponse{
+		Status:  status,
+		Message: message,
 	}
 }

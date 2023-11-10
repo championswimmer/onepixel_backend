@@ -1,12 +1,14 @@
 package api
 
 import (
+	"errors"
 	"onepixel_backend/src/auth"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // UsersRoute /api/v1/users
@@ -22,32 +24,28 @@ func UsersRoute(router fiber.Router, usersController *controllers.UsersControlle
 
 func registerUser(ctx *fiber.Ctx, usersController *controllers.UsersController) error {
 	var u = new(dtos.CreateUserRequest)
-
-	// Parse incoming JSON request
 	if err := ctx.BodyParser(u); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(
+			fiber.StatusBadRequest,
+			"The request body is not valid",
+		))
 	}
 
-	// Attempt to create a new user
-	newUser, err := usersController.Create(u.Email, u.Password)
+	if u.Email == "" || u.Password == "" {
+		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(dtos.CreateErrorResponse(
+			fiber.StatusUnprocessableEntity,
+			"email and password are required to create user",
+		))
+	}
+
+	savedUser, err := usersController.Create(u.Email, u.Password)
 	if err != nil {
-		// Check if the email is already registered
-		if err == gorm.ErrDuplicatedKey {
-			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Email already registered"})
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(fiber.StatusConflict, "User with this email already exists"))
 		}
-		// Return 500 for all other errors
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Successfully created a new user
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"status":  "success",
-		"message": "Registration successful!",
-		"user": fiber.Map{
-			"id":    newUser.ID,
-			"email": newUser.Email,
-		},
-	})
+	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
 }
 
 func loginUser(ctx *fiber.Ctx) error {

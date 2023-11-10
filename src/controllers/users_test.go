@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"log"
-	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db"
 	"testing"
 
@@ -12,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var userController = controllers.NewUsersController(lo.Must(db.InitDBTest()))
+var userController = NewUsersController(lo.Must(db.InitDBTest()))
 
 func TestUsersController_Create(t *testing.T) {
 	user, err := userController.Create("user976@test.com", "123456")

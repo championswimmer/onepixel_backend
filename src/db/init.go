@@ -1,8 +1,10 @@
 package db
 
 import (
-	"gorm.io/gorm/logger"
 	"onepixel_backend/src/models"
+
+	"github.com/gofiber/fiber/v2/log"
+	"gorm.io/gorm/logger"
 
 	"github.com/samber/lo"
 	"gorm.io/driver/postgres"
@@ -11,10 +13,12 @@ import (
 )
 
 func InitDBTest() (*gorm.DB, error) {
+	log.Warn(logger.YellowBold, "Using test database")
 	return initDB(true)
 }
 
 func InitDBProd() (*gorm.DB, error) {
+	log.Warn(logger.RedBold, "Using production database")
 	return initDB(false)
 }
 
