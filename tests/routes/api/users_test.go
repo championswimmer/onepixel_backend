@@ -94,3 +94,18 @@ func TestUsersRoute_GetUserInfo(t *testing.T) {
 	resp := lo.Must(app.Test(req))
 	assert.Equal(t, 200, resp.StatusCode)
 }
+func TestUsersRoute_ShouldNotRegisterUserWhenNoPassword(t *testing.T) {
+	reqBody := []byte(`{"email": "arnav@mail.com"}`)
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	resp := lo.Must(app.Test(req))
+	assert.Equal(t, 400, resp.StatusCode)
+}
+func TestUsersRoute_ShouldNotRegisterUserWhenNoEmail(t *testing.T) {
+	reqBody := []byte(`{"password": "12345"}`)
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	resp := lo.Must(app.Test(req))
+	assert.Equal(t, 400, resp.StatusCode)
+}
+
