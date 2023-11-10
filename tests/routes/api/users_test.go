@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"io"
 	"net/http/httptest"
-	"onepixel_backend/src/auth"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/models"
+	"onepixel_backend/src/security"
 	"onepixel_backend/src/server"
 	"testing"
 
@@ -89,7 +89,7 @@ func TestUsersRoute_GetUserInfoUnauthorizedInvalidJWT(t *testing.T) {
 
 func TestUsersRoute_GetUserInfo(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
-	jwt := auth.CreateJWTFromUser(&models.User{ID: 1})
+	jwt := security.CreateJWTFromUser(&models.User{ID: 1})
 	req.Header.Set("Authorization", jwt)
 	resp := lo.Must(app.Test(req))
 	assert.Equal(t, 200, resp.StatusCode)

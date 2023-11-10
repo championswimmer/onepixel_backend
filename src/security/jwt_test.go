@@ -1,10 +1,11 @@
-package auth
+package security
 
 import (
-	"github.com/gofiber/fiber/v2/log"
-	"github.com/stretchr/testify/assert"
 	"onepixel_backend/src/models"
 	"testing"
+
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJwt_CreateToken(t *testing.T) {
