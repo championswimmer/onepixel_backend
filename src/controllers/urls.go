@@ -19,10 +19,7 @@ func NewUrlController(db *gorm.DB) *UrlController {
 }
 
 // Create new url
-func (c *UrlController) Create(longUrl string, groupId uint, userId uint, iteration int) (*models.Url, error) {
-	if iteration == 10 {
-		return nil, errors.New("cannot create a new URL")
-	}
+func (c *UrlController) Create(longUrl string, groupId uint, userId uint) (*models.Url, error) {
 	url := &models.Url{
 		LongURL:   longUrl,
 		GroupID:   groupId,
@@ -37,8 +34,7 @@ func (c *UrlController) Create(longUrl string, groupId uint, userId uint, iterat
 	res := c.db.Create(url)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
-			iteration += 1
-			return c.Create(longUrl, groupId, userId, iteration)
+			return nil, res.Error
 		}
 	}
 	if res.Error != nil {

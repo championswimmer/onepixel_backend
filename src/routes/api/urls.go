@@ -8,6 +8,7 @@ import (
 	"onepixel_backend/src/auth"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
+	"onepixel_backend/src/models"
 )
 
 var urlController *controllers.UrlController
@@ -28,18 +29,18 @@ func getAllUrls(ctx *fiber.Ctx) error {
 func createShortUrl(ctx *fiber.Ctx) error {
 	var url = new(dtos.CreateUrlRequest)
 	lo.Must0(ctx.BodyParser(url))
-	userIdInterface := ctx.Locals("user_id")
-	userID, ok := userIdInterface.(uint)
+	userIdInterface := ctx.Locals("user")
+	userID, ok := userIdInterface.(*models.User)
 	if !ok {
 		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"message": "User does not exist",
 		})
 	}
-	savedUrl, err := urlController.Create(url.LongUrl, url.GroupId, userID, 0)
+	savedUrl, err := urlController.Create(url.LongUrl, url.GroupId, userID.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
-				"message": "User with this email already exists",
+				"message": "Try Again",
 			})
 		} else {
 			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
