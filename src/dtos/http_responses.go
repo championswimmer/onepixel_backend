@@ -7,21 +7,29 @@ type UserResponse struct {
 	Email string `json:"email"`
 }
 
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
 type ErrorResponse struct {
-	Status  int    `json:"status"`
 	Message string `json:"message"`
 }
 
-func CreateUserResponseFromUser(user *models.User) UserResponse {
+func UserResponseFromUser(user *models.User) UserResponse {
 	return UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
 	}
 }
 
-func CreateErrorResponse(status int, message string) ErrorResponse {
+func LoginResponseFromUser(token string) LoginResponse {
+	return LoginResponse{
+		Token: token,
+	}
+}
+
+func ErrorResponseFromServer(message string) ErrorResponse {
 	return ErrorResponse{
-		Status:  status,
 		Message: message,
 	}
 }

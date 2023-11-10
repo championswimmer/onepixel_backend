@@ -17,8 +17,11 @@ var usersController *controllers.UsersController
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController = controllers.NewUsersController(db)
 	return func(router fiber.Router) {
+		// Public Routes
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
+
+		// Private Routes
 		router.Get("/:id", auth.MandatoryAuthMiddleware, getUserInfo)
 		router.Patch("/:id", auth.MandatoryAuthMiddleware, updateUserInfo)
 	}
@@ -51,7 +54,15 @@ func registerUser(ctx *fiber.Ctx) error {
 }
 
 func loginUser(ctx *fiber.Ctx) error {
-	return ctx.SendString("LoginUser")
+	var u = new(dtos.CreateUserRequest)
+	lo.Must0(ctx.BodyParser(u))
+	savedUser := lo.Must(usersController.FindUserByEmail(u.Email))
+
+	if u.Password != savedUser.Password {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.ErrorResponseFromServer("Incorrect credentials"))
+	}
+	token := auth.CreateJWTFromUser(savedUser)
+	return ctx.Status(fiber.StatusOK).JSON(dtos.LoginResponseFromUser(token))
 }
 
 func getUserInfo(ctx *fiber.Ctx) error {

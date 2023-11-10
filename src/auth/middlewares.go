@@ -1,6 +1,8 @@
 package auth
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 func MandatoryAuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")

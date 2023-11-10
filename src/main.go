@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/samber/lo"
 	"log"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/server"
+
+	"github.com/samber/lo"
 )
 
 func main() {

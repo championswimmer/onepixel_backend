@@ -41,3 +41,15 @@ func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
 	}
 	return user, nil
 }
+
+// Get user by ID
+func (c *UsersController) FindUserById(id uint) (*models.User, error) {
+	user := &models.User{
+		ID: id,
+	}
+	res := c.db.First(user)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return user, nil
+}
