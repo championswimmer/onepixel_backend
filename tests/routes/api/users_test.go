@@ -10,10 +10,8 @@ import (
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/models"
 	"onepixel_backend/src/server"
-	"strings"
 	"testing"
 
-	"github.com/gofiber/fiber"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
@@ -77,18 +75,25 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 }
 
 func TestUsersController_CreateBadJSON(t *testing.T) {
-	// Simulate a request with bad JSON
-	req := httptest.NewRequest("POST", "/api/v1/users", strings.NewReader("{bad json"))
-	req.Header.Set("Content-Type", "application/json")
+	reqBody := []byte(`{bad json}`)
 
-	resp, _ := app.Test(req, -1)
+	// Not setting any content-type will generate a Body Parsing error
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 
-	assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
+	resp := lo.Must(app.Test(req))
 
-	var responseBody map[string]string
-	json.NewDecoder(resp.Body).Decode(&responseBody)
+	var responseBody dtos.ErrorResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &responseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
 
-	assert.Contains(t, responseBody["error"], "Cannot parse JSON")
+	assert.Equal(t, 400, resp.StatusCode)
+	assert.Equal(t, 400, responseBody.Status)
+	assert.Equal(t, "The request body is not valid", responseBody.Message)
 }
 
 func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
