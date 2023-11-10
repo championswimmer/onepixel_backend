@@ -77,8 +77,8 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 func TestUsersController_CreateBadJSON(t *testing.T) {
 	reqBody := []byte(`{bad json}`)
 
-	// Not setting any content-type will generate a Body Parsing error
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
 	resp := lo.Must(app.Test(req))
 
