@@ -1,12 +1,51 @@
 package api
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"errors"
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
+	"gorm.io/gorm"
+	"onepixel_backend/src/auth"
+	"onepixel_backend/src/controllers"
+	"onepixel_backend/src/dtos"
+)
+
+var urlController *controllers.UrlController
 
 // UrlsRoute /api/v1/urls
-func UrlsRoute(router fiber.Router) {
-	router.Get("/", getAllUrls)
+func UrlsRoute(db *gorm.DB) func(router fiber.Router) {
+	urlController = controllers.NewUrlController(db)
+	return func(router fiber.Router) {
+
+		router.Get("/", getAllUrls)
+		router.Post("/", auth.MandatoryAuthMiddleware, createShortUrl)
+	}
 }
 
 func getAllUrls(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetAllUsers")
+}
+func createShortUrl(ctx *fiber.Ctx) error {
+	var url = new(dtos.CreateUrlRequest)
+	lo.Must0(ctx.BodyParser(url))
+	userIdInterface := ctx.Locals("user_id")
+	userID, ok := userIdInterface.(uint)
+	if !ok {
+		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"message": "User does not exist",
+		})
+	}
+	savedUrl, err := urlController.Create(url.LongUrl, url.GroupId, userID, 0)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+				"message": "User with this email already exists",
+			})
+		} else {
+			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"message": err.Error(),
+			})
+		}
+	}
+	return ctx.Status(fiber.StatusCreated).JSON(dtos.UrlResponseFromUrl(savedUrl))
 }
