@@ -2,20 +2,23 @@ package api
 
 import (
 	"bytes"
-	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
+	"encoding/json"
+	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/auth"
 	"onepixel_backend/src/db"
+	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/models"
 	"onepixel_backend/src/server"
 	"testing"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 )
 
 var app = server.CreateApp(lo.Must(db.InitDBTest()))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
-
 	reqBody := []byte(`{"email": "user1461134@test.com", "password": "123456"}`)
 
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
@@ -24,7 +27,6 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 	resp := lo.Must(app.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
-
 }
 
 func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
@@ -35,7 +37,41 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 	assert.Equal(t, 201, resp.StatusCode)
 
 	resp = lo.Must(app.Test(req))
+
+	var responseBody dtos.ErrorResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &responseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+
 	assert.Equal(t, 409, resp.StatusCode)
+	assert.Equal(t, uint(409), responseBody.Status)
+	assert.Equal(t, "User with this email already exists", responseBody.Message)
+}
+
+func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
+	reqBody := []byte(`{"email": "user1461134@test.com", "password": "123456"}`)
+
+	// Not setting any content-type will generate a Body Parsing error
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+
+	resp := lo.Must(app.Test(req))
+
+	var responseBody dtos.ErrorResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &responseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+
+	assert.Equal(t, 400, resp.StatusCode)
+	assert.Equal(t, uint(400), responseBody.Status)
+	assert.Equal(t, "The request body is not valid", responseBody.Message)
 }
 
 func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
