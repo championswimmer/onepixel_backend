@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"io"
 	"net/http/httptest"
-	"onepixel_backend/src/auth"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/models"
+	auth "onepixel_backend/src/security"
 	"onepixel_backend/src/server"
 	"testing"
 
