@@ -2,9 +2,9 @@ package api
 
 import (
 	"errors"
-	"onepixel_backend/src/auth"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
+	auth "onepixel_backend/src/security"
 
 	"gorm.io/gorm"
 
