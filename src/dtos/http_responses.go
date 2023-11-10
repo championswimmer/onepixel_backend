@@ -8,18 +8,18 @@ type UserResponse struct {
 }
 
 type ErrorResponse struct {
-	Status  uint   `json:"status"`
+	Status  int    `json:"status"`
 	Message string `json:"message"`
 }
 
-func UserResponseFromUser(user *models.User) UserResponse {
+func CreateUserResponseFromUser(user *models.User) UserResponse {
 	return UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
 	}
 }
 
-func GetErrorResponse(status uint, message string) ErrorResponse {
+func CreateErrorResponse(status int, message string) ErrorResponse {
 	return ErrorResponse{
 		Status:  status,
 		Message: message,

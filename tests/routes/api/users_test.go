@@ -48,7 +48,7 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 	}
 
 	assert.Equal(t, 409, resp.StatusCode)
-	assert.Equal(t, uint(409), responseBody.Status)
+	assert.Equal(t, 409, responseBody.Status)
 	assert.Equal(t, "User with this email already exists", responseBody.Message)
 }
 
@@ -70,7 +70,7 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 	}
 
 	assert.Equal(t, 400, resp.StatusCode)
-	assert.Equal(t, uint(400), responseBody.Status)
+	assert.Equal(t, 400, responseBody.Status)
 	assert.Equal(t, "The request body is not valid", responseBody.Message)
 }
 
@@ -99,13 +99,12 @@ func TestUsersRoute_ShouldNotRegisterUserWhenNoPassword(t *testing.T) {
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	resp := lo.Must(app.Test(req))
-	assert.Equal(t, 400, resp.StatusCode)
+	assert.Equal(t, 422, resp.StatusCode)
 }
 func TestUsersRoute_ShouldNotRegisterUserWhenNoEmail(t *testing.T) {
 	reqBody := []byte(`{"password": "12345"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	resp := lo.Must(app.Test(req))
-	assert.Equal(t, 400, resp.StatusCode)
+	assert.Equal(t, 422, resp.StatusCode)
 }
-
