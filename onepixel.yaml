@@ -54,6 +54,11 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/user-with-token'
+        '422':
+          $ref: '#/components/responses/422-unprocessable-entity'
+        '409':
+          $ref: '#/components/responses/409-conflict'
+
       security: []
   /api/v1/users/login:
     post:
@@ -211,6 +216,29 @@ components:
               value:
                 code: 403
                 message: forbidden - this resource is not available for current user
+    422-unprocessable-entity:
+      description: Unprocessable entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          examples:
+            Example 1:
+              value:
+                code: 422
+                message: "email and password are required to create user"
+    409-conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          examples:
+            Example 1:
+              value:
+                code: 422
+                message: "user with this email already exists"
+
     user-with-token:
       description: Example response
       content:
