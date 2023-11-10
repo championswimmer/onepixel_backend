@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/gofiber/fiber/v2 v2.50.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/samber/lo v1.38.1
 	github.com/stretchr/testify v1.8.4
 	gorm.io/driver/postgres v1.5.4

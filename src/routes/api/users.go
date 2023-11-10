@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
 )
 
 var usersController *controllers.UsersController
@@ -30,20 +29,28 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 
 func registerUser(ctx *fiber.Ctx) error {
 	var u = new(dtos.CreateUserRequest)
-	// TODO: handle error and show Bad-Request to client
-	lo.Must0(ctx.BodyParser(u))
+	if err := ctx.BodyParser(u); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(
+			fiber.StatusBadRequest,
+			"The request body is not valid",
+		))
+	}
+
+	if u.Email == "" || u.Password == "" {
+		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(dtos.CreateErrorResponse(
+			fiber.StatusUnprocessableEntity,
+			"email and password are required to create user",
+		))
+	}
 
 	savedUser, err := usersController.Create(u.Email, u.Password)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			// TODO: make a Error response DTO
-			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
-				"message": "User with this email already exists",
-			})
+			return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(fiber.StatusConflict, "User with this email already exists"))
 		}
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(dtos.UserResponseFromUser(savedUser))
+	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
 }
 
 func loginUser(ctx *fiber.Ctx) error {

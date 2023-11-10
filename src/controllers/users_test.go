@@ -6,12 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"log"
-	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db"
 	"testing"
 )
 
-var userController = controllers.NewUsersController(lo.Must(db.InitDBTest()))
+var userController = NewUsersController(lo.Must(db.InitDBTest()))
 
 func TestUsersController_Create(t *testing.T) {
 	user, err := userController.Create("user976@test.com", "123456")
