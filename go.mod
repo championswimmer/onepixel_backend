@@ -15,7 +15,9 @@ require (
 
 require (
 	github.com/gofiber/utils v0.0.10 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 )
 
 require (
