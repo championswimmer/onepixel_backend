@@ -130,3 +130,9 @@ func TestUsersRoute_ShouldNotRegisterUserWhenNoEmail(t *testing.T) {
 	resp := lo.Must(app.Test(req))
 	assert.Equal(t, 422, resp.StatusCode)
 }
+
+func TestUsersRoute_GetAllUsers(t *testing.T) {
+	req := httptest.NewRequest("GET", "/api/v1/users", nil)
+	resp := lo.Must(app.Test(req))
+	assert.Equal(t, 200, resp.StatusCode)
+}
