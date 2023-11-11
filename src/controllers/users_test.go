@@ -38,3 +38,35 @@ func TestUsersController_FindUserByEmail(t *testing.T) {
 	log.Println("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
+
+func TestUsersController_FindUserByEmailNonExistent(t *testing.T) {
+    user, err := userController.FindUserByEmail("nonexistent@test.com")
+    assert.Nil(t, user)
+    assert.NotNil(t, err)
+    assert.True(t, errors.Is(err, gorm.ErrRecordNotFound))
+}
+
+
+func TestUsersController_CreatePasswordHashing(t *testing.T) {
+    plainPassword := "123456"
+    user, err := userController.Create("userhash@test.com", plainPassword)
+    assert.Nil(t, err)
+    assert.NotEqual(t, plainPassword, user.Password)
+}
+
+
+func TestUsersController_CreateInvalidEmail(t *testing.T) {
+    user, err := userController.Create("", "123456") // Testing with empty email
+    assert.Nil(t, user)
+    assert.NotNil(t, err)
+}
+
+
+func TestUsersController_CreateUserAttributeIntegrity(t *testing.T) {
+    email := "integrity@test.com"
+    password := "123456"
+    user, err := userController.Create(email, password)
+    assert.Nil(t, err)
+    assert.NotNil(t, user)
+    assert.Equal(t, email, user.Email)
+}
