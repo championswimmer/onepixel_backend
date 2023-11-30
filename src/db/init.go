@@ -24,11 +24,17 @@ func InitDBProd() (*gorm.DB, error) {
 
 func initDB(test bool) (*gorm.DB, error) {
 	// TODO: move db config to external YAML config
-	dbURL := os.Getenv("DATABASE_URL")
+	dbUrl := os.Getenv("DATABASE_URL")
+	dbPrivUrl := os.Getenv("DATABASE_PRIVATE_URL")
 	dsn := "host=postgres user=postgres password=postgres dbname=onepixel port=5432 sslmode=disable TimeZone=UTC"
-	if dbURL != "" {
-		dsn = dbURL
+
+	if dbUrl != "" {
+		dsn = dbUrl
 	}
+	if dbPrivUrl != "" {
+		dsn = dbPrivUrl
+	}
+
 	config := &gorm.Config{
 		TranslateError: true,
 	}
