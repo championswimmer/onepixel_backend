@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm/logger"
 	"onepixel_backend/src/models"
+	"os"
 
 	"github.com/samber/lo"
 	"gorm.io/driver/postgres"
@@ -23,7 +24,8 @@ func InitDBProd() (*gorm.DB, error) {
 
 func initDB(test bool) (*gorm.DB, error) {
 	// TODO: move db config to external YAML config
-	dsn := "host=postgres user=postgres password=postgres dbname=onepixel port=5432 sslmode=disable TimeZone=UTC"
+	dsn := os.Getenv("DATABASE_URL")
+	//dsn := "host=postgres user=postgres password=postgres dbname=onepixel port=5432 sslmode=disable TimeZone=UTC"
 	config := &gorm.Config{
 		TranslateError: true,
 	}
