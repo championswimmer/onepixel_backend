@@ -27,7 +27,5 @@ LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics to
 # COPY --from=builder ["/build/onepixel", "/build/.env", "/"]
 COPY --from=builder ["/build/bin/onepixel", "/"]
 
-ENV DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/onepixel?sslmode=disable}
-
 # Command to run when starting the container.
 ENTRYPOINT ["/onepixel"]
