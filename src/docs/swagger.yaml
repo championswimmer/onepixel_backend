@@ -1,0 +1,145 @@
+basePath: /api/v1
+definitions:
+  dtos.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dtos.ErrorResponse:
+    properties:
+      message:
+        example: Something went wrong
+        type: string
+      status:
+        example: 400
+        type: integer
+    type: object
+  dtos.UserResponse:
+    properties:
+      email:
+        example: user@test.com
+        type: string
+      id:
+        example: 1
+        type: integer
+    type: object
+host: 127.0.0.1:3000
+info:
+  contact:
+    email: dev@championswimmer.in
+    name: Arnav Gupta
+  description: 1px.li URL Shortner API
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://github.com/championswimmer/onepixel_backend
+  title: onepixel API
+  version: "0.1"
+paths:
+  /api/v1/users:
+    post:
+      consumes:
+      - application/json
+      description: Register new user
+      operationId: register-user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UserResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: email and password are required to create user
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      summary: Register new user
+      tags:
+      - users
+  /api/v1/users/:id:
+    get:
+      consumes:
+      - application/json
+      description: Get user info
+      operationId: get-user-info
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get user info
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update user info
+      operationId: update-user-info
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Update user info
+      tags:
+      - users
+  /api/v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      operationId: login-user
+      produces:
+      - application/json
+      responses: {}
+      summary: Login user
+      tags:
+      - users
+  /urls:
+    get:
+      consumes:
+      - application/json
+      description: Get all urls
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetAllUsers
+          schema:
+            type: string
+      security:
+      - BearerToken: []
+      summary: Get all urls
+      tags:
+      - urls
+securityDefinitions:
+  BearerToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

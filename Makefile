@@ -17,11 +17,15 @@ else ifeq ($(ARCH),i386)
 	ARCH := 386
 endif
 
-build:
+docs:
+	@echo "Generating swagger documentation"
+	@swag init -g src/main.go -o src/docs
+
+build: docs
 	@echo "Building $(OS) $(ARCH) binary..."
 	@GOOS=$(OS) GOARCH=$(ARCH) go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
 
-build_all:
+build_all: docs
 	@echo "Building linux amd64 binary..."
 	@GOOS=linux GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-linux-amd64" src/main.go
 	@echo "Building darwin amd64 binary..."

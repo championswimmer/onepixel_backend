@@ -13,7 +13,7 @@ import (
 
 var usersController *controllers.UsersController
 
-// UsersRoute /api/v1/users
+// UsersRoute godoc
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController = controllers.NewUsersController(db)
 	return func(router fiber.Router) {
@@ -24,7 +24,20 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	}
 }
 
-// registerUser POST /api/v1/users
+// registerUser godoc
+//
+//	@Summary		Register new user
+//	@Description	Register new user
+//	@ID				register-user
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		dtos.CreateUserRequest	true	"User"
+//	@Success		201		{object}	dtos.UserResponse
+//	@Failure		400		{object}	dtos.ErrorResponse "The request body is not valid"
+//	@Failure		422		{object}	dtos.ErrorResponse "email and password are required to create user"
+//	@Failure		409		{object}	dtos.ErrorResponse "User with this email already exists"
+//	@Router			/api/v1/users [post]
 func registerUser(ctx *fiber.Ctx) error {
 	var u = new(dtos.CreateUserRequest)
 	if err := ctx.BodyParser(u); err != nil {
@@ -51,17 +64,43 @@ func registerUser(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
 }
 
-// loginUser POST /api/v1/users/login
+// loginUser godoc
+//
+// @Summary		Login user
+// @Description	Login user
+// @ID				login-user
+// @Tags			users
+// @Accept			json
+// @Produce		json
+// @Router			/api/v1/users/login [post]
 func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
 }
 
-// getUserInfo GET /api/v1/users/:id
+// getUserInfo godoc
+//
+// @Summary		Get user info
+// @Description	Get user info
+// @ID				get-user-info
+// @Tags			users
+// @Accept			json
+// @Produce		json
+// @Param			id	path	uint	true	"User ID"
+// @Router			/api/v1/users/:id [get]
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
 
-// updateUserInfo PATCH /api/v1/users/:id
+// updateUserInfo godoc
+//
+// @Summary		Update user info
+// @Description	Update user info
+// @ID				update-user-info
+// @Tags			users
+// @Accept			json
+// @Produce		json
+// @Param			id	path	uint	true	"User ID"
+// @Router			/api/v1/users/:id [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }
