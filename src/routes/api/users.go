@@ -24,6 +24,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	}
 }
 
+// registerUser POST /api/v1/users
 func registerUser(ctx *fiber.Ctx) error {
 	var u = new(dtos.CreateUserRequest)
 	if err := ctx.BodyParser(u); err != nil {
@@ -50,14 +51,17 @@ func registerUser(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
 }
 
+// loginUser POST /api/v1/users/login
 func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
 }
 
+// getUserInfo GET /api/v1/users/:id
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
 
+// updateUserInfo PATCH /api/v1/users/:id
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }

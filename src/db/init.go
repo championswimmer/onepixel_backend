@@ -18,7 +18,7 @@ func InitDBTest() (*gorm.DB, error) {
 }
 
 func InitDBProd() (*gorm.DB, error) {
-	log.Warn(logger.RedBold, "Using production database")
+	log.Warn(logger.YellowBold, "Using production database")
 	return initDB(false)
 }
 

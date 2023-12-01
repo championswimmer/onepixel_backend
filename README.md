@@ -6,6 +6,15 @@ Backend code for the 1px.li URL shortener service.
 [![codecov](https://codecov.io/gh/championswimmer/onepixel_backend/graph/badge.svg?token=DL3DR6CS40)](https://codecov.io/gh/championswimmer/onepixel_backend)
 [![Build and test](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml/badge.svg)](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml)
 
+## Test Instance 
+The latest version of the code is automatically deployed via [Railway](https://railway.app)
+to   
+<big><https://api.onepixel.link></big>
+
+
+You can deploy your own instance too
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/xAJ1-J?referralCode=T4g5xz)
+
 ## Development 
 
 ### Deploy everything (with Docker)

@@ -35,3 +35,12 @@ func TestUsersController_FindUserByEmail(t *testing.T) {
 	log.Println("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
+
+func TestCreateUserAndVerifyLogin(t *testing.T) {
+	user1, err := userController.Create("user139573@test.com", "123456")
+	assert.Nil(t, err)
+	user2, err := userController.VerifyEmailAndPassword("user139573@test.com", "123456")
+	assert.NotNil(t, user2)
+	log.Println("userID", user1.ID, user2.ID)
+	assert.EqualValues(t, user1.ID, user2.ID)
+}
