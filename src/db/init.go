@@ -13,12 +13,12 @@ import (
 )
 
 func InitDBTest() (*gorm.DB, error) {
-	log.Warn(logger.YellowBold, "Using test database")
+	log.Warn(logger.YellowBold, "Using test database", logger.Reset)
 	return initDB(true)
 }
 
 func InitDBProd() (*gorm.DB, error) {
-	log.Warn(logger.YellowBold, "Using production database")
+	log.Warn(logger.YellowBold, "Using production database", logger.Reset)
 	return initDB(false)
 }
 

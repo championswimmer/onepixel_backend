@@ -35,6 +35,10 @@ build_all: docs
 	@echo "Building windows amd64 binary..."
 	@GOOS=windows GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-windows-amd64.exe" src/main.go
 
+test:
+	@echo "Running tests..."
+	@@GOOS=$(OS) GOARCH=$(ARCH) go test -race -covermode=atomic -v -coverpkg=./src/...  ./tests/... ./src/...
+
 clean:
 	@echo "Cleaning..."
 	@go clean
