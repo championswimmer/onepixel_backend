@@ -3,8 +3,9 @@ package dtos
 import "onepixel_backend/src/models"
 
 type UserResponse struct {
-	ID    uint   `json:"id" example:"1"`
-	Email string `json:"email" example:"user@test.com"`
+	ID    uint    `json:"id" example:"1"`
+	Email string  `json:"email" example:"user@test.com"`
+	Token *string `json:"token"`
 }
 
 type ErrorResponse struct {
@@ -12,10 +13,11 @@ type ErrorResponse struct {
 	Message string `json:"message" example:"Something went wrong"`
 }
 
-func CreateUserResponseFromUser(user *models.User) UserResponse {
+func CreateUserResponseFromUser(user *models.User, token *string) UserResponse {
 	return UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
+		Token: token,
 	}
 }
 

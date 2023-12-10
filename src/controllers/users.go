@@ -27,16 +27,17 @@ func NewUsersController(db *gorm.DB) *UsersController {
 }
 
 // Create new user
-func (c *UsersController) Create(email string, password string) (*models.User, error) {
-	user := &models.User{
+func (c *UsersController) Create(email string, password string) (user *models.User, token string, err error) {
+	user = &models.User{
 		Email:    email,
 		Password: security.HashPassword(password),
 	}
 	res := c.db.Create(user)
 	if res.Error != nil {
-		return nil, res.Error
+		return nil, "", res.Error
 	}
-	return user, nil
+	token = security.CreateJWTFromUser(user)
+	return
 }
 
 // FindUserByEmail find user by email

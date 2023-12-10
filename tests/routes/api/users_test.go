@@ -27,6 +27,17 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 	resp := lo.Must(app.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
+
+	var responseBody dtos.UserResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &responseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+	assert.NotNil(t, responseBody.Token)
+
 }
 
 func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {

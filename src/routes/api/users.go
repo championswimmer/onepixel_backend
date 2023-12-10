@@ -55,14 +55,14 @@ func registerUser(ctx *fiber.Ctx) error {
 		))
 	}
 
-	savedUser, err := usersController.Create(u.Email, u.Password)
+	savedUser, token, err := usersController.Create(u.Email, u.Password)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(fiber.StatusConflict, "User with this email already exists"))
 		}
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
+	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser, &token))
 }
 
 // loginUser
