@@ -17,11 +17,17 @@ else ifeq ($(ARCH),i386)
 	ARCH := 386
 endif
 
+BUILDDEPS := docs
+
+ifeq ($(DOCS),false)
+	BUILDDEPS :=
+endif
+
 docs:
 	@echo "Generating swagger documentation"
 	@swag init --pd -g server/server.go -d src -o src/docs
 
-build: docs
+build: $(BUILDDEPS)
 	@echo "Building $(OS) $(ARCH) binary..."
 	@GOOS=$(OS) GOARCH=$(ARCH) go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
 
