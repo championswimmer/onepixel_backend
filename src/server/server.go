@@ -9,6 +9,7 @@ import (
 )
 
 // CreateApp creates the fiber app
+//
 //	@title						onepixel API
 //	@version					0.1
 //	@description				1px.li URL Shortner API
@@ -17,7 +18,7 @@ import (
 //	@contact.email				dev@championswimmer.in
 //	@license.name				MIT
 //	@license.url				https://opensource.org/licenses/MIT
-//	@host						127.0.0.1:3000
+//	@host						https://api.onepixel.link
 //	@BasePath					/api/v1
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
