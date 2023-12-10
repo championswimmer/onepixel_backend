@@ -5,7 +5,7 @@ import "onepixel_backend/src/models"
 type UserResponse struct {
 	ID    uint    `json:"id" example:"1"`
 	Email string  `json:"email" example:"user@test.com"`
-	Token *string `json:"token"`
+	Token *string `json:"token" example:"<JWT_TOKEN>"`
 }
 
 type ErrorResponse struct {

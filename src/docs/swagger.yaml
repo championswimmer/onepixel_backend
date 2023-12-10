@@ -16,6 +16,13 @@ definitions:
         example: 400
         type: integer
     type: object
+  dtos.LoginUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   dtos.UserResponse:
     properties:
       email:
@@ -24,6 +31,9 @@ definitions:
       id:
         example: 1
         type: integer
+      token:
+        example: <JWT_TOKEN>
+        type: string
     type: object
 host: 127.0.0.1:3000
 info:
@@ -116,9 +126,20 @@ paths:
       - application/json
       description: Login user
       operationId: login-user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginUserRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserResponse'
       security:
       - ApiKeyAuth: []
       summary: Login user

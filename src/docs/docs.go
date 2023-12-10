@@ -150,7 +150,25 @@ const docTemplate = `{
                 ],
                 "summary": "Login user",
                 "operationId": "login-user",
-                "responses": {}
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.LoginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UserResponse"
+                        }
+                    }
+                }
             }
         },
         "/urls": {
@@ -207,6 +225,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.LoginUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.UserResponse": {
             "type": "object",
             "properties": {
@@ -217,6 +246,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "token": {
+                    "type": "string",
+                    "example": "\u003cJWT_TOKEN\u003e"
                 }
             }
         }

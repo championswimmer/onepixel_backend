@@ -6,14 +6,14 @@ func MandatoryAuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized",
+			"message": "Unauthorized: No Authorization header provided",
 		})
 	}
 	user, err := ValidateJWT(authHeader)
 
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized",
+			"message": "Unauthorized: Invalid JWT token",
 		})
 	}
 	c.Locals("user", user)
@@ -28,7 +28,7 @@ func OptionalAuthMiddleware(c *fiber.Ctx) error {
 	user, err := ValidateJWT(authHeader)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized",
+			"message": "Unauthorized: Invalid JWT token",
 		})
 	}
 	c.Locals("user", user)

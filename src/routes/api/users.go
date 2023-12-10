@@ -2,13 +2,13 @@ package api
 
 import (
 	"errors"
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/security"
-
-	"gorm.io/gorm"
-
-	"github.com/gofiber/fiber/v2"
+	"onepixel_backend/src/server/parsers"
+	"onepixel_backend/src/server/validators"
 )
 
 var usersController *controllers.UsersController
@@ -40,19 +40,15 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 //	@Router			/api/v1/users [post]
 //	@Security		ApiKeyAuth
 func registerUser(ctx *fiber.Ctx) error {
-	var u = new(dtos.CreateUserRequest)
-	if err := ctx.BodyParser(u); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(
-			fiber.StatusBadRequest,
-			"The request body is not valid",
-		))
+
+	u, parseError := parsers.ParseBody[dtos.CreateUserRequest](ctx)
+	if parseError != nil {
+		return parsers.SendParsingError(ctx, parseError)
 	}
 
-	if u.Email == "" || u.Password == "" {
-		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(dtos.CreateErrorResponse(
-			fiber.StatusUnprocessableEntity,
-			"email and password are required to create user",
-		))
+	validateErr := validators.ValidateCreateUserRequest(u)
+	if validateErr != nil {
+		return validators.SendValidationError(ctx, validateErr)
 	}
 
 	savedUser, token, err := usersController.Create(u.Email, u.Password)
@@ -73,10 +69,28 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Tags			users
 // @Accept			json
 // @Produce		json
+// @Param			user	body		dtos.LoginUserRequest true	"User"
+// @Success		200		{object}	dtos.UserResponse
 // @Router			/api/v1/users/login [post]
 // @Security		ApiKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
-	return ctx.SendString("LoginUser")
+	u, parseError := parsers.ParseBody[dtos.LoginUserRequest](ctx)
+	if parseError != nil {
+		return parsers.SendParsingError(ctx, parseError)
+	}
+
+	validateErr := validators.ValidateLoginUserRequest(u)
+	if validateErr != nil {
+		return validators.SendValidationError(ctx, validateErr)
+	}
+
+	user, err := usersController.VerifyEmailAndPassword(u.Email, u.Password)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Invalid email or password"))
+	}
+	token := security.CreateJWTFromUser(user)
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUserResponseFromUser(user, &token))
 }
 
 // getUserInfo

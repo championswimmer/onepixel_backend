@@ -3,6 +3,8 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gofiber/fiber/v2/log"
+	"gorm.io/gorm/logger"
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/db"
@@ -83,6 +85,42 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 	assert.Equal(t, 400, resp.StatusCode)
 	assert.Equal(t, 400, responseBody.Status)
 	assert.Equal(t, "The request body is not valid", responseBody.Message)
+}
+
+func TestUsersRoute_LoginUser(t *testing.T) {
+	// ---- REGISTER USER
+	reqBody := []byte(`{"email": "user51341@test.com", "password": "123456"}`)
+
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	resp := lo.Must(app.Test(req))
+
+	assert.Equal(t, 201, resp.StatusCode)
+
+	// ---- LOGIN USER
+
+	reqBody = []byte(`{"email": "user51341@test.com" , "password": "123456"}`)
+
+	req = httptest.NewRequest("POST", "/api/v1/users/login", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	resp = lo.Must(app.Test(req))
+
+	assert.Equal(t, 200, resp.StatusCode)
+
+	var responseBody dtos.UserResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &responseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+
+	assert.NotNil(t, *responseBody.Token)
+	log.Info(logger.Green, *responseBody.Token, logger.Reset)
+
 }
 
 func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
