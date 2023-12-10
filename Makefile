@@ -19,7 +19,7 @@ endif
 
 docs:
 	@echo "Generating swagger documentation"
-	@swag init -g src/main.go -o src/docs
+	@swag init --pd -g server/server.go -d src -o src/docs
 
 build: docs
 	@echo "Building $(OS) $(ARCH) binary..."

@@ -7,13 +7,13 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-const HASH_COST_FACTOR = 10
+const HashCostFactor = 10
 
 func HashPassword(password string) string {
 	if password == "" {
 		log.Error(logger.RedBold, "Hashing empty password")
 	}
-	hashedPassword := lo.Must(bcrypt.GenerateFromPassword([]byte(password), HASH_COST_FACTOR))
+	hashedPassword := lo.Must(bcrypt.GenerateFromPassword([]byte(password), HashCostFactor))
 
 	return string(hashedPassword)
 }

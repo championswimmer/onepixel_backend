@@ -70,6 +70,8 @@ paths:
           description: email and password are required to create user
           schema:
             $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Register new user
       tags:
       - users
@@ -117,6 +119,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Login user
       tags:
       - users
@@ -138,6 +142,10 @@ paths:
       tags:
       - urls
 securityDefinitions:
+  API Key:
+    in: header
+    name: X-API-Key
+    type: apiKey
   BearerToken:
     in: header
     name: Authorization

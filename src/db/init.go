@@ -44,6 +44,7 @@ func initDB(test bool) (*gorm.DB, error) {
 	}
 
 	lo.Must0(db.AutoMigrate(&models.User{}))
+	lo.Must0(db.AutoMigrate(&models.UrlGroup{}))
 	lo.Must0(db.AutoMigrate(&models.Url{}))
 
 	return db, nil

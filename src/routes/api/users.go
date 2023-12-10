@@ -13,7 +13,7 @@ import (
 
 var usersController *controllers.UsersController
 
-// UsersRoute godoc
+// UsersRoute defines the routes for /api/v1/users
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController = controllers.NewUsersController(db)
 	return func(router fiber.Router) {
@@ -24,7 +24,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	}
 }
 
-// registerUser godoc
+// registerUser
 //
 //	@Summary		Register new user
 //	@Description	Register new user
@@ -38,6 +38,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 //	@Failure		422		{object}	dtos.ErrorResponse "email and password are required to create user"
 //	@Failure		409		{object}	dtos.ErrorResponse "User with this email already exists"
 //	@Router			/api/v1/users [post]
+//	@Security		ApiKeyAuth
 func registerUser(ctx *fiber.Ctx) error {
 	var u = new(dtos.CreateUserRequest)
 	if err := ctx.BodyParser(u); err != nil {
@@ -64,7 +65,7 @@ func registerUser(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUserResponseFromUser(savedUser))
 }
 
-// loginUser godoc
+// loginUser
 //
 // @Summary		Login user
 // @Description	Login user
@@ -73,11 +74,12 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Router			/api/v1/users/login [post]
+// @Security		ApiKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("LoginUser")
 }
 
-// getUserInfo godoc
+// getUserInfo
 //
 // @Summary		Get user info
 // @Description	Get user info
@@ -91,7 +93,7 @@ func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
 
-// updateUserInfo godoc
+// updateUserInfo
 //
 // @Summary		Update user info
 // @Description	Update user info

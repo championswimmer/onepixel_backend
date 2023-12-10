@@ -25,6 +25,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/users": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Register new user",
                 "consumes": [
                     "application/json"
@@ -128,6 +133,11 @@ const docTemplate = `{
         },
         "/api/v1/users/login": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Login user",
                 "consumes": [
                     "application/json"
@@ -212,6 +222,11 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
+        "API Key": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
+        },
         "BearerToken": {
             "type": "apiKey",
             "name": "Authorization",

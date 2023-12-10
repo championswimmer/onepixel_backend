@@ -2,12 +2,12 @@ package api
 
 import "github.com/gofiber/fiber/v2"
 
-// UrlsRoute godoc
+// UrlsRoute
 func UrlsRoute(router fiber.Router) {
 	router.Get("/", getAllUrls)
 }
 
-// getAllUrls godoc
+// getAllUrls
 //
 //	@Summary		Get all urls
 //	@Description	Get all urls
