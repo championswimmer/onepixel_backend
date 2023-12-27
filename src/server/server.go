@@ -1,11 +1,13 @@
 package server
 
 import (
+	_ "onepixel_backend/src/docs"
+	"onepixel_backend/src/routes/api"
+	"onepixel_backend/src/server/logger"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"gorm.io/gorm"
-	_ "onepixel_backend/src/docs"
-	"onepixel_backend/src/routes/api"
 )
 
 // CreateApp creates the fiber app
@@ -29,6 +31,7 @@ import (
 //	@security					API Key
 func CreateApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
+	app.Use(logger.NewLogger())
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
