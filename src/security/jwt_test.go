@@ -4,7 +4,6 @@ import (
 	"onepixel_backend/src/models"
 	"testing"
 
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +13,7 @@ func TestJwt_CreateToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	log.Info("jwt: ", jwt)
+	utils.AppLogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 }
 
@@ -24,7 +23,7 @@ func TestJwt_ParseToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	log.Info("jwt: ", jwt)
+	utils.AppLogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 
 	user, err := ValidateJWT(jwt)

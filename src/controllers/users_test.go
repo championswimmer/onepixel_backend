@@ -5,12 +5,12 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-	"log"
 	"onepixel_backend/src/db"
+	"onepixel_backend/src/utils"
 	"testing"
 )
 
-var userController = CreateUsersController(lo.Must(db.InitDBTest()))
+var userController = CreateUsersController(lo.Must(db.GetTestDB()))
 
 func TestUsersController_Create(t *testing.T) {
 	user, token, err := userController.Create("user976@test.com", "123456")
@@ -34,7 +34,7 @@ func TestUsersController_FindUserByEmail(t *testing.T) {
 	assert.Nil(t, err)
 	user2, err := userController.FindUserByEmail("user103439@test.com")
 	assert.NotNil(t, user2)
-	log.Println("userID", user1.ID, user2.ID)
+	utils.AppLogger.Info("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
 
@@ -44,6 +44,6 @@ func TestCreateUserAndVerifyLogin(t *testing.T) {
 	user2, err := userController.VerifyEmailAndPassword("user139573@test.com", "123456")
 	assert.NotNil(t, user2)
 	assert.NotNil(t, token1)
-	log.Println("userID", user1.ID, user2.ID)
+	utils.AppLogger.Info("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }

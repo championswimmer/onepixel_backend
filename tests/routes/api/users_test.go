@@ -3,8 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gofiber/fiber/v2/log"
-	"gorm.io/gorm/logger"
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/db"
@@ -18,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var app = server.CreateApp(lo.Must(db.InitDBTest()))
+var app = server.CreateApp(lo.Must(db.GetTestDB()))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
 	reqBody := []byte(`{"email": "user1461134@test.com", "password": "123456"}`)
@@ -119,7 +117,7 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 	}
 
 	assert.NotNil(t, *responseBody.Token)
-	log.Info(logger.Green, *responseBody.Token, logger.Reset)
+	utils.AppLogger.Info(*responseBody.Token)
 
 }
 

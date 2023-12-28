@@ -8,9 +8,9 @@ type Url struct {
 	ID         uint64    `gorm:"primaryKey;autoIncrement:false"`
 	ShortURL   string    `gorm:"unique,not null,size:10"`
 	LongURL    string    `gorm:"not null"`
-	CreatorID  uint      `gorm:"not null"`
+	CreatorID  uint64    `gorm:"not null"`
 	Creator    User      `gorm:"foreignKey:CreatorID"`
-	UrlGroupID *uint     `gorm:"nullable"`
+	UrlGroupID *uint64   `gorm:"nullable"`
 	UrlGroup   *UrlGroup `gorm:"foreignKey:UrlGroupID"`
 }
 
