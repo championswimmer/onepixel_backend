@@ -7,20 +7,26 @@ import (
 	"gorm.io/gorm"
 )
 
+type AuthError struct {
+	reason string
+}
+
+func (e *AuthError) Error() string {
+	return e.reason
+}
+
+// UserController errors
+var (
+	PasswordInvalidLoginError = &AuthError{"Invalid password"}
+	EmailInvalidLoginError    = &AuthError{"Invalid email"}
+)
+
 type UsersController struct {
 	// db
 	db *gorm.DB
 }
 
-type LoginError struct {
-	reason string
-}
-
-func (e *LoginError) Error() string {
-	return e.reason
-}
-
-func NewUsersController(db *gorm.DB) *UsersController {
+func CreateUsersController(db *gorm.DB) *UsersController {
 	return &UsersController{
 		db: db,
 	}
@@ -55,10 +61,10 @@ func (c *UsersController) FindUserByEmail(email string) (*models.User, error) {
 func (c *UsersController) VerifyEmailAndPassword(email string, password string) (*models.User, error) {
 	user, err := c.FindUserByEmail(email)
 	if err != nil {
-		return nil, err
+		return nil, EmailInvalidLoginError
 	}
 	if !security.CheckPasswordHash(password, user.Password) {
-		return nil, &LoginError{"Invalid password"}
+		return nil, PasswordInvalidLoginError
 	}
 	return user, nil
 }

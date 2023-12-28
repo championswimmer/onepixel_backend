@@ -12,7 +12,7 @@ type UrlsController struct {
 	db *gorm.DB
 }
 
-func NewUrlsController(db *gorm.DB) *UrlsController {
+func CreateUrlsController(db *gorm.DB) *UrlsController {
 	return &UrlsController{
 		db: db,
 	}

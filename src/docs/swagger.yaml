@@ -35,7 +35,7 @@ definitions:
         example: <JWT_TOKEN>
         type: string
     type: object
-host: 127.0.0.1:3000
+host: https://api.onepixel.link
 info:
   contact:
     email: dev@championswimmer.in
@@ -140,6 +140,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.UserResponse'
+        "400":
+          description: Invalid email or password
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Login user

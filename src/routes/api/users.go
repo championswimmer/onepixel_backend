@@ -15,7 +15,7 @@ var usersController *controllers.UsersController
 
 // UsersRoute defines the routes for /api/v1/users
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
-	usersController = controllers.NewUsersController(db)
+	usersController = controllers.CreateUsersController(db)
 	return func(router fiber.Router) {
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
@@ -71,6 +71,7 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Produce		json
 // @Param			user	body		dtos.LoginUserRequest true	"User"
 // @Success		200		{object}	dtos.UserResponse
+// @Failure		401		{object}	dtos.ErrorResponse "Invalid email or password"
 // @Router			/api/v1/users/login [post]
 // @Security		ApiKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
@@ -86,7 +87,7 @@ func loginUser(ctx *fiber.Ctx) error {
 
 	user, err := usersController.VerifyEmailAndPassword(u.Email, u.Password)
 	if err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Invalid email or password"))
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, err.Error()))
 	}
 	token := security.CreateJWTFromUser(user)
 

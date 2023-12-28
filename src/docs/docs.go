@@ -167,6 +167,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dtos.UserResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Invalid email or password",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -271,7 +277,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "127.0.0.1:3000",
+	Host:             "https://api.onepixel.link",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "onepixel API",

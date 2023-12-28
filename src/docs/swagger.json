@@ -14,7 +14,7 @@
         },
         "version": "0.1"
     },
-    "host": "127.0.0.1:3000",
+    "host": "https://api.onepixel.link",
     "basePath": "/api/v1",
     "paths": {
         "/api/v1/users": {
@@ -160,6 +160,12 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dtos.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid email or password",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
                         }
                     }
                 }
