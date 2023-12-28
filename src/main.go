@@ -5,6 +5,7 @@ import (
 	"github.com/samber/lo"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/server"
+	"onepixel_backend/src/utils/applogger"
 	"os"
 )
 
@@ -18,5 +19,5 @@ func main() {
 	httpPort, _ := lo.Coalesce(os.Getenv("PORT"), "3000")
 
 	// TODO: move port to external YAML config
-	utils.AppLogger.Fatal(app.Listen(fmt.Sprintf(":%s", httpPort)))
+	applogger.Fatal(app.Listen(fmt.Sprintf(":%s", httpPort)))
 }

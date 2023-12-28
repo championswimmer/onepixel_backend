@@ -10,6 +10,7 @@ import (
 	"onepixel_backend/src/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server"
+	"onepixel_backend/src/utils/applogger"
 	"testing"
 
 	"github.com/samber/lo"
@@ -117,7 +118,7 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 	}
 
 	assert.NotNil(t, *responseBody.Token)
-	utils.AppLogger.Info(*responseBody.Token)
+	applogger.Info(*responseBody.Token)
 
 }
 

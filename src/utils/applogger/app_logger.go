@@ -1,4 +1,4 @@
-package utils
+package applogger
 
 import (
 	"log"
@@ -21,40 +21,34 @@ const (
 	CyanBold    = "\033[36;1m"
 )
 
-type AppLogHandler struct {
-}
-
-func (a AppLogHandler) Trace(v ...interface{}) {
+func Trace(v ...interface{}) {
 	log.Println(append([]any{Cyan, "[TRACE]", Reset}, v...))
 }
 
-func (a AppLogHandler) Debug(v ...interface{}) {
+func Debug(v ...interface{}) {
 	log.Println(append([]any{BlueBold, "[DEBUG]", Reset}, v...))
 }
 
-func (a AppLogHandler) Info(v ...interface{}) {
+func Info(v ...interface{}) {
 	log.Println(append([]any{GreenBold, "[INFO]", Reset}, v...))
 
 }
 
-func (a AppLogHandler) Warn(v ...interface{}) {
+func Warn(v ...interface{}) {
 	log.Println(append([]any{YellowBold, "[WARN]", Reset}, v...))
 
 }
 
-func (a AppLogHandler) Error(v ...interface{}) {
+func Error(v ...interface{}) {
 	log.Println(append([]any{RedBold, "[ERROR]", Reset}, v...))
 
 }
 
-func (a AppLogHandler) Fatal(v ...interface{}) {
+func Fatal(v ...interface{}) {
 	log.Println(append([]any{MagentaBold, "[FATAL]", Reset}, v...))
 
 }
 
-func (a AppLogHandler) Panic(v ...interface{}) {
+func Panic(v ...interface{}) {
 	log.Println(append([]any{MagentaBold, "[PANIC]", Reset}, v...))
-
 }
-
-var AppLogger = &AppLogHandler{}

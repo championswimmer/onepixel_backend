@@ -2,6 +2,7 @@ package security
 
 import (
 	"onepixel_backend/src/models"
+	"onepixel_backend/src/utils/applogger"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ func TestJwt_CreateToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	utils.AppLogger.Info("CreateToken", "jwt", jwt)
+	applogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 }
 
@@ -23,7 +24,7 @@ func TestJwt_ParseToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	utils.AppLogger.Info("CreateToken", "jwt", jwt)
+	applogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 
 	user, err := ValidateJWT(jwt)

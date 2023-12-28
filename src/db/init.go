@@ -7,19 +7,19 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"onepixel_backend/src/models"
-	"onepixel_backend/src/utils"
+	"onepixel_backend/src/utils/applogger"
 	"os"
 )
 
 var dbSingleton *gorm.DB
 
 func GetTestDB() (*gorm.DB, error) {
-	utils.AppLogger.Warn("Using test database")
+	applogger.Warn("Using test database")
 	return getOrInitDB(true)
 }
 
 func GetProdDB() (*gorm.DB, error) {
-	utils.AppLogger.Warn("Using production database")
+	applogger.Warn("Using production database")
 	return getOrInitDB(false)
 }
 

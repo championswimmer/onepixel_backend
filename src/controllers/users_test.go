@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"onepixel_backend/src/db"
-	"onepixel_backend/src/utils"
+	"onepixel_backend/src/utils/applogger"
 	"testing"
 )
 
@@ -34,7 +34,7 @@ func TestUsersController_FindUserByEmail(t *testing.T) {
 	assert.Nil(t, err)
 	user2, err := userController.FindUserByEmail("user103439@test.com")
 	assert.NotNil(t, user2)
-	utils.AppLogger.Info("userID", user1.ID, user2.ID)
+	applogger.Info("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
 
@@ -44,6 +44,6 @@ func TestCreateUserAndVerifyLogin(t *testing.T) {
 	user2, err := userController.VerifyEmailAndPassword("user139573@test.com", "123456")
 	assert.NotNil(t, user2)
 	assert.NotNil(t, token1)
-	utils.AppLogger.Info("userID", user1.ID, user2.ID)
+	applogger.Info("userID", user1.ID, user2.ID)
 	assert.EqualValues(t, user1.ID, user2.ID)
 }
