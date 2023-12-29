@@ -19,8 +19,8 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	return func(router fiber.Router) {
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
-		router.Get("/:id", security.MandatoryAuthMiddleware, getUserInfo)
-		router.Patch("/:id", security.MandatoryAuthMiddleware, updateUserInfo)
+		router.Get("/:userid", security.MandatoryAuthMiddleware, getUserInfo)
+		router.Patch("/:userid", security.MandatoryAuthMiddleware, updateUserInfo)
 	}
 }
 
@@ -38,7 +38,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 //	@Failure		422		{object}	dtos.ErrorResponse "email and password are required to create user"
 //	@Failure		409		{object}	dtos.ErrorResponse "User with this email already exists"
 //	@Router			/api/v1/users [post]
-//	@Security		ApiKeyAuth
+//	@Security		APIKeyAuth
 func registerUser(ctx *fiber.Ctx) error {
 
 	u, parseError := parsers.ParseBody[dtos.CreateUserRequest](ctx)
@@ -55,6 +55,8 @@ func registerUser(ctx *fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(fiber.StatusConflict, "User with this email already exists"))
+		} else {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
 		}
 	}
 
@@ -73,7 +75,7 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Success		200		{object}	dtos.UserResponse
 // @Failure		401		{object}	dtos.ErrorResponse "Invalid email or password"
 // @Router			/api/v1/users/login [post]
-// @Security		ApiKeyAuth
+// @Security		APIKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
 	u, parseError := parsers.ParseBody[dtos.LoginUserRequest](ctx)
 	if parseError != nil {
@@ -103,7 +105,7 @@ func loginUser(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Param			id	path	uint	true	"User ID"
-// @Router			/api/v1/users/:id [get]
+// @Router			/api/v1/users/:userid [get]
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
@@ -117,7 +119,7 @@ func getUserInfo(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Param			id	path	uint	true	"User ID"
-// @Router			/api/v1/users/:id [patch]
+// @Router			/api/v1/users/:userid [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }

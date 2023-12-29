@@ -23,10 +23,10 @@ import (
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
 //	@name						Authorization
-//	@securityDefinitions.apiKey	API Key
+//	@securityDefinitions.apiKey	APIKeyAuth
 //	@in							header
 //	@name						X-API-Key
-//	@security					API Key
+//	@security					APIKeyAuth
 func CreateApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 
@@ -37,7 +37,7 @@ func CreateApp(db *gorm.DB) *fiber.App {
 	apiV1 := app.Group("/api/v1")
 
 	apiV1.Route("/users", api.UsersRoute(db))
-	apiV1.Route("/urls", api.UrlsRoute)
+	apiV1.Route("/urls", api.UrlsRoute(db))
 
 	app.Get("/docs/*", swagger.HandlerDefault)
 

@@ -27,7 +27,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyAuth": []
                     }
                 ],
                 "description": "Register new user",
@@ -81,7 +81,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/:id": {
+        "/api/v1/users/:userid": {
             "get": {
                 "description": "Get user info",
                 "consumes": [
@@ -135,7 +135,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyAuth": []
                     }
                 ],
                 "description": "Login user",
@@ -168,7 +168,7 @@ const docTemplate = `{
                             "$ref": "#/definitions/dtos.UserResponse"
                         }
                     },
-                    "400": {
+                    "401": {
                         "description": "Invalid email or password",
                         "schema": {
                             "$ref": "#/definitions/dtos.ErrorResponse"
@@ -203,10 +203,68 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create random short url",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Create random short url",
+                "operationId": "create-random-url",
+                "parameters": [
+                    {
+                        "description": "Url",
+                        "name": "url",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateUrlRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UrlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "The request body is not valid",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "long_url is required to create url",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "dtos.CreateUrlRequest": {
+            "type": "object",
+            "properties": {
+                "long_url": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -242,6 +300,19 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.UrlResponse": {
+            "type": "object",
+            "properties": {
+                "long_url": {
+                    "type": "string",
+                    "example": "https://www.google.com"
+                },
+                "short_url": {
+                    "type": "string",
+                    "example": "nhg145"
+                }
+            }
+        },
         "dtos.UserResponse": {
             "type": "object",
             "properties": {
@@ -261,7 +332,7 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "API Key": {
+        "APIKeyAuth": {
             "type": "apiKey",
             "name": "X-API-Key",
             "in": "header"

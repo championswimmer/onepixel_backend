@@ -5,19 +5,16 @@ import (
 	"encoding/json"
 	"io"
 	"net/http/httptest"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/models"
 	"onepixel_backend/src/security"
-	"onepixel_backend/src/server"
 	"onepixel_backend/src/utils/applogger"
+	"onepixel_backend/tests"
 	"testing"
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
-
-var app = server.CreateApp(lo.Must(db.GetTestDB()))
 
 func TestUsersRoute_RegisterUser(t *testing.T) {
 	reqBody := []byte(`{"email": "user1461134@test.com", "password": "123456"}`)
@@ -25,7 +22,7 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
 
@@ -45,10 +42,10 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 	reqBody := []byte(`{"email": "user14641522@test.com", "password": "123456"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 201, resp.StatusCode)
 
-	resp = lo.Must(app.Test(req))
+	resp = lo.Must(tests.App.Test(req))
 
 	var responseBody dtos.ErrorResponse
 	body, err := io.ReadAll(resp.Body)
@@ -70,7 +67,7 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 	// Not setting any content-type will generate a Body Parsing error
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 
 	var responseBody dtos.ErrorResponse
 	body, err := io.ReadAll(resp.Body)
@@ -93,7 +90,7 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
 
@@ -104,7 +101,7 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 	req = httptest.NewRequest("POST", "/api/v1/users/login", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
-	resp = lo.Must(app.Test(req))
+	resp = lo.Must(tests.App.Test(req))
 
 	assert.Equal(t, 200, resp.StatusCode)
 
@@ -124,14 +121,14 @@ func TestUsersRoute_LoginUser(t *testing.T) {
 
 func TestUsersRoute_GetUserInfoUnauthorized(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 401, resp.StatusCode)
 }
 
 func TestUsersRoute_GetUserInfoUnauthorizedInvalidJWT(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
 	req.Header.Set("Authorization", "xxxxxxxx")
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 401, resp.StatusCode)
 }
 
@@ -139,20 +136,20 @@ func TestUsersRoute_GetUserInfo(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/users/1", nil)
 	jwt := security.CreateJWTFromUser(&models.User{ID: 1})
 	req.Header.Set("Authorization", jwt)
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 200, resp.StatusCode)
 }
 func TestUsersRoute_ShouldNotRegisterUserWhenNoPassword(t *testing.T) {
 	reqBody := []byte(`{"email": "arnav@mail.com"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 422, resp.StatusCode)
 }
 func TestUsersRoute_ShouldNotRegisterUserWhenNoEmail(t *testing.T) {
 	reqBody := []byte(`{"password": "12345"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	resp := lo.Must(app.Test(req))
+	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 422, resp.StatusCode)
 }

@@ -5,50 +5,50 @@ import (
 )
 
 const (
-	Reset       = "\033[0m"
-	Red         = "\033[31m"
-	Green       = "\033[32m"
-	Yellow      = "\033[33m"
-	Blue        = "\033[34m"
-	Magenta     = "\033[35m"
-	Cyan        = "\033[36m"
-	White       = "\033[37m"
-	RedBold     = "\033[31;1m"
-	GreenBold   = "\033[32;1m"
-	YellowBold  = "\033[33;1m"
-	BlueBold    = "\033[34;1m"
-	MagentaBold = "\033[35;1m"
-	CyanBold    = "\033[36;1m"
+	_reset       = "\033[0m"
+	_red         = "\033[31m"
+	_green       = "\033[32m"
+	_yellow      = "\033[33m"
+	_blue        = "\033[34m"
+	_magenta     = "\033[35m"
+	_cyan        = "\033[36m"
+	_white       = "\033[37m"
+	_redbold     = "\033[31;1m"
+	_greenbold   = "\033[32;1m"
+	_yellowbold  = "\033[33;1m"
+	_bluebold    = "\033[34;1m"
+	_magentabold = "\033[35;1m"
+	_cyanbold    = "\033[36;1m"
 )
 
 func Trace(v ...interface{}) {
-	log.Println(append([]any{Cyan, "[TRACE]", Reset}, v...))
+	log.Println(append([]any{_cyan, "[TRACE]", _reset}, v...))
 }
 
 func Debug(v ...interface{}) {
-	log.Println(append([]any{BlueBold, "[DEBUG]", Reset}, v...))
+	log.Println(append([]any{_bluebold, "[DEBUG]", _reset}, v...))
 }
 
 func Info(v ...interface{}) {
-	log.Println(append([]any{GreenBold, "[INFO]", Reset}, v...))
+	log.Println(append([]any{_greenbold, "[INFO]", _reset}, v...))
 
 }
 
 func Warn(v ...interface{}) {
-	log.Println(append([]any{YellowBold, "[WARN]", Reset}, v...))
+	log.Println(append([]any{_yellowbold, "[WARN]", _reset}, v...))
 
 }
 
 func Error(v ...interface{}) {
-	log.Println(append([]any{RedBold, "[ERROR]", Reset}, v...))
+	log.Println(append([]any{_redbold, "[ERROR]", _reset}, v...))
 
 }
 
 func Fatal(v ...interface{}) {
-	log.Println(append([]any{MagentaBold, "[FATAL]", Reset}, v...))
+	log.Println(append([]any{_magentabold, "[FATAL]", _reset}, v...))
 
 }
 
 func Panic(v ...interface{}) {
-	log.Println(append([]any{MagentaBold, "[PANIC]", Reset}, v...))
+	log.Println(append([]any{_magentabold, "[PANIC]", _reset}, v...))
 }

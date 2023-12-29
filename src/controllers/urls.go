@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"errors"
+	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"math"
@@ -9,31 +11,50 @@ import (
 	"onepixel_backend/src/utils"
 )
 
-const CURRENT_SOFTMAX_URL_LENGTH = 6
+// the current max length of the short url
+// when we generate URLs randomly
+// can be increase future if we run out of this space
+//   - 6: 64^6 = 68,719,476,736
+const _currentMaxUrlLength = 6
 
-var RANDMAX = int(math.Pow(64, CURRENT_SOFTMAX_URL_LENGTH))
+var _randMax = int(math.Pow(64, _currentMaxUrlLength))
 
 type UrlsController struct {
 	// db
 	db *gorm.DB
 }
 
+type UrlError struct {
+	status  int
+	message string
+}
+
+func (e *UrlError) Error() string {
+	return e.message
+}
+
+func (e *UrlError) ErrorDetails() (int, string) {
+	return e.status, e.message
+}
+
+var (
+	UrlNotFound = &UrlError{
+		status:  404,
+		message: "URL not found",
+	}
+	UrlExistsError = &UrlError{
+		status:  fiber.ErrConflict.Code,
+		message: "URL already exists",
+	}
+	UrlForbiddenError = &UrlError{
+		status:  fiber.ErrForbidden.Code,
+		message: "this shortURL is not allowed to be created",
+	}
+)
+
 func CreateUrlsController(db *gorm.DB) *UrlsController {
 	return &UrlsController{
 		db: db,
-	}
-}
-
-func (c *UrlsController) generateNewRandomShortUrl() (string, uint64) {
-	// TODO: optimise in future: why check before trying to create itself -
-	// 		if it fails with unique constraint then only recreate
-	newRandomUrlCode := uint64(rand.Intn(RANDMAX))
-	var existingUrl models.Url
-	c.db.Find(&existingUrl, models.Url{ID: newRandomUrlCode})
-	if existingUrl.ID == newRandomUrlCode {
-		return c.generateNewRandomShortUrl()
-	} else {
-		return lo.Must(utils.Radix64Encode(newRandomUrlCode)), newRandomUrlCode
 	}
 }
 
@@ -48,14 +69,19 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 
 	res := c.db.Create(url)
 	if res.Error != nil {
-		return nil, res.Error
+		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
+			return nil, UrlExistsError
+		} else {
+			return nil, res.Error
+		}
 	}
 
 	return
 }
 
 func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (url *models.Url, err error) {
-	newShortUrl, newShortCode := c.generateNewRandomShortUrl()
+	newShortCode := uint64(rand.Intn(_randMax))
+	newShortUrl := lo.Must(utils.Radix64Encode(newShortCode))
 
 	url = &models.Url{
 		ID:         newShortCode,
@@ -66,6 +92,11 @@ func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (ur
 	}
 	res := c.db.Create(url)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
+			// Having a collision is very unlikely, but if it happens
+			// we just try again (TODO: we should have a limit of retries)
+			return c.CreateRandomShortUrl(longUrl, userId)
+		}
 		return nil, res.Error
 	}
 

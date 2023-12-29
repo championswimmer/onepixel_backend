@@ -14,16 +14,17 @@ func (e *ParsingError) Error() string {
 	return e.message
 }
 
+func (e *ParsingError) ErrorDetails() (int, string) {
+	return e.status, e.message
+}
+
 var bodyParsingError = &ParsingError{
 	status:  fiber.StatusBadRequest,
 	message: "The request body is not valid",
 }
 
 func SendParsingError(ctx *fiber.Ctx, err *ParsingError) error {
-	return ctx.Status(err.status).JSON(dtos.CreateErrorResponse(
-		err.status,
-		err.message,
-	))
+	return ctx.Status(err.status).JSON(dtos.CreateErrorResponse(err.ErrorDetails()))
 
 }
 

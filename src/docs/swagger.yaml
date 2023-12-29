@@ -1,5 +1,10 @@
 basePath: /api/v1
 definitions:
+  dtos.CreateUrlRequest:
+    properties:
+      long_url:
+        type: string
+    type: object
   dtos.CreateUserRequest:
     properties:
       email:
@@ -21,6 +26,15 @@ definitions:
       email:
         type: string
       password:
+        type: string
+    type: object
+  dtos.UrlResponse:
+    properties:
+      long_url:
+        example: https://www.google.com
+        type: string
+      short_url:
+        example: nhg145
         type: string
     type: object
   dtos.UserResponse:
@@ -81,11 +95,11 @@ paths:
           schema:
             $ref: '#/definitions/dtos.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - APIKeyAuth: []
       summary: Register new user
       tags:
       - users
-  /api/v1/users/:id:
+  /api/v1/users/:userid:
     get:
       consumes:
       - application/json
@@ -140,12 +154,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dtos.UserResponse'
-        "400":
+        "401":
           description: Invalid email or password
           schema:
             $ref: '#/definitions/dtos.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - APIKeyAuth: []
       summary: Login user
       tags:
       - users
@@ -166,8 +180,40 @@ paths:
       summary: Get all urls
       tags:
       - urls
+    post:
+      consumes:
+      - application/json
+      description: Create random short url
+      operationId: create-random-url
+      parameters:
+      - description: Url
+        in: body
+        name: url
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUrlRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UrlResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: long_url is required to create url
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Create random short url
+      tags:
+      - urls
 securityDefinitions:
-  API Key:
+  APIKeyAuth:
     in: header
     name: X-API-Key
     type: apiKey
