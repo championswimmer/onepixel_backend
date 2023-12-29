@@ -49,7 +49,7 @@ definitions:
         example: <JWT_TOKEN>
         type: string
     type: object
-host: https://api.onepixel.link
+host: api.onepixel.link
 info:
   contact:
     email: dev@championswimmer.in
@@ -62,107 +62,6 @@ info:
   title: onepixel API
   version: "0.1"
 paths:
-  /api/v1/users:
-    post:
-      consumes:
-      - application/json
-      description: Register new user
-      operationId: register-user
-      parameters:
-      - description: User
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.CreateUserRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/dtos.UserResponse'
-        "400":
-          description: The request body is not valid
-          schema:
-            $ref: '#/definitions/dtos.ErrorResponse'
-        "409":
-          description: User with this email already exists
-          schema:
-            $ref: '#/definitions/dtos.ErrorResponse'
-        "422":
-          description: email and password are required to create user
-          schema:
-            $ref: '#/definitions/dtos.ErrorResponse'
-      security:
-      - APIKeyAuth: []
-      summary: Register new user
-      tags:
-      - users
-  /api/v1/users/:userid:
-    get:
-      consumes:
-      - application/json
-      description: Get user info
-      operationId: get-user-info
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      summary: Get user info
-      tags:
-      - users
-    patch:
-      consumes:
-      - application/json
-      description: Update user info
-      operationId: update-user-info
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      summary: Update user info
-      tags:
-      - users
-  /api/v1/users/login:
-    post:
-      consumes:
-      - application/json
-      description: Login user
-      operationId: login-user
-      parameters:
-      - description: User
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/dtos.LoginUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dtos.UserResponse'
-        "401":
-          description: Invalid email or password
-          schema:
-            $ref: '#/definitions/dtos.ErrorResponse'
-      security:
-      - APIKeyAuth: []
-      summary: Login user
-      tags:
-      - users
   /urls:
     get:
       consumes:
@@ -212,6 +111,107 @@ paths:
       summary: Create random short url
       tags:
       - urls
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register new user
+      operationId: register-user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UserResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: email and password are required to create user
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - APIKeyAuth: []
+      summary: Register new user
+      tags:
+      - users
+  /users/:userid:
+    get:
+      consumes:
+      - application/json
+      description: Get user info
+      operationId: get-user-info
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get user info
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update user info
+      operationId: update-user-info
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Update user info
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      operationId: login-user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UserResponse'
+        "401":
+          description: Invalid email or password
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - APIKeyAuth: []
+      summary: Login user
+      tags:
+      - users
 securityDefinitions:
   APIKeyAuth:
     in: header

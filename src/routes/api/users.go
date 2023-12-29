@@ -37,7 +37,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 //	@Failure		400		{object}	dtos.ErrorResponse "The request body is not valid"
 //	@Failure		422		{object}	dtos.ErrorResponse "email and password are required to create user"
 //	@Failure		409		{object}	dtos.ErrorResponse "User with this email already exists"
-//	@Router			/api/v1/users [post]
+//	@Router			/users [post]
 //	@Security		APIKeyAuth
 func registerUser(ctx *fiber.Ctx) error {
 
@@ -74,7 +74,7 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Param			user	body		dtos.LoginUserRequest true	"User"
 // @Success		200		{object}	dtos.UserResponse
 // @Failure		401		{object}	dtos.ErrorResponse "Invalid email or password"
-// @Router			/api/v1/users/login [post]
+// @Router			/users/login [post]
 // @Security		APIKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
 	u, parseError := parsers.ParseBody[dtos.LoginUserRequest](ctx)
@@ -105,7 +105,7 @@ func loginUser(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Param			id	path	uint	true	"User ID"
-// @Router			/api/v1/users/:userid [get]
+// @Router			/users/:userid [get]
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
@@ -119,7 +119,7 @@ func getUserInfo(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Param			id	path	uint	true	"User ID"
-// @Router			/api/v1/users/:userid [patch]
+// @Router			/users/:userid [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }
