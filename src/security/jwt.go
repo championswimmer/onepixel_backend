@@ -32,7 +32,7 @@ func ValidateJWT(t string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	sub := uint(lo.Must(strconv.Atoi(lo.Must(claims.GetSubject()))))
+	sub := uint64(lo.Must(strconv.Atoi(lo.Must(claims.GetSubject()))))
 	exp := lo.Must(claims.GetExpirationTime())
 	if exp.Before(time.Now()) {
 		return nil, jwt.ErrTokenExpired

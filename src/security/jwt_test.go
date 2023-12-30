@@ -2,9 +2,9 @@ package security
 
 import (
 	"onepixel_backend/src/models"
+	"onepixel_backend/src/utils/applogger"
 	"testing"
 
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +14,7 @@ func TestJwt_CreateToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	log.Info("jwt: ", jwt)
+	applogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 }
 
@@ -24,7 +24,7 @@ func TestJwt_ParseToken(t *testing.T) {
 	}
 
 	jwt := CreateJWTFromUser(testUser)
-	log.Info("jwt: ", jwt)
+	applogger.Info("CreateToken", "jwt", jwt)
 	assert.NotNil(t, jwt)
 
 	user, err := ValidateJWT(jwt)

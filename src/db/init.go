@@ -1,28 +1,33 @@
 package db
 
 import (
-	"github.com/gofiber/fiber/v2/log"
-	"gorm.io/gorm/logger"
-	"onepixel_backend/src/models"
-	"os"
-
 	"github.com/samber/lo"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"onepixel_backend/src/models"
+	"onepixel_backend/src/utils/applogger"
+	"os"
 )
 
-func InitDBTest() (*gorm.DB, error) {
-	log.Warn(logger.YellowBold, "Using test database", logger.Reset)
-	return initDB(true)
+var dbSingleton *gorm.DB
+
+func GetTestDB() (*gorm.DB, error) {
+	applogger.Warn("Using test database")
+	return getOrInitDB(true)
 }
 
-func InitDBProd() (*gorm.DB, error) {
-	log.Warn(logger.YellowBold, "Using production database", logger.Reset)
-	return initDB(false)
+func GetProdDB() (*gorm.DB, error) {
+	applogger.Warn("Using production database")
+	return getOrInitDB(false)
 }
 
-func initDB(test bool) (*gorm.DB, error) {
+func getOrInitDB(test bool) (*gorm.DB, error) {
+
+	if dbSingleton != nil {
+		return dbSingleton, nil
+	}
 	// TODO: move db config to external YAML config
 	dsn, _ := lo.Coalesce(
 		os.Getenv("DATABASE_PRIVATE_URL"),
@@ -33,19 +38,18 @@ func initDB(test bool) (*gorm.DB, error) {
 	config := &gorm.Config{
 		TranslateError: true,
 	}
-	var db *gorm.DB
 
 	if test {
-		db = lo.Must(gorm.Open(sqlite.Open("file::memory:?cache=shared"), config))
 		config.Logger = logger.Default.LogMode(logger.Info)
+		dbSingleton = lo.Must(gorm.Open(sqlite.Open("file::memory:?cache=shared"), config))
 	} else {
-		db = lo.Must(gorm.Open(postgres.Open(dsn), config))
 		config.Logger = logger.Default.LogMode(logger.Error)
+		dbSingleton = lo.Must(gorm.Open(postgres.Open(dsn), config))
 	}
 
-	lo.Must0(db.AutoMigrate(&models.User{}))
-	lo.Must0(db.AutoMigrate(&models.UrlGroup{}))
-	lo.Must0(db.AutoMigrate(&models.Url{}))
+	lo.Must0(dbSingleton.AutoMigrate(&models.User{}))
+	lo.Must0(dbSingleton.AutoMigrate(&models.UrlGroup{}))
+	lo.Must0(dbSingleton.AutoMigrate(&models.Url{}))
 
-	return db, nil
+	return dbSingleton, nil
 }

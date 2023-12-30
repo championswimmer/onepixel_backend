@@ -1,17 +1,16 @@
 package security
 
 import (
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/samber/lo"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm/logger"
+	"onepixel_backend/src/utils/applogger"
 )
 
 const HashCostFactor = 10
 
 func HashPassword(password string) string {
 	if password == "" {
-		log.Error(logger.RedBold, "Hashing empty password", logger.Reset)
+		applogger.Error("Hashing empty password")
 	}
 	hashedPassword := lo.Must(bcrypt.GenerateFromPassword([]byte(password), HashCostFactor))
 
@@ -20,7 +19,7 @@ func HashPassword(password string) string {
 
 func CheckPasswordHash(password, hash string) bool {
 	if password == "" || hash == "" {
-		log.Error(logger.RedBold, "Comparing empty password", logger.Reset)
+		applogger.Error("Comparing empty password")
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

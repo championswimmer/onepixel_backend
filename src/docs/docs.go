@@ -23,11 +23,89 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/users": {
+        "/urls": {
+            "get": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Get all urls",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Get all urls",
+                "responses": {
+                    "200": {
+                        "description": "GetAllUsers",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create random short url",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Create random short url",
+                "operationId": "create-random-url",
+                "parameters": [
+                    {
+                        "description": "Url",
+                        "name": "url",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateUrlRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UrlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "The request body is not valid",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "long_url is required to create url",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "security": [
+                    {
+                        "APIKeyAuth": []
                     }
                 ],
                 "description": "Register new user",
@@ -81,7 +159,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/:id": {
+        "/users/:userid": {
             "get": {
                 "description": "Get user info",
                 "consumes": [
@@ -131,11 +209,11 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/v1/users/login": {
+        "/users/login": {
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyAuth": []
                     }
                 ],
                 "description": "Login user",
@@ -167,33 +245,11 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dtos.UserResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/urls": {
-            "get": {
-                "security": [
-                    {
-                        "BearerToken": []
-                    }
-                ],
-                "description": "Get all urls",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "urls"
-                ],
-                "summary": "Get all urls",
-                "responses": {
-                    "200": {
-                        "description": "GetAllUsers",
+                    },
+                    "401": {
+                        "description": "Invalid email or password",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dtos.ErrorResponse"
                         }
                     }
                 }
@@ -201,6 +257,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dtos.CreateUrlRequest": {
+            "type": "object",
+            "properties": {
+                "long_url": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -236,6 +300,19 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.UrlResponse": {
+            "type": "object",
+            "properties": {
+                "long_url": {
+                    "type": "string",
+                    "example": "https://www.google.com"
+                },
+                "short_url": {
+                    "type": "string",
+                    "example": "nhg145"
+                }
+            }
+        },
         "dtos.UserResponse": {
             "type": "object",
             "properties": {
@@ -255,7 +332,7 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "API Key": {
+        "APIKeyAuth": {
             "type": "apiKey",
             "name": "X-API-Key",
             "in": "header"
@@ -271,7 +348,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "127.0.0.1:3000",
+	Host:             "api.onepixel.link",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "onepixel API",

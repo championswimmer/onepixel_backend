@@ -2,6 +2,9 @@ package security
 
 import "github.com/gofiber/fiber/v2"
 
+// MandatoryAuthMiddleware makes authentication mandatory
+// will return 401 if no Authorization header is provided or if the JWT is invalid
+// saves the user in the context locals as "user"
 func MandatoryAuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {

@@ -2,10 +2,19 @@ package dtos
 
 import "onepixel_backend/src/models"
 
+type AppError interface {
+	ErrorDetails() (int, string)
+}
+
 type UserResponse struct {
-	ID    uint    `json:"id" example:"1"`
+	ID    uint64  `json:"id" example:"1"`
 	Email string  `json:"email" example:"user@test.com"`
 	Token *string `json:"token" example:"<JWT_TOKEN>"`
+}
+
+type UrlResponse struct {
+	ShortURL string `json:"short_url" example:"nhg145"`
+	LongURL  string `json:"long_url" example:"https://www.google.com"`
 }
 
 type ErrorResponse struct {
@@ -25,5 +34,12 @@ func CreateErrorResponse(status int, message string) ErrorResponse {
 	return ErrorResponse{
 		Status:  status,
 		Message: message,
+	}
+}
+
+func CreateUrlResponse(url *models.Url) UrlResponse {
+	return UrlResponse{
+		ShortURL: url.ShortURL,
+		LongURL:  url.LongURL,
 	}
 }
