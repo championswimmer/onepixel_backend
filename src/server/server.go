@@ -18,7 +18,7 @@ import (
 //	@contact.email				dev@championswimmer.in
 //	@license.name				MIT
 //	@license.url				https://opensource.org/licenses/MIT
-//	@host						api.onepixel.link
+//	@host						onepixel.link
 //	@BasePath					/api/v1
 //	@schemes					https
 //	@securityDefinitions.apiKey	BearerToken

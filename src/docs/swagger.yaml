@@ -49,7 +49,7 @@ definitions:
         example: <JWT_TOKEN>
         type: string
     type: object
-host: api.onepixel.link
+host: onepixel.link
 info:
   contact:
     email: dev@championswimmer.in

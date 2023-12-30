@@ -14,7 +14,7 @@
         },
         "version": "0.1"
     },
-    "host": "api.onepixel.link",
+    "host": "onepixel.link",
     "basePath": "/api/v1",
     "paths": {
         "/urls": {

@@ -9,7 +9,7 @@ Backend code for the 1px.li URL shortener service.
 ## Test Instance 
 The latest version of the code is automatically deployed via [Railway](https://railway.app)
 to   
-<big><https://api.onepixel.link></big>
+<big><https://onepixel.link></big>
 
 
 You can deploy your own instance too
