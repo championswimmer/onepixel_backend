@@ -43,7 +43,11 @@ func CreateApp(db *gorm.DB) *fiber.App {
 	apiV1.Route("/users", api.UsersRoute(db))
 	apiV1.Route("/urls", api.UrlsRoute(db))
 
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
+	if config.Env == "production" {
+		docs.SwaggerInfo.Host = config.AdminHost
+	} else {
+		docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
+	}
 
 	app.Get("/docs/*", swagger.HandlerDefault)
 

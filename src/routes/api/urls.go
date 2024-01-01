@@ -73,6 +73,23 @@ func createRandomUrl(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
 }
 
+// createSpecificUrl
+//
+//	@Summary		Create specific short url
+//	@Description	Create specific short url
+//	@ID				create-specific-url
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			shortcode	path	string	true	"Shortcode"
+//	@Param			url	body		dtos.CreateUrlRequest	true	"Url"
+//	@Success		201	{object}	dtos.UrlResponse
+//	@Failure		400	{object}	dtos.ErrorResponse	"The request body is not valid"
+//	@Failure		422	{object}	dtos.ErrorResponse	"long_url is required to create url"
+//	@Failure		409	{object}	dtos.ErrorResponse	"Shortcode already exists"
+//	@Failure		403	{object}	dtos.ErrorResponse	"Shortcode is not allowed"
+//	@Router			/urls/{shortcode} [put]
+//	@Security		BearerToken
 func createSpecificUrl(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*models.User)
 

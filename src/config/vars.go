@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+var Env string
 var DBLogging string
 var DBDialect string
 var DBUrl string
@@ -14,6 +15,11 @@ var AdminHost string
 
 // should run after env.go#init as this `vars` is alphabetically after `env`
 func init() {
+	Env, _ = lo.Coalesce(
+		os.Getenv("RAILWAY_ENVIRONMENT"),
+		os.Getenv("ENV"),
+		"local",
+	)
 	DBLogging = os.Getenv("DB_LOGGING")
 	DBDialect = os.Getenv("DB_DIALECT")
 	DBUrl, _ = lo.Coalesce(
