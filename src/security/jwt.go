@@ -1,6 +1,7 @@
 package security
 
 import (
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"strconv"
 	"time"
@@ -9,25 +10,24 @@ import (
 	"github.com/samber/lo"
 )
 
-// TODO: pick JWT_KEY from config
-
-var JWT_KEY = "this is a sample key, should change in prod"
-var JWT_SIGNING_METHOD = jwt.SigningMethodHS256
+var SigningKey = []byte(config.JwtSigningKey)
+var SigningMethod = jwt.SigningMethodHS256
+var KeyDuration = config.JwtDurationDays
 
 func CreateJWTFromUser(u *models.User) string {
-	token := jwt.NewWithClaims(JWT_SIGNING_METHOD, jwt.MapClaims{
+	token := jwt.NewWithClaims(SigningMethod, jwt.MapClaims{
 		"sub": strconv.Itoa(int(u.ID)),
 		"iat": jwt.NewNumericDate(time.Now()),
-		"exp": jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), // 7 days
+		"exp": jwt.NewNumericDate(time.Now().AddDate(0, 0, KeyDuration)), // 7 days
 	})
 
-	return lo.Must(token.SignedString([]byte(JWT_KEY)))
+	return lo.Must(token.SignedString(SigningKey))
 }
 
 func ValidateJWT(t string) (*models.User, error) {
 	claims := jwt.MapClaims{}
 	_, err := jwt.ParseWithClaims(t, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(JWT_KEY), nil
+		return SigningKey, nil
 	})
 	if err != nil {
 		return nil, err

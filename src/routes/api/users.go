@@ -19,8 +19,8 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	return func(router fiber.Router) {
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
-		router.Get("/:userid", security.MandatoryAuthMiddleware, getUserInfo)
-		router.Patch("/:userid", security.MandatoryAuthMiddleware, updateUserInfo)
+		router.Get("/:userid", security.MandatoryJwtAuthMiddleware, getUserInfo)
+		router.Patch("/:userid", security.MandatoryJwtAuthMiddleware, updateUserInfo)
 	}
 }
 
@@ -75,7 +75,6 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Success		200		{object}	dtos.UserResponse
 // @Failure		401		{object}	dtos.ErrorResponse "Invalid email or password"
 // @Router			/users/login [post]
-// @Security		APIKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
 	u, parseError := parsers.ParseBody[dtos.LoginUserRequest](ctx)
 	if parseError != nil {

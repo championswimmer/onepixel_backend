@@ -19,8 +19,8 @@ func UrlsRoute(db *gorm.DB) func(router fiber.Router) {
 	urlsController = controllers.CreateUrlsController(db)
 	return func(router fiber.Router) {
 		router.Get("/", getAllUrls)
-		router.Post("/", security.MandatoryAuthMiddleware, createRandomUrl)
-		router.Put("/:shortcode", security.MandatoryAuthMiddleware, createSpecificUrl)
+		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
+		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 	}
 }
 

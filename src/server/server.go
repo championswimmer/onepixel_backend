@@ -30,7 +30,6 @@ import (
 //	@securityDefinitions.apiKey	APIKeyAuth
 //	@in							header
 //	@name						X-API-Key
-//	@security					APIKeyAuth
 func CreateAdminApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 
