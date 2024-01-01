@@ -6,4 +6,4 @@ import (
 	"onepixel_backend/src/server"
 )
 
-var App = server.CreateApp(lo.Must(db.GetDB()))
+var App = server.CreateAdminApp(lo.Must(db.GetDB()))

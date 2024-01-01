@@ -11,7 +11,7 @@ import (
 	"onepixel_backend/src/routes/api"
 )
 
-// CreateApp creates the fiber app
+// CreateAdminApp creates the fiber app
 //
 //	@title						onepixel API
 //	@version					0.1
@@ -31,12 +31,8 @@ import (
 //	@in							header
 //	@name						X-API-Key
 //	@security					APIKeyAuth
-func CreateApp(db *gorm.DB) *fiber.App {
+func CreateAdminApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
 
 	apiV1 := app.Group("/api/v1")
 
@@ -50,6 +46,16 @@ func CreateApp(db *gorm.DB) *fiber.App {
 	}
 
 	app.Get("/docs/*", swagger.HandlerDefault)
+
+	return app
+}
+
+func CreateMainApp(db *gorm.DB) *fiber.App {
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World 👋!")
+	})
 
 	return app
 }

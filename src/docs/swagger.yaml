@@ -194,7 +194,7 @@ paths:
       summary: Register new user
       tags:
       - users
-  /users/:userid:
+  /users/{userid}:
     get:
       consumes:
       - application/json
@@ -203,7 +203,7 @@ paths:
       parameters:
       - description: User ID
         in: path
-        name: id
+        name: userid
         required: true
         type: integer
       produces:
@@ -220,7 +220,7 @@ paths:
       parameters:
       - description: User ID
         in: path
-        name: id
+        name: userid
         required: true
         type: integer
       produces:

@@ -104,8 +104,8 @@ func loginUser(ctx *fiber.Ctx) error {
 // @Tags			users
 // @Accept			json
 // @Produce		json
-// @Param			id	path	uint	true	"User ID"
-// @Router			/users/:userid [get]
+// @Param			userid	path	uint	true	"User ID"
+// @Router			/users/{userid} [get]
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
@@ -118,8 +118,8 @@ func getUserInfo(ctx *fiber.Ctx) error {
 // @Tags			users
 // @Accept			json
 // @Produce		json
-// @Param			id	path	uint	true	"User ID"
-// @Router			/users/:userid [patch]
+// @Param			userid	path	uint	true	"User ID"
+// @Router			/users/{userid} [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }
