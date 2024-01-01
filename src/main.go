@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Initialize the database
-	db := lo.Must(db.GetProdDB())
+	db := lo.Must(db.GetDB())
 
 	// Create the app
 	app := server.CreateApp(db)

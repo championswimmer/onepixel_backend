@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var urlsController = CreateUrlsController(lo.Must(db.GetTestDB()))
+var urlsController = CreateUrlsController(lo.Must(db.GetDB()))
 
 func TestUrlsController_CreateSpecificShortUrl(t *testing.T) {
 	user, _, _ := userController.Create("user7353@test.com", "123456")
