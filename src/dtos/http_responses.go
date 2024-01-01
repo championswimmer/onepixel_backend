@@ -1,6 +1,6 @@
 package dtos
 
-import "onepixel_backend/src/models"
+import "onepixel_backend/src/db/models"
 
 type AppError interface {
 	ErrorDetails() (int, string)

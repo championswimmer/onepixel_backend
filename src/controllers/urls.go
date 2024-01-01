@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"math"
 	"math/rand"
-	"onepixel_backend/src/models"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 )
 

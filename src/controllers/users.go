@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"onepixel_backend/src/models"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 
 	"gorm.io/gorm"

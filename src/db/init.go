@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"onepixel_backend/src/config"
-	"onepixel_backend/src/models"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
 )
 
