@@ -350,7 +350,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
 	Host:             "api.onepixel.link",
 	BasePath:         "/api/v1",
-	Schemes:          []string{"https"},
+	Schemes:          []string{"http", "https"},
 	Title:            "onepixel API",
 	Description:      "1px.li URL Shortner API",
 	InfoInstanceName: "swagger",

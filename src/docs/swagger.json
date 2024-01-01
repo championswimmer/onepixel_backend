@@ -1,5 +1,6 @@
 {
     "schemes": [
+        "http",
         "https"
     ],
     "swagger": "2.0",

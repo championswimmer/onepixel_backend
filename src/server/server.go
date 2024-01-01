@@ -1,9 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"gorm.io/gorm"
+	"onepixel_backend/src/config"
+	"onepixel_backend/src/docs"
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
 )
@@ -20,7 +23,7 @@ import (
 //	@license.url				https://opensource.org/licenses/MIT
 //	@host						api.onepixel.link
 //	@BasePath					/api/v1
-//	@schemes					https
+//	@schemes					http https
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
 //	@name						Authorization
@@ -39,6 +42,8 @@ func CreateApp(db *gorm.DB) *fiber.App {
 
 	apiV1.Route("/users", api.UsersRoute(db))
 	apiV1.Route("/urls", api.UrlsRoute(db))
+
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
 
 	app.Get("/docs/*", swagger.HandlerDefault)
 

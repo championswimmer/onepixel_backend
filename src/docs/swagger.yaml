@@ -213,6 +213,7 @@ paths:
       tags:
       - users
 schemes:
+- http
 - https
 securityDefinitions:
   APIKeyAuth:
