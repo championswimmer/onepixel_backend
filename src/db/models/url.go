@@ -10,7 +10,7 @@ type Url struct {
 	LongURL    string   `gorm:"not null"`
 	CreatorID  uint64   `gorm:"not null"`
 	Creator    User     `gorm:"foreignKey:CreatorID"`
-	UrlGroupID uint64   `gorm:"not null, default:0"`
+	UrlGroupID uint64   `gorm:"primaryKey;not null, default:0"`
 	UrlGroup   UrlGroup `gorm:"foreignKey:UrlGroupID"`
 }
 
