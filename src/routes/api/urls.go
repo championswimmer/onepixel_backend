@@ -16,7 +16,10 @@ var urlsController *controllers.UrlsController
 
 // UrlsRoute
 func UrlsRoute(db *gorm.DB) func(router fiber.Router) {
+	// initialize UrlsController
 	urlsController = controllers.CreateUrlsController(db)
+	urlsController.InitDefaultUrlGroup()
+
 	return func(router fiber.Router) {
 		router.Get("/", getAllUrls)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
