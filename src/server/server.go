@@ -2,13 +2,19 @@ package server
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/swagger"
-	"gorm.io/gorm"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/docs"
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
+	"onepixel_backend/src/server/logger"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
+	"gorm.io/gorm"
+)
+
+const (
+	ENVIRONMENT_NAME_PRODUCTION = "production"
 )
 
 // CreateAdminApp creates the fiber app
@@ -33,16 +39,18 @@ import (
 func CreateAdminApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 
+	switch config.Env {
+	case ENVIRONMENT_NAME_PRODUCTION:
+		docs.SwaggerInfo.Host = config.AdminHost
+	default:
+		app.Use(logger.NewLogger())
+		docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
+	}
+
 	apiV1 := app.Group("/api/v1")
 
 	apiV1.Route("/users", api.UsersRoute(db))
 	apiV1.Route("/urls", api.UrlsRoute(db))
-
-	if config.Env == "production" {
-		docs.SwaggerInfo.Host = config.AdminHost
-	} else {
-		docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
-	}
 
 	app.Get("/docs/*", swagger.HandlerDefault)
 
