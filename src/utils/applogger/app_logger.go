@@ -2,6 +2,7 @@ package applogger
 
 import (
 	"log"
+	"os"
 )
 
 const (
@@ -46,9 +47,10 @@ func Error(v ...interface{}) {
 
 func Fatal(v ...interface{}) {
 	log.Println(append([]any{_magentabold, "[FATAL]", _reset}, v...))
-
+	os.Exit(1)
 }
 
 func Panic(v ...interface{}) {
 	log.Println(append([]any{_magentabold, "[PANIC]", _reset}, v...))
+	panic(v)
 }

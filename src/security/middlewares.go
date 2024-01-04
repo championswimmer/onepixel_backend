@@ -1,11 +1,14 @@
 package security
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"onepixel_backend/src/config"
+)
 
-// MandatoryAuthMiddleware makes authentication mandatory
+// MandatoryJwtAuthMiddleware makes authentication mandatory
 // will return 401 if no Authorization header is provided or if the JWT is invalid
 // saves the user in the context locals as "user"
-func MandatoryAuthMiddleware(c *fiber.Ctx) error {
+func MandatoryJwtAuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -23,7 +26,7 @@ func MandatoryAuthMiddleware(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func OptionalAuthMiddleware(c *fiber.Ctx) error {
+func OptionalJwtAuthMiddleware(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
 		return c.Next()
@@ -35,5 +38,21 @@ func OptionalAuthMiddleware(c *fiber.Ctx) error {
 		})
 	}
 	c.Locals("user", user)
+	return c.Next()
+}
+
+func MandatoryAdminApiKeyAuthMiddleware(c *fiber.Ctx) error {
+	authHeader := c.Get("X-API-Key")
+	if authHeader == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized: No X-API-Key header provided",
+		})
+	}
+	if authHeader != config.AdminApiKey {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized: Invalid X-API-Key",
+		})
+	}
+	c.Locals("admin", true)
 	return c.Next()
 }

@@ -15,12 +15,15 @@ var usersController *controllers.UsersController
 
 // UsersRoute defines the routes for /api/v1/users
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
+	// initialize UsersController
 	usersController = controllers.CreateUsersController(db)
+	usersController.InitDefaultUser()
+
 	return func(router fiber.Router) {
 		router.Post("/", registerUser)
 		router.Post("/login", loginUser)
-		router.Get("/:userid", security.MandatoryAuthMiddleware, getUserInfo)
-		router.Patch("/:userid", security.MandatoryAuthMiddleware, updateUserInfo)
+		router.Get("/:userid", security.MandatoryJwtAuthMiddleware, getUserInfo)
+		router.Patch("/:userid", security.MandatoryJwtAuthMiddleware, updateUserInfo)
 	}
 }
 
@@ -75,7 +78,6 @@ func registerUser(ctx *fiber.Ctx) error {
 // @Success		200		{object}	dtos.UserResponse
 // @Failure		401		{object}	dtos.ErrorResponse "Invalid email or password"
 // @Router			/users/login [post]
-// @Security		APIKeyAuth
 func loginUser(ctx *fiber.Ctx) error {
 	u, parseError := parsers.ParseBody[dtos.LoginUserRequest](ctx)
 	if parseError != nil {
@@ -104,8 +106,8 @@ func loginUser(ctx *fiber.Ctx) error {
 // @Tags			users
 // @Accept			json
 // @Produce		json
-// @Param			id	path	uint	true	"User ID"
-// @Router			/users/:userid [get]
+// @Param			userid	path	uint	true	"User ID"
+// @Router			/users/{userid} [get]
 func getUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("GetUserInfo")
 }
@@ -118,8 +120,8 @@ func getUserInfo(ctx *fiber.Ctx) error {
 // @Tags			users
 // @Accept			json
 // @Produce		json
-// @Param			id	path	uint	true	"User ID"
-// @Router			/users/:userid [patch]
+// @Param			userid	path	uint	true	"User ID"
+// @Router			/users/{userid} [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
 	return ctx.SendString("UpdateUserInfo")
 }

@@ -6,45 +6,41 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"onepixel_backend/src/models"
+	"onepixel_backend/src/config"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
-	"os"
 )
 
 var dbSingleton *gorm.DB
 
-func GetTestDB() (*gorm.DB, error) {
-	applogger.Warn("Using test database")
-	return getOrInitDB(true)
-}
+func GetDB() (*gorm.DB, error) {
 
-func GetProdDB() (*gorm.DB, error) {
-	applogger.Warn("Using production database")
-	return getOrInitDB(false)
-}
-
-func getOrInitDB(test bool) (*gorm.DB, error) {
-
+	// TODO: thread safety?
 	if dbSingleton != nil {
 		return dbSingleton, nil
 	}
-	// TODO: move db config to external YAML config
-	dsn, _ := lo.Coalesce(
-		os.Getenv("DATABASE_PRIVATE_URL"),
-		os.Getenv("DATABASE_URL"),
-		"host=postgres user=postgres password=postgres dbname=onepixel port=5432 sslmode=disable TimeZone=UTC",
-	)
 
-	config := &gorm.Config{
+	dbConfig := &gorm.Config{
 		TranslateError: true,
 	}
+	var dbLogLevel logger.LogLevel = lo.Switch[string, logger.LogLevel](config.DBLogging).
+		Case("info", logger.Info).
+		Case("warn", logger.Warn).
+		Case("error", logger.Error).
+		Default(logger.Error)
 
-	if test {
-		config.Logger = logger.Default.LogMode(logger.Info)
-		dbSingleton = lo.Must(gorm.Open(sqlite.Open("file::memory:?cache=shared"), config))
-	} else {
-		config.Logger = logger.Default.LogMode(logger.Error)
-		dbSingleton = lo.Must(gorm.Open(postgres.Open(dsn), config))
+	dbConfig.Logger = logger.Default.LogMode(dbLogLevel)
+	switch config.DBDialect {
+	case "sqlite":
+		applogger.Warn("Using sqlite db")
+		dbSingleton = lo.Must(gorm.Open(sqlite.Open(config.DBUrl), dbConfig))
+		break
+	case "postgres":
+		applogger.Warn("Using postgres db")
+		dbSingleton = lo.Must(gorm.Open(postgres.Open(config.DBUrl), dbConfig))
+		break
+	default:
+		panic("Database config incorrect")
 	}
 
 	lo.Must0(dbSingleton.AutoMigrate(&models.User{}))

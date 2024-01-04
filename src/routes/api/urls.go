@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
-	"onepixel_backend/src/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
@@ -16,11 +16,14 @@ var urlsController *controllers.UrlsController
 
 // UrlsRoute
 func UrlsRoute(db *gorm.DB) func(router fiber.Router) {
+	// initialize UrlsController
 	urlsController = controllers.CreateUrlsController(db)
+	urlsController.InitDefaultUrlGroup()
+
 	return func(router fiber.Router) {
 		router.Get("/", getAllUrls)
-		router.Post("/", security.MandatoryAuthMiddleware, createRandomUrl)
-		router.Put("/:shortcode", security.MandatoryAuthMiddleware, createSpecificUrl)
+		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
+		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 	}
 }
 
@@ -73,6 +76,23 @@ func createRandomUrl(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
 }
 
+// createSpecificUrl
+//
+//	@Summary		Create specific short url
+//	@Description	Create specific short url
+//	@ID				create-specific-url
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			shortcode	path	string	true	"Shortcode"
+//	@Param			url	body		dtos.CreateUrlRequest	true	"Url"
+//	@Success		201	{object}	dtos.UrlResponse
+//	@Failure		400	{object}	dtos.ErrorResponse	"The request body is not valid"
+//	@Failure		422	{object}	dtos.ErrorResponse	"long_url is required to create url"
+//	@Failure		409	{object}	dtos.ErrorResponse	"Shortcode already exists"
+//	@Failure		403	{object}	dtos.ErrorResponse	"Shortcode is not allowed"
+//	@Router			/urls/{shortcode} [put]
+//	@Security		BearerToken
 func createSpecificUrl(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*models.User)
 

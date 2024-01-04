@@ -1,6 +1,9 @@
 package server
 
 import (
+	"fmt"
+	"onepixel_backend/src/config"
+	"onepixel_backend/src/docs"
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
 	"onepixel_backend/src/server/logger"
@@ -10,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateApp creates the fiber app
+// CreateAdminApp creates the fiber app
 //
 //	@title						onepixel API
 //	@version					0.1
@@ -22,28 +25,39 @@ import (
 //	@license.url				https://opensource.org/licenses/MIT
 //	@host						api.onepixel.link
 //	@BasePath					/api/v1
-//	@schemes					https
+//	@schemes					http https
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
 //	@name						Authorization
 //	@securityDefinitions.apiKey	APIKeyAuth
 //	@in							header
 //	@name						X-API-Key
-//	@security					APIKeyAuth
-func CreateApp(db *gorm.DB) *fiber.App {
+func CreateAdminApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 	app.Use(logger.NewLogger())
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
 
 	apiV1 := app.Group("/api/v1")
 
 	apiV1.Route("/users", api.UsersRoute(db))
 	apiV1.Route("/urls", api.UrlsRoute(db))
 
+	if config.Env == "production" {
+		docs.SwaggerInfo.Host = config.AdminHost
+	} else {
+		docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", config.AdminHost, config.Port)
+	}
+
 	app.Get("/docs/*", swagger.HandlerDefault)
+
+	return app
+}
+
+func CreateMainApp(db *gorm.DB) *fiber.App {
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World 👋!")
+	})
 
 	return app
 }

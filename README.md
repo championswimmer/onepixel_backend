@@ -1,6 +1,12 @@
 # onepixel (1px.li)
 
-Backend code for the 1px.li URL shortener service.
+"onepixel" is an API-first URL shortner. 
+
+#### Why this name? 
+A URL shortner should have a short domain name, possibly 2 or 3 letter in length.   
+"1 pixel" is the smallest unit of a screen.   
+So `1px.li` stands for `one pixel links` - i.e. smallest possible links :) 
+
 
 #### Status Badges 
 [![codecov](https://codecov.io/gh/championswimmer/onepixel_backend/graph/badge.svg?token=DL3DR6CS40)](https://codecov.io/gh/championswimmer/onepixel_backend)
@@ -9,7 +15,7 @@ Backend code for the 1px.li URL shortener service.
 ## Test Instance 
 The latest version of the code is automatically deployed via [Railway](https://railway.app)
 to   
-<big><https://api.onepixel.link></big>
+<big><https://onepixel.link></big>
 
 
 You can deploy your own instance too

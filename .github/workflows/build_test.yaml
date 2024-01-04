@@ -31,6 +31,8 @@ jobs:
       
   test:
     runs-on: ubuntu-latest
+    env:
+      ENV: test
 
     steps:
     - name: Checkout repository

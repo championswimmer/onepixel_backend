@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var userController = CreateUsersController(lo.Must(db.GetTestDB()))
+var userController = CreateUsersController(lo.Must(db.GetDB()))
 
 func TestUsersController_Create(t *testing.T) {
 	user, token, err := userController.Create("user976@test.com", "123456")

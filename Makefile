@@ -43,7 +43,7 @@ build_all: docs
 
 test:
 	@echo "Running tests..."
-	@@GOOS=$(OS) GOARCH=$(ARCH) go test -race -covermode=atomic -v -coverpkg=./src/...  ./tests/... ./src/...
+	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -race -covermode=atomic -v -coverpkg=./src/...  ./tests/... ./src/...
 
 clean:
 	@echo "Cleaning..."
@@ -52,4 +52,4 @@ clean:
 
 run: build
 	@echo "Running..."
-	@./bin/$(BINARY_NAME)-$(OS)-$(ARCH)
+	@./bin/$(BINARY_NAME)

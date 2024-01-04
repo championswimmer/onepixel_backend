@@ -101,6 +101,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/urls/{shortcode}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerToken": []
+                    }
+                ],
+                "description": "Create specific short url",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Create specific short url",
+                "operationId": "create-specific-url",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Shortcode",
+                        "name": "shortcode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Url",
+                        "name": "url",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.CreateUrlRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UrlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "The request body is not valid",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Shortcode is not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Shortcode already exists",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "long_url is required to create url",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "security": [
@@ -159,56 +230,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/:userid": {
-            "get": {
-                "description": "Get user info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user info",
-                "operationId": "get-user-info",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "patch": {
-                "description": "Update user info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update user info",
-                "operationId": "update-user-info",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/users/login": {
             "post": {
                 "security": [
@@ -253,6 +274,56 @@ const docTemplate = `{
                         }
                     }
                 }
+            }
+        },
+        "/users/{userid}": {
+            "get": {
+                "description": "Get user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user info",
+                "operationId": "get-user-info",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "description": "Update user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user info",
+                "operationId": "update-user-info",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
             }
         }
     },
@@ -350,7 +421,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
 	Host:             "api.onepixel.link",
 	BasePath:         "/api/v1",
-	Schemes:          []string{},
+	Schemes:          []string{"http", "https"},
 	Title:            "onepixel API",
 	Description:      "1px.li URL Shortner API",
 	InfoInstanceName: "swagger",
