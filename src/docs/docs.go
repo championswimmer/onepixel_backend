@@ -408,17 +408,27 @@ const docTemplate = `{
             "name": "Authorization",
             "in": "header"
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "Operations about users",
+            "name": "users"
+        },
+        {
+            "description": "Operations about urls",
+            "name": "urls"
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.1",
-	Host:             "api.onepixel.link",
+	Host:             "onepixel.link",
 	BasePath:         "/api/v1",
 	Schemes:          []string{"http", "https"},
 	Title:            "onepixel API",
-	Description:      "1px.li URL Shortner API",
+	Description:      "## About\n\n`1px.li` is an URL shortener created by [Arnav Gupta](https://twitter.com/championswimmer)\n\n- Source Code: <https://github.com/championswimmer/onepixel_backend> \n- Admin API: <https://onepixel.link/api/v1/>\n- API Docs: <https://onepixel.link/docs/> \n\n### Purchase Subscription\n\nUsing `onepixel` requires a subscription. You can purchase a subscription below\n\n[![Purchase](https://img.shields.io/badge/Purchase-blue?style=for-the-badge&logo=stripe&logoColor=white)](https://buy.stripe.com/bIY7tIfvucSv94A6oo)\n\nOnce you purchase a subscription, you'll receive an email with details of your account within 2-3 business days.\n",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

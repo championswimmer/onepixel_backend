@@ -14,9 +14,9 @@ import (
 
 // CreateAdminApp creates the fiber app
 //
-//	@title						onepixel API
-//	@version					0.1
-//	@description				1px.li URL Shortner API
+//	@title		onepixel API
+//	@version	0.1
+//	@description.markdown
 //	@termsOfService				https://github.com/championswimmer/onepixel_backend
 //	@contact.name				Arnav Gupta
 //	@contact.email				dev@championswimmer.in
@@ -25,6 +25,12 @@ import (
 //	@host						onepixel.link
 //	@BasePath					/api/v1
 //	@schemes					http https
+//
+//	@tag.name					users
+//	@tag.description			Operations about users
+//	@tag.name					urls
+//	@tag.description			Operations about urls
+//
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
 //	@name						Authorization

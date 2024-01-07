@@ -5,7 +5,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "1px.li URL Shortner API",
+        "description": "## About\n\n`1px.li` is an URL shortener created by [Arnav Gupta](https://twitter.com/championswimmer)\n\n- Source Code: \u003chttps://github.com/championswimmer/onepixel_backend\u003e \n- Admin API: \u003chttps://onepixel.link/api/v1/\u003e\n- API Docs: \u003chttps://onepixel.link/docs/\u003e \n\n### Purchase Subscription\n\nUsing `onepixel` requires a subscription. You can purchase a subscription below\n\n[![Purchase](https://img.shields.io/badge/Purchase-blue?style=for-the-badge\u0026logo=stripe\u0026logoColor=white)](https://buy.stripe.com/bIY7tIfvucSv94A6oo)\n\nOnce you purchase a subscription, you'll receive an email with details of your account within 2-3 business days.\n",
         "title": "onepixel API",
         "termsOfService": "https://github.com/championswimmer/onepixel_backend",
         "contact": {
@@ -18,7 +18,7 @@
         },
         "version": "0.1"
     },
-    "host": "api.onepixel.link",
+    "host": "onepixel.link",
     "basePath": "/api/v1",
     "paths": {
         "/urls": {
@@ -406,5 +406,15 @@
             "name": "Authorization",
             "in": "header"
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "Operations about users",
+            "name": "users"
+        },
+        {
+            "description": "Operations about urls",
+            "name": "urls"
+        }
+    ]
 }
