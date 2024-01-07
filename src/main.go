@@ -56,10 +56,7 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		if db, err := db.DB(); err == nil {
-			db.Close()
-		}
-
+		lo.Must(db.DB()).Close()
 		adminApp.ShutdownWithContext(ctx)
 		mainApp.ShutdownWithContext(ctx)
 		app.ShutdownWithContext(ctx)
