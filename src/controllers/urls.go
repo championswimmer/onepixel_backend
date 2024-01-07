@@ -124,3 +124,17 @@ func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (ur
 
 	return
 }
+
+func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url, err error) {
+	url = &models.Url{}
+	id := lo.Must(utils.Radix64Decode(shortcode))
+	res := c.db.First(url, id)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, UrlNotFound
+		}
+		return nil, res.Error
+	}
+
+	return
+}

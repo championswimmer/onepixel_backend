@@ -9,6 +9,7 @@ import (
 	"onepixel_backend/src/docs"
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
+	"onepixel_backend/src/routes/redirect"
 )
 
 // CreateAdminApp creates the fiber app
@@ -52,6 +53,7 @@ func CreateAdminApp(db *gorm.DB) *fiber.App {
 func CreateMainApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 
+	app.Route("/", redirect.RedirectRoute(db))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
 	})
