@@ -253,8 +253,6 @@ paths:
           description: Invalid email or password
           schema:
             $ref: '#/definitions/dtos.ErrorResponse'
-      security:
-      - APIKeyAuth: []
       summary: Login user
       tags:
       - users

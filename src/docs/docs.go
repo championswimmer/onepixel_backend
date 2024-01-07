@@ -232,11 +232,6 @@ const docTemplate = `{
         },
         "/users/login": {
             "post": {
-                "security": [
-                    {
-                        "APIKeyAuth": []
-                    }
-                ],
                 "description": "Login user",
                 "consumes": [
                     "application/json"
