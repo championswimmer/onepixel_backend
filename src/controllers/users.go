@@ -40,6 +40,7 @@ func (c *UsersController) InitDefaultUser() {
 		Email:    "admin@onepixel.link",
 		Password: security.HashPassword(uuid.New().String()),
 		ID:       0,
+		Verified: true,
 	}
 
 	// this doesn't really work, passing ID=0 to gorm is borked

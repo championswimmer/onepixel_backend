@@ -20,7 +20,7 @@ func UsersRoute(db *gorm.DB) func(router fiber.Router) {
 	usersController.InitDefaultUser()
 
 	return func(router fiber.Router) {
-		router.Post("/", registerUser)
+		router.Post("/", security.MandatoryAdminApiKeyAuthMiddleware, registerUser)
 		router.Post("/login", loginUser)
 		router.Get("/:userid", security.MandatoryJwtAuthMiddleware, getUserInfo)
 		router.Patch("/:userid", security.MandatoryJwtAuthMiddleware, updateUserInfo)

@@ -19,7 +19,7 @@ func MandatoryJwtAuthMiddleware(c *fiber.Ctx) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Unauthorized: Invalid JWT token",
+			"message": "Unauthorized: Invalid JWT token" + err.Error(),
 		})
 	}
 	c.Locals("user", user)

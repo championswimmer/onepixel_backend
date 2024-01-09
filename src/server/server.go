@@ -8,6 +8,8 @@ import (
 	"onepixel_backend/src/routes/api"
 	"onepixel_backend/src/server/logger"
 
+	"onepixel_backend/src/routes/redirect"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"gorm.io/gorm"
@@ -19,17 +21,23 @@ const (
 
 // CreateAdminApp creates the fiber app
 //
-//	@title						onepixel API
-//	@version					0.1
-//	@description				1px.li URL Shortner API
+//	@title		onepixel API
+//	@version	0.1
+//	@description.markdown
 //	@termsOfService				https://github.com/championswimmer/onepixel_backend
 //	@contact.name				Arnav Gupta
 //	@contact.email				dev@championswimmer.in
 //	@license.name				MIT
 //	@license.url				https://opensource.org/licenses/MIT
-//	@host						api.onepixel.link
+//	@host						onepixel.link
 //	@BasePath					/api/v1
 //	@schemes					http https
+//
+//	@tag.name					users
+//	@tag.description			Operations about users
+//	@tag.name					urls
+//	@tag.description			Operations about urls
+//
 //	@securityDefinitions.apiKey	BearerToken
 //	@in							header
 //	@name						Authorization
@@ -60,6 +68,7 @@ func CreateAdminApp(db *gorm.DB) *fiber.App {
 func CreateMainApp(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 
+	app.Route("/", redirect.RedirectRoute(db))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World 👋!")
 	})
