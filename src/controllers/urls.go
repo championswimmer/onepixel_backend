@@ -2,14 +2,15 @@ package controllers
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
-	"gorm.io/gorm"
 	"math"
 	"math/rand"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
+	"gorm.io/gorm"
 )
 
 // the current max length of the short url
@@ -54,7 +55,7 @@ var (
 	}
 )
 
-func CreateUrlsController(db *gorm.DB) *UrlsController {
+func CreateUrlsController(db *gorm.DB) models.IUrlController {
 	return &UrlsController{
 		db: db,
 	}

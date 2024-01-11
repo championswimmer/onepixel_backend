@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/utils/applogger"
+
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
@@ -29,7 +30,7 @@ type UsersController struct {
 	db *gorm.DB
 }
 
-func CreateUsersController(db *gorm.DB) *UsersController {
+func CreateUsersController(db *gorm.DB) models.IUserController {
 	return &UsersController{
 		db: db,
 	}

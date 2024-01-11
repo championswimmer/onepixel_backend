@@ -2,16 +2,20 @@ package api
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
+
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
-var usersController *controllers.UsersController
+//var usersController *controllers.UsersController
+
+var usersController models.IUserController
 
 // UsersRoute defines the routes for /api/v1/users
 func UsersRoute(db *gorm.DB) func(router fiber.Router) {
