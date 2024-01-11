@@ -17,3 +17,10 @@ type Url struct {
 func (Url) TableName() string {
 	return "urls"
 }
+
+type IUrlController interface {
+	InitDefaultUrlGroup()
+	CreateSpecificShortUrl(shorturl, longurl string, userId uint64) (*Url, error)
+	CreateRandomShortUrl(longUrl string, userId uint64) (*Url, error)
+	GetUrlWithShortCode(shortcode string) (*Url, error)
+}

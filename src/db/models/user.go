@@ -16,3 +16,10 @@ type User struct {
 func (User) TableName() string {
 	return "users"
 }
+
+type IUserController interface {
+	InitDefaultUser()
+	Create(email, password string) (user *User, token string, err error)
+	FindUserByEmail(email string) (*User, error)
+	VerifyEmailAndPassword(email string, password string) (*User, error)
+}
