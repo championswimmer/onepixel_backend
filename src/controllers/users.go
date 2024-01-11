@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"errors"
+	"github.com/google/uuid"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
+	"onepixel_backend/src/utils/applogger"
 
 	"gorm.io/gorm"
 )
@@ -29,6 +32,29 @@ type UsersController struct {
 func CreateUsersController(db *gorm.DB) *UsersController {
 	return &UsersController{
 		db: db,
+	}
+}
+
+func (c *UsersController) InitDefaultUser() {
+	defaultUser := &models.User{
+		Email:    "admin@onepixel.link",
+		Password: security.HashPassword(uuid.New().String()),
+		ID:       0,
+		Verified: true,
+	}
+
+	// this doesn't really work, passing ID=0 to gorm is borked
+	// the code here is just for documentation purposes
+	res := c.db.Save([]models.User{*(defaultUser)})
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
+			applogger.Warn("Default user already exists")
+			return
+		}
+		applogger.Error("Failed to create default user")
+		applogger.Panic(res.Error)
+	} else {
+		applogger.Info("Default user created")
 	}
 }
 

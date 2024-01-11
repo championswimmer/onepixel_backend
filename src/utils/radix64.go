@@ -9,6 +9,9 @@ const Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 var AlphabetIndex = map[rune]uint64{}
 
 const MaxSafeStringLength = 10
+
+// MaxSafeNumber is the largest 64-bit number that can be represented in radix64
+// 64^10 < 2^64, but 64^11 > 2^64
 const MaxSafeNumber = 1152921504606846976 // 64^10
 
 type Radix64Error struct {
