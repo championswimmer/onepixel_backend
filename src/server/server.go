@@ -10,6 +10,7 @@ import (
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
 	"onepixel_backend/src/routes/redirect"
+	"time"
 )
 
 // CreateAdminApp creates the fiber app
@@ -52,7 +53,11 @@ func CreateAdminApp(db *gorm.DB) *fiber.App {
 	}
 
 	app.Get("/docs/*", swagger.HandlerDefault)
-	app.Static("/", "./public_html")
+	app.Static("/", "./public_html", fiber.Static{
+		Compress:      true,
+		MaxAge:        60 * 60, // 1 hour
+		CacheDuration: time.Hour * 1,
+	})
 	return app
 }
 

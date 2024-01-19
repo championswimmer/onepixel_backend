@@ -26,6 +26,7 @@ LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics to
 # Copy binary and config files from /build to root folder of scratch container.
 COPY --from=builder ["/build/*.env", "/"]
 COPY --from=builder ["/build/bin/onepixel", "/"]
+COPY --from=builder ["/build/public_html", "/public_html"]
 
 # Command to run when starting the container.
 ENTRYPOINT ["/onepixel"]
