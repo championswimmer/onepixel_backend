@@ -27,7 +27,7 @@ jobs:
         go get ./...
 
     - name: Build
-      run: make build ARGS="-v"
+      run: make build DOCS=false ARGS="-v"
       
   test:
     runs-on: ubuntu-latest
