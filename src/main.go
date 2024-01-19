@@ -19,11 +19,11 @@ import (
 
 func main() {
 	// Initialize the database
-	db := lo.Must(db.GetDB())
+	appDb := lo.Must(db.GetDB())
 
 	// Create the app
-	adminApp := server.CreateAdminApp(db)
-	mainApp := server.CreateMainApp(db)
+	adminApp := server.CreateAdminApp(appDb)
+	mainApp := server.CreateMainApp(appDb)
 
 	app := fiber.New()
 	app.Use(func(c *fiber.Ctx) error {
@@ -56,10 +56,10 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		lo.Must(db.DB()).Close()
-		adminApp.ShutdownWithContext(ctx)
-		mainApp.ShutdownWithContext(ctx)
-		app.ShutdownWithContext(ctx)
+		lo.Must0(lo.Must(appDb.DB()).Close())
+		lo.Must0(adminApp.ShutdownWithContext(ctx))
+		lo.Must0(mainApp.ShutdownWithContext(ctx))
+		lo.Must0(app.ShutdownWithContext(ctx))
 	}()
 
 	applogger.Fatal(app.Listen(fmt.Sprintf(":%s", config.Port)))

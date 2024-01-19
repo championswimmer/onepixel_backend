@@ -61,7 +61,11 @@ func CreateMainApp(db *gorm.DB) *fiber.App {
 
 	app.Route("/", redirect.RedirectRoute(db))
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
+		redirPath := c.Protocol() + "://" + config.AdminHost
+		if config.Env == "local" {
+			redirPath += ":" + config.Port
+		}
+		return c.Redirect(redirPath, fiber.StatusMovedPermanently)
 	})
 
 	return app
