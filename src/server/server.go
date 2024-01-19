@@ -52,7 +52,7 @@ func CreateAdminApp(db *gorm.DB) *fiber.App {
 	}
 
 	app.Get("/docs/*", swagger.HandlerDefault)
-
+	app.Static("/", "./public_html")
 	return app
 }
 
