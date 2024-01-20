@@ -31,3 +31,16 @@
     --bs-btn-active-bg: var(--color-razorpay-darker);
     --bs-btn-active-border-color: var(--color-razorpay-darker);
 }
+
+@media (min-width: 768px) {
+    .border-md-start {
+        border-left: var(--bs-border-width) solid var(--bs-border-color)
+    }
+}
+
+@media (min-width: 992px) {
+    .border-lg-start {
+        border-left: var(--bs-border-width) solid var(--bs-border-color)
+    }
+}
+
