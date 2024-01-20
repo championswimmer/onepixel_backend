@@ -1,0 +1,33 @@
+:root {
+    --color-stripe: #6c63ff;
+    --color-stripe-dark: #5650cf;
+    --color-stripe-darker: #4640a8;
+
+    --color-razorpay: #3395FF;
+    --color-razorpay-dark: #2979D9;
+    --color-razorpay-darker: #1C5FAF;
+}
+
+.btn-stripe {
+    --bs-btn-bg: var(--color-stripe);
+    --bs-btn-border-color: var(--color-stripe);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: var(--color-stripe-dark);
+    --bs-btn-hover-border-color: var(--color-stripe-dark);
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: var(--color-stripe-darker);
+    --bs-btn-active-border-color: var(--color-stripe-darker);
+}
+
+.btn-razorpay {
+    --bs-btn-bg: var(--color-razorpay);
+    --bs-btn-border-color: var(--color-razorpay);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: var(--color-razorpay-dark);
+    --bs-btn-hover-border-color: var(--color-razorpay-dark);
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: var(--color-razorpay-darker);
+    --bs-btn-active-border-color: var(--color-razorpay-darker);
+}
