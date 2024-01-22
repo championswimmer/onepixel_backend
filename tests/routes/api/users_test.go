@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http/httptest"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/security"
@@ -21,6 +22,7 @@ func TestUsersRoute_RegisterUser(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("X-API-Key", config.AdminApiKey)
 
 	resp := lo.Must(tests.App.Test(req))
 
@@ -42,6 +44,7 @@ func TestUsersRoute_RegisterUserDuplicateFail(t *testing.T) {
 	reqBody := []byte(`{"email": "user14641522@test.com", "password": "123456"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("X-API-Key", config.AdminApiKey)
 	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 201, resp.StatusCode)
 
@@ -66,6 +69,7 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 
 	// Not setting any content-type will generate a Body Parsing error
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	req.Header.Set("X-API-Key", config.AdminApiKey)
 
 	resp := lo.Must(tests.App.Test(req))
 
@@ -85,27 +89,19 @@ func TestUsersRoute_RegisterUserBodyParsingFail(t *testing.T) {
 
 func TestUsersRoute_LoginUser(t *testing.T) {
 	// ---- REGISTER USER
-	reqBody := []byte(`{"email": "user51341@test.com", "password": "123456"}`)
+	responseBody := tests.TestUtil_CreateUser(t, "user51341@test.com", "123456")
 
-	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	// ---- LOGIN USER
+
+	reqBody := []byte(`{"email": "user51341@test.com" , "password": "123456"}`)
+
+	req := httptest.NewRequest("POST", "/api/v1/users/login", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
 	resp := lo.Must(tests.App.Test(req))
 
-	assert.Equal(t, 201, resp.StatusCode)
-
-	// ---- LOGIN USER
-
-	reqBody = []byte(`{"email": "user51341@test.com" , "password": "123456"}`)
-
-	req = httptest.NewRequest("POST", "/api/v1/users/login", bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
-	resp = lo.Must(tests.App.Test(req))
-
 	assert.Equal(t, 200, resp.StatusCode)
 
-	var responseBody dtos.UserResponse
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Error reading response body: %v", err)
@@ -143,6 +139,7 @@ func TestUsersRoute_ShouldNotRegisterUserWhenNoPassword(t *testing.T) {
 	reqBody := []byte(`{"email": "arnav@mail.com"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("X-API-Key", config.AdminApiKey)
 	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 422, resp.StatusCode)
 }
@@ -150,6 +147,7 @@ func TestUsersRoute_ShouldNotRegisterUserWhenNoEmail(t *testing.T) {
 	reqBody := []byte(`{"password": "12345"}`)
 	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("X-API-Key", config.AdminApiKey)
 	resp := lo.Must(tests.App.Test(req))
 	assert.Equal(t, 422, resp.StatusCode)
 }

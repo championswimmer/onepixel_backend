@@ -16,36 +16,19 @@ import (
 func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 
 	// ------ REGISTER USER ------
-	reqBody := []byte(`{"email": "user3689@test.com", "password": "123456"}`)
 
-	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	responseBody := tests.TestUtil_CreateUser(t, "user3689@test.com", "123456")
+
+	// ------ CREATE URL ------
+	reqBody := []byte(`{"long_url": "https://google.com"}`)
+	req := httptest.NewRequest("POST", "/api/v1/urls", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
+	req.Header.Set("Authorization", *responseBody.Token)
 	resp := lo.Must(tests.App.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
-
-	var responseBody dtos.UserResponse
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("Error reading response body: %v", err)
-	}
-	if err := json.Unmarshal(body, &responseBody); err != nil {
-		t.Fatalf("Error unmarshalling response body: %v", err)
-	}
-
-	assert.NotNil(t, responseBody.Token)
-
-	// ------ CREATE URL ------
-	reqBody = []byte(`{"long_url": "https://google.com"}`)
-	req = httptest.NewRequest("POST", "/api/v1/urls", bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	req.Header.Set("Authorization", *responseBody.Token)
-	resp = lo.Must(tests.App.Test(req))
-
-	assert.Equal(t, 201, resp.StatusCode)
 	var urlResponseBody dtos.UrlResponse
-	body, err = io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Error reading response body: %v", err)
 	}
@@ -60,36 +43,18 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 
 	// ------ REGISTER USER ------
-	reqBody := []byte(`{"email": "user2584@test.com", "password": "123456"}`)
+	responseBody := tests.TestUtil_CreateUser(t, "user2584@test.com", "123456")
 
-	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewBuffer(reqBody))
+	// ------ CREATE URL ------
+	reqBody := []byte(`{"long_url": "https://example.com"}`)
+	req := httptest.NewRequest("PUT", "/api/v1/urls/my_code", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
+	req.Header.Set("Authorization", *responseBody.Token)
 	resp := lo.Must(tests.App.Test(req))
 
 	assert.Equal(t, 201, resp.StatusCode)
-
-	var responseBody dtos.UserResponse
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatalf("Error reading response body: %v", err)
-	}
-	if err := json.Unmarshal(body, &responseBody); err != nil {
-		t.Fatalf("Error unmarshalling response body: %v", err)
-	}
-
-	assert.NotNil(t, responseBody.Token)
-
-	// ------ CREATE URL ------
-	reqBody = []byte(`{"long_url": "https://example.com"}`)
-	req = httptest.NewRequest("PUT", "/api/v1/urls/my_code", bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	req.Header.Set("Authorization", *responseBody.Token)
-	resp = lo.Must(tests.App.Test(req))
-
-	assert.Equal(t, 201, resp.StatusCode)
 	var urlResponseBody dtos.UrlResponse
-	body, err = io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("Error reading response body: %v", err)
 	}
