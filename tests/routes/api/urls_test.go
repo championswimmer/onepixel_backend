@@ -35,6 +35,7 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 	if err := json.Unmarshal(body, &urlResponseBody); err != nil {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
+	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
 
 	applogger.Info("Short URL Created", urlResponseBody.ShortURL)
 
@@ -61,7 +62,7 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 	if err := json.Unmarshal(body, &urlResponseBody); err != nil {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
-
+	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
 	assert.Equal(t, "my_code", urlResponseBody.ShortURL)
 
 	// ------ CREATE URL WITH SAME CODE ------

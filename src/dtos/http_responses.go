@@ -13,8 +13,9 @@ type UserResponse struct {
 }
 
 type UrlResponse struct {
-	ShortURL string `json:"short_url" example:"nhg145"`
-	LongURL  string `json:"long_url" example:"https://www.google.com"`
+	ShortURL  string `json:"short_url" example:"nhg145"`
+	LongURL   string `json:"long_url" example:"https://www.google.com"`
+	CreatorID uint64 `json:"creator_id" example:"1"`
 }
 
 type ErrorResponse struct {
@@ -39,7 +40,8 @@ func CreateErrorResponse(status int, message string) ErrorResponse {
 
 func CreateUrlResponse(url *models.Url) UrlResponse {
 	return UrlResponse{
-		ShortURL: url.ShortURL,
-		LongURL:  url.LongURL,
+		ShortURL:  url.ShortURL,
+		LongURL:   url.LongURL,
+		CreatorID: url.CreatorID,
 	}
 }
