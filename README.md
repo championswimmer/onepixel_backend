@@ -1,9 +1,9 @@
 # onepixel (1px.li)
 
-"onepixel" is an API-first URL shortner. 
+"onepixel" is an API-first URL shortener. 
 
 #### Why this name? 
-A URL shortner should have a short domain name, possibly 2 or 3 letter in length.   
+A URL shortener should have a short domain name, possibly 2 or 3 letter in length.   
 "1 pixel" is the smallest unit of a screen.   
 So `1px.li` stands for `one pixel links` - i.e. smallest possible links :) 
 
