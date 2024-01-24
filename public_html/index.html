@@ -17,9 +17,20 @@
 
 <body>
     <!-- Header -->
-    <header>
+    <header>     
         <div class="container-fluid p-4 bg-body-tertiary">
-            <h1 class="display-1 text-center fw-bold text-body-tertiary">1px.li</h1>
+            <div class="d-flex align-items-center justify-content-center gap-2">
+                <h1 class="display-1 text-center fw-bold text-body-tertiary">1px.li</h1>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i id="icon" class="bi bi-brightness-high"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><button class="dropdown-item" type="button" onclick="changeValue('brightness-high', 'light')"><i class="bi bi-brightness-high"></i> Light</button></li>
+                      <li><button class="dropdown-item" type="button" onclick="changeValue('moon-stars', 'dark')"><i class="bi bi-moon-stars"></i> Dark</button></li>
+                    </ul>
+                </div>
+            </div>           
             <p class="lead text-center text-secondary-emphasis">
                 onepixel·link - a no nonsense API-first URL shortner for geeks
             </p>

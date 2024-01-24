@@ -17,3 +17,10 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
     htmlElement.setAttribute("data-bs-theme", colorScheme);
   }
 });
+
+function changeValue (iconClass, color){
+  document.getElementById("icon").className = 'bi bi-' + iconClass;
+  if (htmlElement) {
+    htmlElement.setAttribute("data-bs-theme", color);
+  }
+}
