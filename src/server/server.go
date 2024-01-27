@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
-	"gorm.io/gorm"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/docs"
 	_ "onepixel_backend/src/docs"
@@ -38,13 +37,13 @@ import (
 //	@securityDefinitions.apiKey	APIKeyAuth
 //	@in							header
 //	@name						X-API-Key
-func CreateAdminApp(db *gorm.DB) *fiber.App {
+func CreateAdminApp() *fiber.App {
 	app := fiber.New()
 
 	apiV1 := app.Group("/api/v1")
 
-	apiV1.Route("/users", api.UsersRoute(db))
-	apiV1.Route("/urls", api.UrlsRoute(db))
+	apiV1.Route("/users", api.UsersRoute())
+	apiV1.Route("/urls", api.UrlsRoute())
 
 	if config.Env == "production" {
 		docs.SwaggerInfo.Host = config.AdminHost
@@ -61,10 +60,10 @@ func CreateAdminApp(db *gorm.DB) *fiber.App {
 	return app
 }
 
-func CreateMainApp(db *gorm.DB) *fiber.App {
+func CreateMainApp() *fiber.App {
 	app := fiber.New()
 
-	app.Route("/", redirect.RedirectRoute(db))
+	app.Route("/", redirect.RedirectRoute())
 	app.Get("/", func(c *fiber.Ctx) error {
 		redirPath := c.Protocol() + "://" + config.AdminHost
 		if config.Env == "local" {

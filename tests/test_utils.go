@@ -8,13 +8,12 @@ import (
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/config"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
 	"testing"
 )
 
-var App = server.CreateAdminApp(lo.Must(db.GetDB()))
+var App = server.CreateAdminApp()
 
 func TestUtil_CreateUser(t *testing.T, email string, password string) dtos.UserResponse {
 

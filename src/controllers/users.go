@@ -3,6 +3,8 @@ package controllers
 import (
 	"errors"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/utils/applogger"
@@ -29,9 +31,10 @@ type UsersController struct {
 	db *gorm.DB
 }
 
-func CreateUsersController(db *gorm.DB) *UsersController {
+func CreateUsersController() *UsersController {
+	appDb := lo.Must(db.GetAppDB())
 	return &UsersController{
-		db: db,
+		db: appDb,
 	}
 }
 

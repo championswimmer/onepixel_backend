@@ -187,5 +187,7 @@ fabric.properties
 /bin/
 /tmp/
 
-# Postgres Data Files 
+# DB Data Files
 /data/
+/clk_data/
+/clk_logs/

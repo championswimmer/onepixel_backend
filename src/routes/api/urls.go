@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
@@ -15,9 +14,9 @@ import (
 var urlsController *controllers.UrlsController
 
 // UrlsRoute
-func UrlsRoute(db *gorm.DB) func(router fiber.Router) {
+func UrlsRoute() func(router fiber.Router) {
 	// initialize UrlsController
-	urlsController = controllers.CreateUrlsController(db)
+	urlsController = controllers.CreateUrlsController()
 	urlsController.InitDefaultUrlGroup()
 
 	return func(router fiber.Router) {

@@ -19,11 +19,12 @@ import (
 
 func main() {
 	// Initialize the database
-	appDb := lo.Must(db.GetDB())
+	appDb := lo.Must(db.GetAppDB())
+	_ = lo.Must(db.GetEventsDB())
 
 	// Create the app
-	adminApp := server.CreateAdminApp(appDb)
-	mainApp := server.CreateMainApp(appDb)
+	adminApp := server.CreateAdminApp()
+	mainApp := server.CreateMainApp()
 
 	app := fiber.New()
 	app.Use(func(c *fiber.Ctx) error {

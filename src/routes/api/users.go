@@ -14,9 +14,9 @@ import (
 var usersController *controllers.UsersController
 
 // UsersRoute defines the routes for /api/v1/users
-func UsersRoute(db *gorm.DB) func(router fiber.Router) {
+func UsersRoute() func(router fiber.Router) {
 	// initialize UsersController
-	usersController = controllers.CreateUsersController(db)
+	usersController = controllers.CreateUsersController()
 	usersController.InitDefaultUser()
 
 	return func(router fiber.Router) {

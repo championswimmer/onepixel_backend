@@ -26,7 +26,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: onepixel
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 3s
       timeout: 3s
       retries: 3
@@ -34,3 +34,25 @@ services:
       - "5432"
     ports:
       - "5432:5432"
+
+  clickhouse:
+    container_name: clickhouse
+    image: clickhouse/clickhouse-server
+    volumes:
+      - ./clk_data:/var/lib/clickhouse
+      - ./clk_logs:/var/log/clickhouse-server
+    environment:
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_DB: onepixel
+    healthcheck:
+      test: [ "CMD-SHELL", "clickhouse-client --user=clickhouse --password=clickhouse --query=\"SELECT 1\"" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    expose:
+      - "8123"
+      - "9000"
+    ports:
+      - "8123:8123"
+      - "9000:9000"

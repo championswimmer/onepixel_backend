@@ -3,7 +3,6 @@ package redirect
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server/validators"
@@ -11,8 +10,8 @@ import (
 
 var urlsController *controllers.UrlsController
 
-func RedirectRoute(db *gorm.DB) func(router fiber.Router) {
-	urlsController = controllers.CreateUrlsController(db)
+func RedirectRoute() func(router fiber.Router) {
+	urlsController = controllers.CreateUrlsController()
 	return func(router fiber.Router) {
 		router.Get("/:shortcode", redirectShortCode)
 		router.Get("/:group/:shortcode", redirectGroupedShortCode)

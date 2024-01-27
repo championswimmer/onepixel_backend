@@ -1,14 +1,12 @@
 package controllers
 
 import (
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/utils/applogger"
 	"testing"
 )
 
-var urlsController = CreateUrlsController(lo.Must(db.GetDB()))
+var urlsController = CreateUrlsController()
 
 func TestUrlsController_CreateSpecificShortUrl(t *testing.T) {
 	user, _, _ := userController.Create("user7353@test.com", "123456")

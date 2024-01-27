@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"math"
 	"math/rand"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
@@ -54,9 +55,10 @@ var (
 	}
 )
 
-func CreateUrlsController(db *gorm.DB) *UrlsController {
+func CreateUrlsController() *UrlsController {
+	appDb := lo.Must(db.GetAppDB())
 	return &UrlsController{
-		db: db,
+		db: appDb,
 	}
 }
 
@@ -73,7 +75,7 @@ func (c *UrlsController) InitDefaultUrlGroup() {
 			applogger.Warn("Default url group already exists")
 			return
 		}
-		applogger.Error("Failed to create default user")
+		applogger.Error("Failed to create default url group")
 		applogger.Panic(res.Error)
 	} else {
 		applogger.Info("Default url group created")

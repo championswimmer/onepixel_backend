@@ -2,15 +2,13 @@ package controllers
 
 import (
 	"errors"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/utils/applogger"
 	"testing"
 )
 
-var userController = CreateUsersController(lo.Must(db.GetDB()))
+var userController = CreateUsersController()
 
 func TestUsersController_Create(t *testing.T) {
 	user, token, err := userController.Create("user976@test.com", "123456")

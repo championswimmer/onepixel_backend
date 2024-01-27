@@ -1,26 +1,26 @@
 package db
 
 import (
-	"github.com/samber/lo"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
+	"sync"
+
+	"github.com/samber/lo"
+	"gorm.io/driver/clickhouse"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-var dbSingleton *gorm.DB
+var appDb *gorm.DB    // singleton
+var eventsDb *gorm.DB // singleton
+var createAppDbOnce sync.Once
+var createEventsDbOnce sync.Once
 
-func GetDB() (*gorm.DB, error) {
-
-	// TODO: thread safety?
-	if dbSingleton != nil {
-		return dbSingleton, nil
-	}
-
-	dbConfig := &gorm.Config{
+func getGormConfig() (dbConfig *gorm.Config) {
+	dbConfig = &gorm.Config{
 		TranslateError: true,
 	}
 	var dbLogLevel logger.LogLevel = lo.Switch[string, logger.LogLevel](config.DBLogging).
@@ -30,22 +30,42 @@ func GetDB() (*gorm.DB, error) {
 		Default(logger.Error)
 
 	dbConfig.Logger = logger.Default.LogMode(dbLogLevel)
-	switch config.DBDialect {
-	case "sqlite":
-		applogger.Warn("Using sqlite db")
-		dbSingleton = lo.Must(gorm.Open(sqlite.Open(config.DBUrl), dbConfig))
-		break
-	case "postgres":
-		applogger.Warn("Using postgres db")
-		dbSingleton = lo.Must(gorm.Open(postgres.Open(config.DBUrl), dbConfig))
-		break
-	default:
-		panic("Database config incorrect")
-	}
+	return
+}
 
-	lo.Must0(dbSingleton.AutoMigrate(&models.User{}))
-	lo.Must0(dbSingleton.AutoMigrate(&models.UrlGroup{}))
-	lo.Must0(dbSingleton.AutoMigrate(&models.Url{}))
+func GetAppDB() (*gorm.DB, error) {
 
-	return dbSingleton, nil
+	createAppDbOnce.Do(func() {
+		switch config.DBDialect {
+		case "sqlite":
+			applogger.Warn("App: Using sqlite db")
+			appDb = lo.Must(gorm.Open(sqlite.Open(config.DBUrl), getGormConfig()))
+			break
+		case "postgres":
+			applogger.Warn("App: Using postgres db")
+			appDb = lo.Must(gorm.Open(postgres.Open(config.DBUrl), getGormConfig()))
+			break
+		default:
+			panic("Database config incorrect")
+		}
+
+		lo.Must0(appDb.AutoMigrate(&models.User{}))
+		lo.Must0(appDb.AutoMigrate(&models.UrlGroup{}))
+		lo.Must0(appDb.AutoMigrate(&models.Url{}))
+	})
+
+	return appDb, nil
+}
+
+func GetEventsDB() (*gorm.DB, error) {
+	createEventsDbOnce.Do(func() {
+
+		dsn := "clickhouse://clickhouse:clickhouse@127.0.0.1:9000/onepixel?dial_timeout=10s&read_timeout=20s"
+		applogger.Warn("Events: Using clickhouse db")
+		eventsDb = lo.Must(gorm.Open(clickhouse.Open(dsn), getGormConfig()))
+
+		lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
+	})
+
+	return eventsDb, nil
 }
