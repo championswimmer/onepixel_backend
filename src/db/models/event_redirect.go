@@ -9,7 +9,7 @@ import (
 type EventRedirect struct {
 	CreatedAt time.Time
 	//UUID key
-	ID uuid.UUID `gorm:"type:UUID;default:generateUUIDv4()"`
+	ID uuid.UUID `gorm:"primaryKey;type:UUID;default:generateUUIDv4()"`
 
 	// short url
 	ShortURL   string `gorm:"size:21"` // <group>/<shortcode>

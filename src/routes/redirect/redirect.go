@@ -9,9 +9,12 @@ import (
 )
 
 var urlsController *controllers.UrlsController
+var eventsController *controllers.EventsController
 
 func RedirectRoute() func(router fiber.Router) {
 	urlsController = controllers.CreateUrlsController()
+	eventsController = controllers.CreateEventsController()
+
 	return func(router fiber.Router) {
 		router.Get("/:shortcode", redirectShortCode)
 		router.Get("/:group/:shortcode", redirectGroupedShortCode)
@@ -34,6 +37,15 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, urlErr.Error()))
 	}
+	eventsController.LogRedirectAsync(&controllers.EventRedirectDTO{
+		ShortUrlID: url.ID,
+		UrlGroupID: url.UrlGroupID,
+		ShortURL:   url.ShortURL,
+		CreatorID:  url.CreatorID,
+		IPAddress:  ctx.IP(),
+		UserAgent:  ctx.Get("User-Agent"),
+		Referer:    ctx.Get("Referer"),
+	})
 	return ctx.Redirect(url.LongURL, fiber.StatusMovedPermanently)
 }
 

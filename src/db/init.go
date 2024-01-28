@@ -64,10 +64,11 @@ func GetEventsDB() (*gorm.DB, error) {
 
 		eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
 
-		// create table if not exists
+		// automigrate table if we cannot get column types
 		if _, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName()); err != nil {
 			lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
 		}
+
 	})
 
 	return eventsDb, nil
