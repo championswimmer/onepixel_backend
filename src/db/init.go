@@ -60,9 +60,8 @@ func GetAppDB() (*gorm.DB, error) {
 func GetEventsDB() (*gorm.DB, error) {
 	createEventsDbOnce.Do(func() {
 
-		dsn := "clickhouse://clickhouse:clickhouse@127.0.0.1:9000/onepixel?dial_timeout=10s&read_timeout=20s"
 		applogger.Warn("Events: Using clickhouse db")
-		eventsDb = lo.Must(gorm.Open(clickhouse.Open(dsn), getGormConfig()))
+		eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
 
 		lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
 	})

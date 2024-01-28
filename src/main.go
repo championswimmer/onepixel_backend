@@ -20,7 +20,7 @@ import (
 func main() {
 	// Initialize the database
 	appDb := lo.Must(db.GetAppDB())
-	//_ = lo.Must(db.GetEventsDB())
+	_ = lo.Must(db.GetEventsDB())
 
 	// Create the app
 	adminApp := server.CreateAdminApp()
