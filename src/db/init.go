@@ -64,8 +64,6 @@ func GetEventsDB() (*gorm.DB, error) {
 		eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
 
 		lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
-		lo.Must0(eventsDb.Set("gorm:table_options", "ENGINE=MergeTree()").AutoMigrate(&models.EventRedirect{}))
-		lo.Must0(eventsDb.Set("gorm:table_cluster_options", "on cluster default").AutoMigrate(&models.EventRedirect{}))
 	})
 
 	return eventsDb, nil
