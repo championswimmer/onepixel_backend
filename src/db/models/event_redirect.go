@@ -1,23 +1,27 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 // EventRedirect event db entity
 type EventRedirect struct {
-	gorm.Model
-	// UUID key
-	ID string `gorm:"primaryKey;autoIncrement:false"`
+	CreatedAt time.Time
+	//UUID key
+	ID uuid.UUID `gorm:"type:UUID;default:generateUUIDv4()"`
+
 	// short url
-	ShortURL   string `gorm:"not null,size:21"` // <group>/<shortcode>
-	ShortUrlID uint64 `gorm:"not null"`
-	UrlGroupID uint64 `gorm:"not null"`
-	CreatorID  uint64 `gorm:"not null"`
+	ShortURL   string `gorm:"size:21"` // <group>/<shortcode>
+	ShortUrlID uint64 `gorm:"bigint,index:idx_short_url_id,not null"`
+	UrlGroupID uint64 `gorm:"bigint,index:idx_short_url_id,not null"`
+	CreatorID  uint64 `gorm:"bigint,index:idx_creator_id,not null"`
 	// user agent
-	UserAgent string `gorm:"nullable"`
+	UserAgent string `gorm:"size:100"`
 	// ip address
-	IPAddress string `gorm:"nullable"`
+	IPAddress string `gorm:"size:16"`
 	// referer
-	Referer string `gorm:"nullable"`
+	Referer string `gorm:"size:255"`
 }
 
 func (EventRedirect) TableName() string {

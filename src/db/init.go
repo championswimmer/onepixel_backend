@@ -1,6 +1,7 @@
 package db
 
 import (
+	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"onepixel_backend/src/config"
@@ -9,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
-	"gorm.io/driver/clickhouse"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -61,9 +61,13 @@ func GetEventsDB() (*gorm.DB, error) {
 	createEventsDbOnce.Do(func() {
 
 		applogger.Warn("Events: Using clickhouse db")
+
 		eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
 
-		lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
+		// create table if not exists
+		if _, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName()); err != nil {
+			lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
+		}
 	})
 
 	return eventsDb, nil
