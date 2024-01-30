@@ -10,6 +10,7 @@ import (
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
 	"onepixel_backend/src/routes/redirect"
+	"strings"
 	"time"
 )
 
@@ -75,7 +76,7 @@ func CreateMainApp() *fiber.App {
 			UrlGroupID: 0,
 			ShortURL:   "/",
 			CreatorID:  0,
-			IPAddress:  c.IP(),
+			IPAddress:  strings.Split(c.Get("X-Forwarded-For"), ",")[0],
 			UserAgent:  c.Get("User-Agent"),
 			Referer:    c.Get("Referer"),
 		})

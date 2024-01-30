@@ -6,6 +6,7 @@ import (
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server/validators"
+	"strings"
 )
 
 var urlsController *controllers.UrlsController
@@ -42,7 +43,7 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 		UrlGroupID: url.UrlGroupID,
 		ShortURL:   url.ShortURL,
 		CreatorID:  url.CreatorID,
-		IPAddress:  ctx.IP(),
+		IPAddress:  strings.Split(ctx.Get("X-Forwarded-For"), ",")[0],
 		UserAgent:  ctx.Get("User-Agent"),
 		Referer:    ctx.Get("Referer"),
 	})
