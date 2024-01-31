@@ -6,6 +6,7 @@ import (
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server/validators"
+	"onepixel_backend/src/utils/applogger"
 	"strings"
 )
 
@@ -25,6 +26,7 @@ func RedirectRoute() func(router fiber.Router) {
 
 func redirectShortCode(ctx *fiber.Ctx) error {
 	shortcode := ctx.Params("shortcode")
+	applogger.Info("redirect: shortcode: " + ctx.OriginalURL())
 	validErr := validators.ValidateRedirectShortCodeRequest(shortcode)
 	if validErr != nil {
 		return validators.SendValidationError(ctx, validErr)

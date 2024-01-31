@@ -10,6 +10,7 @@ import (
 	_ "onepixel_backend/src/docs"
 	"onepixel_backend/src/routes/api"
 	"onepixel_backend/src/routes/redirect"
+	"onepixel_backend/src/utils/applogger"
 	"strings"
 	"time"
 )
@@ -72,6 +73,7 @@ func CreateMainApp() *fiber.App {
 		if config.Env == "local" {
 			redirPath += ":" + config.Port
 		}
+		applogger.Info("redirect: root: " + c.OriginalURL())
 		eventsController.LogRedirectAsync(&controllers.EventRedirectDTO{
 			UrlGroupID: 0,
 			ShortURL:   "/",
