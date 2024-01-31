@@ -12,16 +12,16 @@ type EventRedirect struct {
 	ID uuid.UUID `gorm:"primaryKey;type:UUID;default:generateUUIDv4()"`
 
 	// short url
-	ShortURL   string `gorm:"size:21"` // <group>/<shortcode>
+	ShortURL   string `gorm:"type:string"` // <group>/<shortcode>
 	ShortUrlID uint64 `gorm:"bigint,not null"`
 	UrlGroupID uint64 `gorm:"bigint,not null"`
 	CreatorID  uint64 `gorm:"bigint,not null"`
 	// user agent
-	UserAgent string `gorm:"size:200"`
+	UserAgent string `gorm:"type:string"`
 	// ip address
-	IPAddress string `gorm:"size:20"`
+	IPAddress string `gorm:"type:string"`
 	// referer
-	Referer string `gorm:"size:255"`
+	Referer string `gorm:"type:string"`
 }
 
 func (EventRedirect) TableName() string {
