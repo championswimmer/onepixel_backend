@@ -63,5 +63,5 @@ func main() {
 		lo.Must0(app.ShutdownWithContext(ctx))
 	}()
 
-	applogger.Fatal(app.Listen(fmt.Sprintf(":%s", config.Port)))
+	lo.Must0(app.Listen(fmt.Sprintf(":%s", config.Port)))
 }
