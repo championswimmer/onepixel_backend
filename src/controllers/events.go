@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
+	"onepixel_backend/src/utils/applogger"
 	"sync"
 )
 
@@ -35,7 +36,12 @@ var wg = sync.WaitGroup{}
 func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer func() {
+			if r := recover(); r != nil {
+				applogger.Error("LogRedirectAsync panic: ", r)
+			}
+			wg.Done()
+		}()
 
 		event := &models.EventRedirect{
 			ShortURL:   redirData.ShortURL,
