@@ -13,13 +13,13 @@ type EventRedirect struct {
 
 	// short url
 	ShortURL   string `gorm:"size:21"` // <group>/<shortcode>
-	ShortUrlID uint64 `gorm:"bigint,index:idx_short_url_id,not null"`
-	UrlGroupID uint64 `gorm:"bigint,index:idx_short_url_id,not null"`
-	CreatorID  uint64 `gorm:"bigint,index:idx_creator_id,not null"`
+	ShortUrlID uint64 `gorm:"bigint,not null"`
+	UrlGroupID uint64 `gorm:"bigint,not null"`
+	CreatorID  uint64 `gorm:"bigint,not null"`
 	// user agent
-	UserAgent string `gorm:"size:100"`
+	UserAgent string `gorm:"size:200"`
 	// ip address
-	IPAddress string `gorm:"size:16"`
+	IPAddress string `gorm:"size:20"`
 	// referer
 	Referer string `gorm:"size:255"`
 }
