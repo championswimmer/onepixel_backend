@@ -67,7 +67,7 @@ func createRandomUrl(ctx *fiber.Ctx) error {
 		return validators.SendValidationError(ctx, validErr)
 	}
 
-	createdUrl, createErr := urlsController.CreateRandomShortUrl(cur.LongUrl, user.ID)
+	createdUrl, createErr := urlsController.CreateRandomShortUrl(cur.LongUrl, user.ID, 0)
 	if createErr != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
 	}

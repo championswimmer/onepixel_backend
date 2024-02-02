@@ -23,6 +23,8 @@ var AdminApiKey string
 var JwtSigningKey string
 var JwtDurationDays int
 
+var UrlGenMaxRetries uint64
+
 // should run after env.go#init as this `vars` is alphabetically after `env`
 func init() {
 	Env, _ = lo.Coalesce(
@@ -46,4 +48,5 @@ func init() {
 	AdminApiKey = os.Getenv("ADMIN_API_KEY")
 	JwtSigningKey = os.Getenv("JWT_SIGNING_KEY")
 	JwtDurationDays, _ = strconv.Atoi(os.Getenv("JWT_DURATION_DAYS"))
+	UrlGenMaxRetries, _ = strconv.ParseUint(os.Getenv("URL_GEN_MAX_RETRIES"), 10, 64)
 }

@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"math"
 	"math/rand"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
@@ -52,6 +53,10 @@ var (
 	UrlForbiddenError = &UrlError{
 		status:  fiber.ErrForbidden.Code,
 		message: "this shortURL is not allowed to be created",
+	}
+	MaxRetriesReachedError = &UrlError{
+		status:  fiber.ErrInternalServerError.Code,
+		message: "max number of attempts to generate a URL reached. Please try after some time",
 	}
 )
 
@@ -103,7 +108,7 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 	return
 }
 
-func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (url *models.Url, err error) {
+func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64, attemptNo uint64) (url *models.Url, err error) {
 	newShortCode := uint64(rand.Intn(_randMax))
 	newShortUrl := lo.Must(utils.Radix64Encode(newShortCode))
 
@@ -116,10 +121,11 @@ func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (ur
 	}
 	res := c.db.Create(url)
 	if res.Error != nil {
+		if attemptNo == config.UrlGenMaxRetries {
+			return nil, MaxRetriesReachedError
+		}
 		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
-			// Having a collision is very unlikely, but if it happens
-			// we just try again (TODO: we should have a limit of retries)
-			return c.CreateRandomShortUrl(longUrl, userId)
+			return c.CreateRandomShortUrl(longUrl, userId, attemptNo + 1)
 		}
 		return nil, res.Error
 	}

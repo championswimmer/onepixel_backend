@@ -22,7 +22,7 @@ func TestUrlsController_CreateRandomShortUrl(t *testing.T) {
 	user, _, _ := userController.Create("user24987@test.com", "123456")
 
 	assert.NotNil(t, user)
-	url, err := urlsController.CreateRandomShortUrl("https://google.com", user.ID)
+	url, err := urlsController.CreateRandomShortUrl("https://google.com", user.ID, 0)
 	assert.Nil(t, err)
 	assert.NotNil(t, url)
 	assert.EqualValues(t, user.ID, url.CreatorID)
