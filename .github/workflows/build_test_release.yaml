@@ -81,7 +81,7 @@ jobs:
           go get ./...
     
     - name: Build
-      run: make build DOCS=false ARGS="-v"
+      run: make build_all DOCS=false ARGS="-v"
 
     - name: Create release
       env:
@@ -89,7 +89,7 @@ jobs:
           tag: ${{ github.ref_name }}
       run: |
           gh release create "$tag" \
-              bin/onepixel \
+              bin/* \
               --repo="$GITHUB_REPOSITORY" \
               --title="Onepixel release ${tag#v}" \
               --generate-notes

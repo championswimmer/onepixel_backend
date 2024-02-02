@@ -31,7 +31,7 @@ build: $(BUILDDEPS)
 	@echo "Building $(OS) $(ARCH) binary..."
 	@GOOS=$(OS) GOARCH=$(ARCH) go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
 
-build_all: docs
+build_all: $(BUILDDEPS)
 	@echo "Building linux amd64 binary..."
 	@GOOS=linux GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-linux-amd64" src/main.go
 	@echo "Building darwin amd64 binary..."
