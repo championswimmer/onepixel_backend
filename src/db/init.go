@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/c0deltin/duckdb-driver/duckdb"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -59,10 +60,18 @@ func GetAppDB() (*gorm.DB, error) {
 
 func GetEventsDB() (*gorm.DB, error) {
 	createEventsDbOnce.Do(func() {
-
-		applogger.Warn("Events: Using clickhouse db")
-
-		eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
+		switch config.EventDBDialect {
+		case "clickhouse":
+			applogger.Warn("Events: Using clickhouse db")
+			eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
+			break
+		case "duckdb":
+			applogger.Warn("Events: Using duck db")
+			eventsDb = lo.Must(gorm.Open(duckdb.Open(config.EventDBUrl), getGormConfig()))
+			break
+		default:
+			panic("EventDB config incorrect")
+		}
 
 		// automigrate table if we cannot get column types
 		if _, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName()); err != nil {

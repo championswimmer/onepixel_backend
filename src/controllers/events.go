@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"onepixel_backend/src/db"
@@ -44,6 +45,7 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 		}()
 
 		event := &models.EventRedirect{
+			ID:         uuid.New(),
 			ShortURL:   redirData.ShortURL,
 			ShortUrlID: redirData.ShortUrlID,
 			UrlGroupID: redirData.UrlGroupID,

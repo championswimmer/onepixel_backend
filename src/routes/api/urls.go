@@ -128,3 +128,11 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
 }
+
+func createGroupedRandomUrl(ctx *fiber.Ctx) error {
+	return ctx.SendString("createGroupedRandomUrl")
+}
+
+func createGroupedSpecificUrl(ctx *fiber.Ctx) error {
+	return ctx.SendString("createGroupedSpecificUrl")
+}

@@ -191,3 +191,5 @@ fabric.properties
 /data/
 /clk_data/
 /clk_logs/
+/events.db
+/events.db.wal

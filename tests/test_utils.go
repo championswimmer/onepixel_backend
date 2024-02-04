@@ -14,6 +14,7 @@ import (
 )
 
 var App = server.CreateAdminApp()
+var MainApp = server.CreateMainApp()
 
 func TestUtil_CreateUser(t *testing.T, email string, password string) dtos.UserResponse {
 
