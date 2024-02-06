@@ -55,8 +55,8 @@ var (
 		message: "this shortURL is not allowed to be created",
 	}
 	MaxRetriesReachedError = &UrlError{
-		status:  fiber.ErrInternalServerError.Code,
-		message: "max number of attempts to generate a URL reached. Please try after some time",
+		status:  fiber.StatusLoopDetected,
+		message: "server exhausted attempts to generate a unique shortUrl, please try again",
 	}
 )
 
