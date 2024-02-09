@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/stretchr/testify/assert"
 	"onepixel_backend/src/utils/applogger"
+	_ "onepixel_backend/tests"
 	"testing"
 )
 
