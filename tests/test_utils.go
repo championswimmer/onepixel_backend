@@ -3,18 +3,27 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/config"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
 	"testing"
 )
 
-var App = server.CreateAdminApp()
-var MainApp = server.CreateMainApp()
+var App *fiber.App
+var MainApp *fiber.App
+
+func init() {
+	db.InjectDBProvider("sqlite", ProvideSqliteDB)
+	db.InjectDBProvider("duckdb", ProvideDuckDB)
+	App = server.CreateAdminApp()
+	MainApp = server.CreateMainApp()
+}
 
 func TestUtil_CreateUser(t *testing.T, email string, password string) dtos.UserResponse {
 

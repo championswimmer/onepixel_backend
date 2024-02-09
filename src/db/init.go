@@ -1,10 +1,6 @@
 package db
 
 import (
-	"github.com/c0deltin/duckdb-driver/duckdb"
-	"gorm.io/driver/clickhouse"
-	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
@@ -34,17 +30,29 @@ func getGormConfig() (dbConfig *gorm.Config) {
 	return
 }
 
+type DatabaseProvider func(dbUrl string, config *gorm.Config) *gorm.DB
+
+var dbProviders map[string]DatabaseProvider = map[string]DatabaseProvider{}
+
+func InjectDBProvider(name string, provider DatabaseProvider) {
+	dbProviders[name] = provider
+}
+
+func init() {
+	InjectDBProvider("postgres", ProvidePostgresDB)
+	InjectDBProvider("clickhouse", ProvideClickhouseDB)
+}
+
 func GetAppDB() (*gorm.DB, error) {
 
 	createAppDbOnce.Do(func() {
+		applogger.Warn("App: Creating db")
 		switch config.DBDialect {
 		case "sqlite":
-			applogger.Warn("App: Using sqlite db")
-			appDb = lo.Must(gorm.Open(sqlite.Open(config.DBUrl), getGormConfig()))
+			appDb = dbProviders["sqlite"](config.DBUrl, getGormConfig())
 			break
 		case "postgres":
-			applogger.Warn("App: Using postgres db")
-			appDb = lo.Must(gorm.Open(postgres.Open(config.DBUrl), getGormConfig()))
+			appDb = dbProviders["postgres"](config.DBUrl, getGormConfig())
 			break
 		default:
 			panic("Database config incorrect")
@@ -60,14 +68,14 @@ func GetAppDB() (*gorm.DB, error) {
 
 func GetEventsDB() (*gorm.DB, error) {
 	createEventsDbOnce.Do(func() {
+		applogger.Warn("Events: Creating db")
+
 		switch config.EventDBDialect {
 		case "clickhouse":
-			applogger.Warn("Events: Using clickhouse db")
-			eventsDb = lo.Must(gorm.Open(clickhouse.Open(config.EventDBUrl), getGormConfig()))
+			eventsDb = dbProviders["clickhouse"](config.EventDBUrl, getGormConfig())
 			break
 		case "duckdb":
-			applogger.Warn("Events: Using duck db")
-			eventsDb = lo.Must(gorm.Open(duckdb.Open(config.EventDBUrl), getGormConfig()))
+			eventsDb = dbProviders["duckdb"](config.EventDBUrl, getGormConfig())
 			break
 		default:
 			panic("EventDB config incorrect")
