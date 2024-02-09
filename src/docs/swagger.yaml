@@ -30,6 +30,9 @@ definitions:
     type: object
   dtos.UrlResponse:
     properties:
+      creator_id:
+        example: 1
+        type: integer
       long_url:
         example: https://www.google.com
         type: string

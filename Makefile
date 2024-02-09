@@ -29,7 +29,7 @@ docs:
 
 build: $(BUILDDEPS)
 	@echo "Building $(OS) $(ARCH) binary..."
-	@GOOS=$(OS) GOARCH=$(ARCH) go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
+	@GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=1 go build $(ARGS) -o "bin/$(BINARY_NAME)" src/main.go
 
 build_all: $(BUILDDEPS)
 	@echo "Building linux amd64 binary..."
