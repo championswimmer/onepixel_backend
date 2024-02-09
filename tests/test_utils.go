@@ -9,9 +9,9 @@ import (
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/config"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
+	_ "onepixel_backend/tests/providers"
 	"testing"
 )
 
@@ -19,8 +19,6 @@ var App *fiber.App
 var MainApp *fiber.App
 
 func init() {
-	db.InjectDBProvider("sqlite", ProvideSqliteDB)
-	db.InjectDBProvider("duckdb", ProvideDuckDB)
 	App = server.CreateAdminApp()
 	MainApp = server.CreateMainApp()
 }

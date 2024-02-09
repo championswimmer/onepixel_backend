@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"onepixel_backend/src/utils/applogger"
-	_ "onepixel_backend/tests"
+	_ "onepixel_backend/tests/providers"
 	"testing"
 )
 

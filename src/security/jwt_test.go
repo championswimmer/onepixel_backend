@@ -3,7 +3,7 @@ package security
 import (
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
-	_ "onepixel_backend/tests"
+	_ "onepixel_backend/tests/providers"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

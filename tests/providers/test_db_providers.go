@@ -1,12 +1,19 @@
-package tests
+package providers
 
 import (
 	"github.com/c0deltin/duckdb-driver/duckdb"
 	"github.com/samber/lo"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/utils/applogger"
 )
+
+func init() {
+	db.InjectDBProvider("sqlite", ProvideSqliteDB)
+	db.InjectDBProvider("duckdb", ProvideDuckDB)
+
+}
 
 func ProvideSqliteDB(dbUrl string, config *gorm.Config) *gorm.DB {
 	applogger.Warn("Test: Using sqlite db")
