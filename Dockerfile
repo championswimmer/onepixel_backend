@@ -1,6 +1,6 @@
 FROM golang:1.20-alpine AS builder
 
-RUN apk add --no-cache make
+RUN apk add --no-cache make build-base
 
 # Move to working directory (/build).
 WORKDIR /build
@@ -13,7 +13,7 @@ RUN go mod download
 COPY . .
 
 # Set necessary environment variables needed for our image and build the API server.
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 # RUN go build -ldflags="-s -w" -o onepixel ./src/main.go
 RUN make build DOCS=false
 
