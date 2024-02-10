@@ -13,6 +13,7 @@ var DBDialect string
 var DBUrl string
 
 var EventDBUrl string
+var EventDBDialect string
 
 var Port string
 var MainHost string
@@ -38,6 +39,7 @@ func init() {
 		os.Getenv("DATABASE_PRIVATE_URL"),
 		os.Getenv("DATABASE_URL"),
 	)
+	EventDBDialect = os.Getenv("EVENTDB_DIALECT")
 	EventDBUrl, _ = lo.Coalesce(
 		os.Getenv("EVENTDB_PRIVATE_URL"),
 		os.Getenv("EVENTDB_URL"),

@@ -1,0 +1,95 @@
+name: Build, test and release
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20.x'
+
+    - name: Install dependencies
+      run: |
+        go install github.com/swaggo/swag/cmd/swag@latest
+        go get ./...
+
+    - name: Build
+      run: make build DOCS=false ARGS="-v"
+      
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ENV: test
+    needs: build
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20.x'
+
+    - name: Install dependencies
+      run: |
+        go install github.com/swaggo/swag/cmd/swag@latest
+        go get ./...
+
+    - name: Test
+      run: go test -timeout 2s -coverprofile=coverage.txt -race -covermode=atomic -v -coverpkg=./src/...  ./tests/... ./src/...
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref_type == 'tag'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20.x'
+
+    - name: Install dependencies
+      run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+          go get ./...
+    
+    - name: Build
+      run: make build_all DOCS=false ARGS="-v"
+
+    - name: Create release
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+      run: |
+          gh release create "$tag" \
+              bin/* \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="Onepixel release ${tag#v}" \
+              --generate-notes

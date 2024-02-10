@@ -369,6 +369,10 @@ const docTemplate = `{
         "dtos.UrlResponse": {
             "type": "object",
             "properties": {
+                "creator_id": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "long_url": {
                     "type": "string",
                     "example": "https://www.google.com"

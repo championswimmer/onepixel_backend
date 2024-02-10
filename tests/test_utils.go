@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -10,10 +11,17 @@ import (
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
+	_ "onepixel_backend/tests/providers"
 	"testing"
 )
 
-var App = server.CreateAdminApp()
+var App *fiber.App
+var MainApp *fiber.App
+
+func init() {
+	App = server.CreateAdminApp()
+	MainApp = server.CreateMainApp()
+}
 
 func TestUtil_CreateUser(t *testing.T, email string, password string) dtos.UserResponse {
 

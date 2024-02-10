@@ -11,6 +11,7 @@ import (
 	"onepixel_backend/src/utils/applogger"
 	"onepixel_backend/tests"
 	"testing"
+	"time"
 )
 
 func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
@@ -39,6 +40,15 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 
 	applogger.Info("Short URL Created", urlResponseBody.ShortURL)
 
+	// ------ CHECK REDIRECT ------
+	req = httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
+	resp = lo.Must(tests.MainApp.Test(req))
+
+	assert.Equal(t, 301, resp.StatusCode)
+	assert.Equal(t, "https://google.com", resp.Header.Get("Location"))
+	// give time for analytics to flush
+	time.Sleep(1 * time.Second)
+
 }
 
 func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
@@ -64,6 +74,15 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 	}
 	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
 	assert.Equal(t, "my_code", urlResponseBody.ShortURL)
+
+	// ------ CHECK REDIRECT ------
+	req = httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
+	resp = lo.Must(tests.MainApp.Test(req))
+
+	assert.Equal(t, 301, resp.StatusCode)
+	assert.Equal(t, "https://example.com", resp.Header.Get("Location"))
+	// give time for analytics to flush
+	time.Sleep(1 * time.Second)
 
 	// ------ CREATE URL WITH SAME CODE ------
 	reqBody = []byte(`{"long_url": "https://example2.com"}`)
