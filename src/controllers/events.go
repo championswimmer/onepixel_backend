@@ -7,7 +7,6 @@ import (
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
-	"sync"
 )
 
 type EventsController struct {
@@ -32,18 +31,9 @@ type EventRedirectDTO struct {
 	Referer    string
 }
 
-var wg = sync.WaitGroup{}
-
 func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
-	wg.Add(1)
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				applogger.Error("LogRedirectAsync panic: ", r)
-			}
-			wg.Done()
-		}()
 
+	lo.Async(func() uuid.UUID {
 		event := &models.EventRedirect{
 			ID:         uuid.New(),
 			ShortURL:   redirData.ShortURL,
@@ -54,9 +44,13 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 			IPAddress:  redirData.IPAddress,
 			Referer:    redirData.Referer,
 		}
-		c.eventDb.Create(event)
+		lo.Try(func() error {
+			tx := c.eventDb.Create(event)
+			return tx.Error
+		})
+		return event.ID
+	})
 
-	}()
 }
 
 func (c *EventsController) GetRedirectsCountForUserId(userId string) []models.EventRedirectCountView {
