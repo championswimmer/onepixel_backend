@@ -1,7 +1,7 @@
 package providers
 
 import (
-	"github.com/c0deltin/duckdb-driver/duckdb"
+	"github.com/championswimmer/duckdb-driver/duckdb"
 	"github.com/samber/lo"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

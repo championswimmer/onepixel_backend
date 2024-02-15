@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
@@ -46,7 +47,7 @@ func init() {
 func GetAppDB() (*gorm.DB, error) {
 
 	createAppDbOnce.Do(func() {
-		applogger.Warn("App: Creating db")
+		applogger.Warn("App: Initialising database")
 		switch config.DBDialect {
 		case "sqlite":
 			appDb = dbProviders["sqlite"](config.DBUrl, getGormConfig())
@@ -68,7 +69,7 @@ func GetAppDB() (*gorm.DB, error) {
 
 func GetEventsDB() (*gorm.DB, error) {
 	createEventsDbOnce.Do(func() {
-		applogger.Warn("Events: Creating db")
+		applogger.Warn("Events: Initialising database")
 
 		switch config.EventDBDialect {
 		case "clickhouse":
@@ -82,9 +83,21 @@ func GetEventsDB() (*gorm.DB, error) {
 		}
 
 		// automigrate table if we cannot get column types
-		if _, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName()); err != nil {
+		lo.TryCatchWithErrorValue(func() error {
+			if eventsDb.Migrator().HasTable((&models.EventRedirect{}).TableName()) {
+				applogger.Info("Events: table exists")
+				return nil
+			} else {
+				return errors.New("table not found")
+			}
+			//_, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName())
+			//return err
+		}, func(e any) {
+			applogger.Error("Error reading column types of eventsdb: " + e.(error).Error())
 			lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
-		}
+			applogger.Info("Events: table automigrated")
+
+		})
 
 	})
 

@@ -11,6 +11,7 @@ import (
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
+	// to inject database providers
 	_ "onepixel_backend/tests/providers"
 	"testing"
 )
