@@ -47,6 +47,7 @@ func CreateAdminApp() *fiber.App {
 
 	apiV1.Route("/users", api.UsersRoute())
 	apiV1.Route("/urls", api.UrlsRoute())
+	apiV1.Route("/stats", api.StatsRoute())
 
 	if config.Env == "production" {
 		docs.SwaggerInfo.Host = config.AdminHost

@@ -11,6 +11,7 @@ import (
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
+	"sync"
 )
 
 // the current max length of the short url
@@ -55,14 +56,9 @@ var (
 	}
 )
 
-func CreateUrlsController() *UrlsController {
-	appDb := lo.Must(db.GetAppDB())
-	return &UrlsController{
-		db: appDb,
-	}
-}
+var initDefaultUrlGroupOnce sync.Once
 
-func (c *UrlsController) InitDefaultUrlGroup() {
+func (c *UrlsController) initDefaultUrlGroup() {
 	defaultUrlGroup := &models.UrlGroup{
 		ID:        _defaultUrlGroupId,
 		Name:      lo.Must(utils.Radix64Encode(_defaultUrlGroupId)), // "0",
@@ -80,6 +76,15 @@ func (c *UrlsController) InitDefaultUrlGroup() {
 	} else {
 		applogger.Info("Default url group created")
 	}
+}
+
+func CreateUrlsController() *UrlsController {
+	appDb := lo.Must(db.GetAppDB())
+	ctrl := &UrlsController{
+		db: appDb,
+	}
+	initDefaultUrlGroupOnce.Do(ctrl.initDefaultUrlGroup)
+	return ctrl
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {

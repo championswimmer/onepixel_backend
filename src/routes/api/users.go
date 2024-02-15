@@ -17,7 +17,6 @@ var usersController *controllers.UsersController
 func UsersRoute() func(router fiber.Router) {
 	// initialize UsersController
 	usersController = controllers.CreateUsersController()
-	usersController.InitDefaultUser()
 
 	return func(router fiber.Router) {
 		router.Post("/", security.MandatoryAdminApiKeyAuthMiddleware, registerUser)

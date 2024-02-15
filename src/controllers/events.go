@@ -58,3 +58,21 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 
 	}()
 }
+
+func (c *EventsController) GetRedirectsCountForUserId(userId string) []models.EventRedirectCountView {
+	rows, err := c.eventDb.Model(&models.EventRedirect{}).
+		Select("count(id) as redirects, short_url").
+		Group("short_url").
+		Rows()
+
+	if err != nil {
+		applogger.Panic("GetRedirectsCountForUserId: ", err)
+	}
+	data := make([]models.EventRedirectCountView, 0)
+	for rows.Next() {
+		var d models.EventRedirectCountView
+		lo.Must0(c.eventDb.Model(&models.EventRedirect{}).ScanRows(rows, &d))
+		data = append(data, d)
+	}
+	return data
+}

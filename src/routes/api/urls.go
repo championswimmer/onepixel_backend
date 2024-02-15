@@ -17,7 +17,6 @@ var urlsController *controllers.UrlsController
 func UrlsRoute() func(router fiber.Router) {
 	// initialize UrlsController
 	urlsController = controllers.CreateUrlsController()
-	urlsController.InitDefaultUrlGroup()
 
 	return func(router fiber.Router) {
 		router.Get("/", getAllUrls)

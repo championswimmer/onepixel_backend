@@ -27,3 +27,10 @@ type EventRedirect struct {
 func (EventRedirect) TableName() string {
 	return "events_redirect"
 }
+
+// ----- row models for query views -----
+
+type EventRedirectCountView struct {
+	Redirects uint64
+	ShortURL  string
+}

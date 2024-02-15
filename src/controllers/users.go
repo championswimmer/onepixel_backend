@@ -4,12 +4,12 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
+	"gorm.io/gorm"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/utils/applogger"
-
-	"gorm.io/gorm"
+	"sync"
 )
 
 type AuthError struct {
@@ -31,14 +31,7 @@ type UsersController struct {
 	db *gorm.DB
 }
 
-func CreateUsersController() *UsersController {
-	appDb := lo.Must(db.GetAppDB())
-	return &UsersController{
-		db: appDb,
-	}
-}
-
-func (c *UsersController) InitDefaultUser() {
+func (c *UsersController) initDefaultUser() {
 	defaultUser := &models.User{
 		Email:    "admin@onepixel.link",
 		Password: security.HashPassword(uuid.New().String()),
@@ -59,6 +52,17 @@ func (c *UsersController) InitDefaultUser() {
 	} else {
 		applogger.Info("Default user created")
 	}
+}
+
+var initDefaultUserOnce sync.Once
+
+func CreateUsersController() *UsersController {
+	appDb := lo.Must(db.GetAppDB())
+	ctrl := &UsersController{
+		db: appDb,
+	}
+	initDefaultUserOnce.Do(ctrl.initDefaultUser)
+	return ctrl
 }
 
 // Create new user
