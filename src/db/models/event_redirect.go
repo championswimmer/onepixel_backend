@@ -19,7 +19,10 @@ type EventRedirect struct {
 	// user agent
 	UserAgent string `gorm:"type:string"`
 	// ip address
-	IPAddress string `gorm:"type:string"`
+	IPAddress       string `gorm:"type:string"`
+	LocationCity    string `gorm:"type:string"`
+	LocationRegion  string `gorm:"type:string"`
+	LocationCountry string `gorm:"type:string"`
 	// referer
 	Referer string `gorm:"type:string"`
 }

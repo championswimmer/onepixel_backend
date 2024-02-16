@@ -2,13 +2,15 @@ package api
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 var urlsController *controllers.UrlsController
@@ -54,7 +56,7 @@ func getAllUrls(ctx *fiber.Ctx) error {
 //	@Router			/urls [post]
 //	@Security		BearerToken
 func createRandomUrl(ctx *fiber.Ctx) error {
-	user := ctx.Locals("user").(*models.User)
+	user := ctx.Locals(config.LOCALS_USER).(*models.User)
 
 	cur, parseErr := parsers.ParseBody[dtos.CreateUrlRequest](ctx)
 	if parseErr != nil {
@@ -92,7 +94,7 @@ func createRandomUrl(ctx *fiber.Ctx) error {
 //	@Router			/urls/{shortcode} [put]
 //	@Security		BearerToken
 func createSpecificUrl(ctx *fiber.Ctx) error {
-	user := ctx.Locals("user").(*models.User)
+	user := ctx.Locals(config.LOCALS_USER).(*models.User)
 
 	cur, parseErr := parsers.ParseBody[dtos.CreateUrlRequest](ctx)
 	if parseErr != nil {

@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
@@ -57,7 +56,7 @@ func (c *UsersController) initDefaultUser() {
 var initDefaultUserOnce sync.Once
 
 func CreateUsersController() *UsersController {
-	appDb := lo.Must(db.GetAppDB())
+	appDb := db.GetAppDB()
 	ctrl := &UsersController{
 		db: appDb,
 	}

@@ -23,6 +23,9 @@ type ErrorResponse struct {
 	Message string `json:"message" example:"Something went wrong"`
 }
 
+type RedirectCountStatsResponse struct {
+}
+
 func CreateUserResponseFromUser(user *models.User, token *string) UserResponse {
 	return UserResponse{
 		ID:    user.ID,

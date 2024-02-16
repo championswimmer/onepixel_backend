@@ -79,7 +79,7 @@ func (c *UrlsController) initDefaultUrlGroup() {
 }
 
 func CreateUrlsController() *UrlsController {
-	appDb := lo.Must(db.GetAppDB())
+	appDb := db.GetAppDB()
 	ctrl := &UrlsController{
 		db: appDb,
 	}

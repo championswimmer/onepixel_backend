@@ -1,10 +1,12 @@
 package db
 
 import (
-	"errors"
+	"github.com/oschwald/geoip2-golang"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
+	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
+	"os"
 	"sync"
 
 	"github.com/samber/lo"
@@ -12,10 +14,12 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var appDb *gorm.DB    // singleton
-var eventsDb *gorm.DB // singleton
+var appDb *gorm.DB        // singleton
+var eventsDb *gorm.DB     // singleton
+var reader *geoip2.Reader // singleton
 var createAppDbOnce sync.Once
 var createEventsDbOnce sync.Once
+var createGeoIPDbOnce sync.Once
 
 func getGormConfig() (dbConfig *gorm.Config) {
 	dbConfig = &gorm.Config{
@@ -44,7 +48,7 @@ func init() {
 	InjectDBProvider("clickhouse", ProvideClickhouseDB)
 }
 
-func GetAppDB() (*gorm.DB, error) {
+func GetAppDB() *gorm.DB {
 
 	createAppDbOnce.Do(func() {
 		applogger.Warn("App: Initialising database")
@@ -64,10 +68,10 @@ func GetAppDB() (*gorm.DB, error) {
 		lo.Must0(appDb.AutoMigrate(&models.Url{}))
 	})
 
-	return appDb, nil
+	return appDb
 }
 
-func GetEventsDB() (*gorm.DB, error) {
+func GetEventsDB() *gorm.DB {
 	createEventsDbOnce.Do(func() {
 		applogger.Warn("Events: Initialising database")
 
@@ -83,23 +87,37 @@ func GetEventsDB() (*gorm.DB, error) {
 		}
 
 		// automigrate table if we cannot get column types
-		lo.TryCatchWithErrorValue(func() error {
-			if eventsDb.Migrator().HasTable((&models.EventRedirect{}).TableName()) {
-				applogger.Info("Events: table exists")
-				return nil
-			} else {
-				return errors.New("table not found")
-			}
-			//_, err := eventsDb.Migrator().ColumnTypes((&models.EventRedirect{}).TableName())
-			//return err
-		}, func(e any) {
-			applogger.Error("Error reading column types of eventsdb: " + e.(error).Error())
-			lo.Must0(eventsDb.AutoMigrate(&models.EventRedirect{}))
-			applogger.Info("Events: table automigrated")
-
+		err, success := lo.TryWithErrorValue(func() error {
+			return eventsDb.AutoMigrate(&models.EventRedirect{})
 		})
+		if !success {
+			applogger.Error("Events: AutoMigrate failed", err)
+		}
 
 	})
 
-	return eventsDb, nil
+	return eventsDb
+}
+
+func GetGeoIPDB() *geoip2.Reader {
+
+	// download file : https://git.io/GeoLite2-City.mmdb
+	createGeoIPDbOnce.Do(func() {
+		applogger.Warn("GeoIP: Initialising database")
+		fresh := utils.IsFileFresh(30, "GeoLite2-City.mmdb")
+		if !fresh {
+			applogger.Error("GeoIP: GeoLite2-City.mmdb is not fresh; downloading again")
+			lo.Try(func() error {
+				return os.Remove("GeoLite2-City.mmdb")
+			})
+			lo.Must0(utils.DownloadFile("https://git.io/GeoLite2-City.mmdb", "GeoLite2-City.mmdb"))
+			applogger.Info("GeoIP: GeoLite2-City.mmdb downloaded")
+		}
+
+		reader = lo.Must(geoip2.Open("GeoLite2-City.mmdb"))
+
+	})
+
+	return reader
+
 }
