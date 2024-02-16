@@ -1,6 +1,8 @@
 FROM golang:1.20-alpine AS builder
 
 RUN apk add --no-cache make
+RUN apk add --no-cache ca-certificates
+RUN update-ca-certificates
 
 # Move to working directory (/build).
 WORKDIR /build
@@ -22,6 +24,7 @@ FROM scratch
 LABEL maintainer="Arnav Gupta <championswimmer@gmail.com> (https://arnav.tech)"
 LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics tool"
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copy binary and config files from /build to root folder of scratch container.
 COPY --from=builder ["/build/*.env", "/"]

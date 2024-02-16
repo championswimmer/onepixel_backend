@@ -110,7 +110,7 @@ func GetGeoIPDB() *geoip2.Reader {
 			lo.Try(func() error {
 				return os.Remove("GeoLite2-City.mmdb")
 			})
-			lo.Must0(utils.DownloadFile("https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb", "GeoLite2-City.mmdb"))
+			lo.Must0(utils.DownloadFile("https://git.io/GeoLite2-City.mmdb", "GeoLite2-City.mmdb"))
 			applogger.Info("GeoIP: GeoLite2-City.mmdb downloaded")
 		}
 
