@@ -47,7 +47,7 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 			req := httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
 			req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
 			req.Header.Set("X-Forwarded-For", "42.108.28.82")
-			resp = lo.Must(tests.MainApp.Test(req))
+			resp := lo.Must(tests.MainApp.Test(req))
 
 			assert.Equal(t, 301, resp.StatusCode)
 			assert.Equal(t, "https://google.com", resp.Header.Get("Location"))
