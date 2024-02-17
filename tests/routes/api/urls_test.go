@@ -108,8 +108,8 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 	// ------ CHECK REDIRECT ------
 	chans := lo.Times(3, func(i int) <-chan string {
 		return lo.Async(func() string {
-			req = httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
-			resp = lo.Must(tests.MainApp.Test(req))
+			req := httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
+			resp := lo.Must(tests.MainApp.Test(req))
 
 			assert.Equal(t, 301, resp.StatusCode)
 			assert.Equal(t, "https://example.com", resp.Header.Get("Location"))
