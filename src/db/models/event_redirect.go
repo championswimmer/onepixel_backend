@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type GeoIpData struct {
+	LocationCity    string `gorm:"type:string"`
+	LocationRegion  string `gorm:"type:string"`
+	LocationCountry string `gorm:"type:string"`
+}
+
 // EventRedirect event db entity
 type EventRedirect struct {
 	CreatedAt time.Time
@@ -19,10 +25,8 @@ type EventRedirect struct {
 	// user agent
 	UserAgent string `gorm:"type:string"`
 	// ip address
-	IPAddress       string `gorm:"type:string"`
-	LocationCity    string `gorm:"type:string"`
-	LocationRegion  string `gorm:"type:string"`
-	LocationCountry string `gorm:"type:string"`
+	IPAddress string `gorm:"type:string"`
+	GeoIpData
 	// referer
 	Referer string `gorm:"type:string"`
 }

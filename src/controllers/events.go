@@ -6,10 +6,10 @@ import (
 	"github.com/oschwald/geoip2-golang"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
-	"net"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
+	"onepixel_backend/src/utils/clientinfo"
 )
 
 type EventsController struct {
@@ -71,24 +71,11 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 			IPAddress:  redirData.IPAddress,
 			Referer:    redirData.Referer,
 		}
-		ip := net.ParseIP(redirData.IPAddress)
-
-		// if IP exists, populate city, country info
-		if ip != nil {
-			city, err := c.geoipDB.City(ip)
-			if err == nil {
-				if city.Country.Names["en"] != "" {
-					event.LocationCountry = fmt.Sprintf("%s (%s)", city.Country.Names["en"], city.Country.IsoCode)
-				}
-
-				if city.Subdivisions[0].Names["en"] != "" {
-					event.LocationRegion = fmt.Sprintf("%s (%s)", city.Subdivisions[0].Names["en"], city.Subdivisions[0].IsoCode)
-				}
-
-				if city.City.Names["en"] != "" {
-					event.LocationCity = city.City.Names["en"]
-				}
-			}
+		geoIpData, err := clientinfo.GetGeoIpDataFromIP(c.geoipDB, redirData.IPAddress)
+		if err != nil {
+			applogger.Warn("LogRedirectAsync: failed to get geoip data: ", err)
+		} else {
+			event.GeoIpData = *geoIpData
 		}
 
 		lo.Try(func() error {
