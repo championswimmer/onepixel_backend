@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http/httptest"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils/applogger"
@@ -17,6 +16,7 @@ import (
 )
 
 func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
+	t.Cleanup(tests.TestUtil_FlushEventsDb)
 
 	// ------ REGISTER USER ------
 	responseBody := tests.TestUtil_CreateUser(t, "user2584@test.com", "123456")
@@ -56,7 +56,6 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 
 	// give time for analytics to flush
 	time.Sleep(200 * time.Millisecond)
-	lo.Try0(func() { db.GetEventsDB().Exec("CHECKPOINT") })
 
 	// ------ CREATE URL WITH SAME CODE ------
 	reqBody = []byte(`{"long_url": "https://example2.com"}`)

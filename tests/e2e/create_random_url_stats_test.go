@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http/httptest"
-	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils/applogger"
@@ -17,6 +16,7 @@ import (
 )
 
 func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
+	t.Cleanup(tests.TestUtil_FlushEventsDb)
 
 	// ------ REGISTER USER ------
 
@@ -59,7 +59,6 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 	applogger.Info("Redirected to: ", lo.Times(3, func(i int) string { return <-ch }))
 	// give time for analytics to flush
 	time.Sleep(200 * time.Millisecond)
-	lo.Try0(func() { db.GetEventsDB().Exec("CHECKPOINT") })
 
 	// ------ CHECK STATS ------
 
@@ -80,5 +79,4 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
 	assert.GreaterOrEqual(t, len(statsResponseBody), 1)
-
 }

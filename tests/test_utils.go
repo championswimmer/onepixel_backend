@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http/httptest"
 	"onepixel_backend/src/config"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/server"
 	// to inject database providers
@@ -48,4 +49,8 @@ func TestUtil_CreateUser(t *testing.T, email string, password string) dtos.UserR
 
 	return responseBody
 
+}
+
+func TestUtil_FlushEventsDb() {
+	lo.Try0(func() { db.GetEventsDB().Exec("CHECKPOINT") })
 }
