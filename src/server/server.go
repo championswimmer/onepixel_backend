@@ -75,7 +75,7 @@ func CreateMainApp() *fiber.App {
 			redirPath += ":" + config.Port
 		}
 		applogger.Info("redirect: root: " + c.OriginalURL())
-		eventsController.LogRedirectAsync(&controllers.EventRedirectDTO{
+		eventsController.LogRedirectAsync(&controllers.EventRedirectData{
 			UrlGroupID: 0,
 			ShortURL:   "/",
 			CreatorID:  0,

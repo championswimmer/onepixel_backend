@@ -86,7 +86,7 @@ func GetEventsDB() *gorm.DB {
 			panic("EventDB config incorrect")
 		}
 
-		// automigrate table if we cannot get column types
+		// try to automigrate
 		err, success := lo.TryWithErrorValue(func() error {
 			return eventsDb.AutoMigrate(&models.EventRedirect{})
 		})

@@ -191,6 +191,7 @@ fabric.properties
 /data/
 /clk_data/
 /clk_logs/
+/app.db
 /events.db
 /events.db.wal
 /duckdb-driver

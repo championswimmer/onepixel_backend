@@ -40,7 +40,7 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 		}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, urlErr.Error()))
 	}
-	eventsController.LogRedirectAsync(&controllers.EventRedirectDTO{
+	eventsController.LogRedirectAsync(&controllers.EventRedirectData{
 		ShortUrlID: url.ID,
 		UrlGroupID: url.UrlGroupID,
 		ShortURL:   url.ShortURL,

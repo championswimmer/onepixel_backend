@@ -10,7 +10,7 @@ import (
 var urlsController = CreateUrlsController()
 
 func TestUrlsController_CreateSpecificShortUrl(t *testing.T) {
-	user, _, _ := userController.Create("user7353@test.com", "123456")
+	user, _, _ := userController.Create("user136254@test.com", "123456")
 	assert.NotNil(t, user)
 	url, err := urlsController.CreateSpecificShortUrl("ax_bg", "https://example.com", user.ID)
 	assert.Nil(t, err)

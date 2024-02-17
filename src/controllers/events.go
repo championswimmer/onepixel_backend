@@ -25,7 +25,7 @@ func CreateEventsController() *EventsController {
 	}
 }
 
-type EventRedirectDTO struct {
+type EventRedirectData struct {
 	ShortUrlID uint64
 	UrlGroupID uint64
 	ShortURL   string
@@ -35,8 +35,30 @@ type EventRedirectDTO struct {
 	Referer    string
 }
 
-func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
+// synced is a synchronized locker to access user-specific views
+var synced = lo.Synchronize()
 
+func (c *EventsController) getViewForUser(userId uint64) *gorm.DB {
+	var evdb *gorm.DB
+	synced.Do(func() {
+		viewName := (&models.EventRedirect{}).TableName() + "_" + fmt.Sprint(userId)
+		viewOption := gorm.ViewOption{
+			Replace: true,
+			Query:   c.eventDb.Model(&models.EventRedirect{}).Where("creator_id = ?", userId),
+		}
+		lo.Try(func() error {
+			err := c.eventDb.Migrator().CreateView(viewName, viewOption)
+			if err != nil {
+				applogger.Error("getViewForUser: failed to create view for user id: ", userId, err)
+			}
+			return err
+		})
+		evdb = c.eventDb.Table(viewName)
+	})
+	return evdb
+}
+
+func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 	lo.Async(func() uuid.UUID {
 
 		event := &models.EventRedirect{
@@ -51,6 +73,7 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 		}
 		ip := net.ParseIP(redirData.IPAddress)
 
+		// if IP exists, populate city, country info
 		if ip != nil {
 			city, err := c.geoipDB.City(ip)
 			if err == nil {
@@ -67,8 +90,12 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 				}
 			}
 		}
+
 		lo.Try(func() error {
 			tx := c.eventDb.Create(event)
+			if tx.Error != nil {
+				applogger.Error("LogRedirectAsync: failed to create event redirect: ", tx.Error)
+			}
 			return tx.Error
 		})
 		return event.ID
@@ -77,9 +104,9 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectDTO) {
 }
 
 func (c *EventsController) GetRedirectsCountForUserId(userId uint64) ([]models.EventRedirectCountView, error) {
-	rows, err := c.eventDb.Model(&models.EventRedirect{}).
+	view := c.getViewForUser(userId)
+	rows, err := view.Model(&models.EventRedirect{}).
 		Select("count(id) as redirects, short_url").
-		Where("creator_id = ?", userId).
 		Group("short_url").
 		Rows()
 
@@ -90,7 +117,7 @@ func (c *EventsController) GetRedirectsCountForUserId(userId uint64) ([]models.E
 	data := make([]models.EventRedirectCountView, 0)
 	for rows.Next() {
 		var d models.EventRedirectCountView
-		lo.Must0(c.eventDb.Model(&models.EventRedirect{}).ScanRows(rows, &d))
+		lo.Must0(view.Model(&models.EventRedirect{}).ScanRows(rows, &d))
 		data = append(data, d)
 	}
 	return data, nil

@@ -27,6 +27,7 @@ type EventRedirect struct {
 	Referer string `gorm:"type:string"`
 }
 
+// TableName returns the table name for the event redirect
 func (EventRedirect) TableName() string {
 	return "events_redirect"
 }
@@ -34,6 +35,6 @@ func (EventRedirect) TableName() string {
 // ----- row models for query views -----
 
 type EventRedirectCountView struct {
-	Redirects uint64
-	ShortURL  string
+	Redirects uint64 `gorm:"type:bigint"`
+	ShortURL  string `gorm:"type:string"`
 }
