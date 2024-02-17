@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http/httptest"
+	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils/applogger"
@@ -55,6 +56,7 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 
 	// give time for analytics to flush
 	time.Sleep(200 * time.Millisecond)
+	lo.Try0(func() { db.GetEventsDB().Exec("CHECKPOINT") })
 
 	// ------ CREATE URL WITH SAME CODE ------
 	reqBody = []byte(`{"long_url": "https://example2.com"}`)

@@ -25,11 +25,12 @@ func init() {
 	removeDbOnce.Do(func() {
 		cwd := lo.Must(os.Getwd())
 		appDbPath := path.Join(cwd, config.DBUrl)
-		eventDbPath := path.Join(cwd, config.EventDBUrl+"*")
+		eventDbPath := path.Join(cwd, config.EventDBUrl)
 		applogger.Debug("App: Removing existing test database file at", appDbPath)
 		lo.Must0(os.RemoveAll(appDbPath))
 		applogger.Debug("Events: Removing existing test database file at", eventDbPath)
 		lo.Must0(os.RemoveAll(eventDbPath))
+		lo.Must0(os.RemoveAll(eventDbPath + ".wal"))
 		time.Sleep(1 * time.Second)
 	})
 
