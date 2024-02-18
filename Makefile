@@ -43,11 +43,11 @@ build_all: $(BUILDDEPS)
 
 test_unit:
 	@echo "Running unit tests..."
-	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -timeout 10s -race -coverprofile=coverage.unit.out -covermode=atomic -v -coverpkg=./src/...  ./src/...
+	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.unit.out -covermode=atomic -v -coverpkg=./src/...  ./src/...
 
 test_e2e:
 	@echo "Running end-to-end tests..."
-	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -timeout 10s -race -coverprofile=coverage.e2e.out -covermode=atomic -v -coverpkg=./src/...  ./tests/...
+	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.e2e.out -covermode=atomic -v -coverpkg=./src/...  ./tests/...
 
 test: test_unit test_e2e
 

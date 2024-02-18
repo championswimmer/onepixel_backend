@@ -20,6 +20,7 @@ var MainHost string
 var AdminHost string
 
 var AdminApiKey string
+var AdminUserEmail string
 
 var JwtSigningKey string
 var JwtDurationDays int
@@ -46,6 +47,7 @@ func init() {
 	MainHost = os.Getenv("MAIN_SITE_HOST")
 	AdminHost = os.Getenv("ADMIN_SITE_HOST")
 	AdminApiKey = os.Getenv("ADMIN_API_KEY")
+	AdminUserEmail = os.Getenv("ADMIN_USER_EMAIL")
 	JwtSigningKey = os.Getenv("JWT_SIGNING_KEY")
 	JwtDurationDays, _ = strconv.Atoi(os.Getenv("JWT_DURATION_DAYS"))
 }

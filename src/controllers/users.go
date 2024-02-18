@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
@@ -30,30 +31,35 @@ type UsersController struct {
 	db *gorm.DB
 }
 
-func (c *UsersController) initDefaultUser() {
-	defaultUser := &models.User{
-		Email:    "admin@onepixel.link",
-		Password: security.HashPassword(uuid.New().String()),
-		ID:       0,
-		Verified: true,
-	}
-
-	// this doesn't really work, passing ID=0 to gorm is borked
-	// the code here is just for documentation purposes
-	res := c.db.Save([]models.User{*(defaultUser)})
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
-			applogger.Warn("Default user already exists")
-			return
-		}
-		applogger.Error("Failed to create default user")
-		applogger.Panic(res.Error)
-	} else {
-		applogger.Info("Default user created")
-	}
-}
-
 var initDefaultUserOnce sync.Once
+
+func (c *UsersController) initDefaultUser() {
+	var defaultUser = models.User{
+		Email: config.AdminUserEmail,
+	}
+	// check if default user exists
+	res := c.db.First(&defaultUser)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			applogger.Info("Default user doesn't exist")
+			defaultUser.Password = security.HashPassword(uuid.New().String())
+			defaultUser.Verified = true
+			res = c.db.Create(&defaultUser)
+		} else {
+			applogger.Error("Failed to check if default user exists")
+			applogger.Panic(res.Error)
+		}
+	}
+	// update default user id to 0
+	res = c.db.Model(defaultUser).
+		Where("email = ?", defaultUser.Email).
+		Update("id", 0)
+	if res.Error != nil {
+		applogger.Error("Failed to update default user id")
+		applogger.Panic(res.Error)
+	}
+
+}
 
 func CreateUsersController() *UsersController {
 	appDb := db.GetAppDB()
