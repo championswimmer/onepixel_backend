@@ -1,7 +1,7 @@
-ARG METABASE_VERSION
+ARG METABASE_VERSION=v0.48.6
 FROM alpine as builder
 
-ARG METABASE_CLICKHOUSE_DRIVER_VERSION
+ARG METABASE_CLICKHOUSE_DRIVER_VERSION=1.3.2
 
 RUN apk add --no-cache wget
 RUN apk add --no-cache ca-certificates
