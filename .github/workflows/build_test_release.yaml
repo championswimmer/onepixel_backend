@@ -53,8 +53,11 @@ jobs:
         go install github.com/swaggo/swag/cmd/swag@latest
         go get ./...
 
-    - name: Test
-      run: make test
+    - name: Test Unit
+      run: make test_unit
+
+    - name: Test E2E
+      run: make test_e2e
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
