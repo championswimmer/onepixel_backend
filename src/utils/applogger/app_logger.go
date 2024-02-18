@@ -22,35 +22,46 @@ const (
 	_cyanbold    = "\033[36;1m"
 )
 
+var logFlags = log.LstdFlags | log.LUTC | log.Lmsgprefix | log.Lshortfile
+var (
+	traceLogger = log.New(os.Stdout, _cyanbold+"[TRACE] "+_reset, logFlags)
+	debugLogger = log.New(os.Stdout, _bluebold+"[DEBUG] "+_reset, logFlags)
+	infoLogger  = log.New(os.Stdout, _greenbold+"[INFO] "+_reset, logFlags)
+	warnLogger  = log.New(os.Stdout, _yellowbold+"[WARN] "+_reset, logFlags)
+	errorLogger = log.New(os.Stderr, _redbold+"[ERROR] "+_reset, logFlags)
+	fatalLogger = log.New(os.Stderr, _magentabold+"[FATAL] "+_reset, logFlags)
+	panicLogger = log.New(os.Stderr, _magentabold+"[PANIC] "+_reset, logFlags)
+)
+
 func Trace(v ...interface{}) {
-	log.Println(append([]any{_cyan, "[TRACE]", _reset}, v...))
+	traceLogger.Println(v...)
 }
 
 func Debug(v ...interface{}) {
-	log.Println(append([]any{_bluebold, "[DEBUG]", _reset}, v...))
+	debugLogger.Println(v...)
 }
 
 func Info(v ...interface{}) {
-	log.Println(append([]any{_greenbold, "[INFO]", _reset}, v...))
+	infoLogger.Println(v...)
 
 }
 
 func Warn(v ...interface{}) {
-	log.Println(append([]any{_yellowbold, "[WARN]", _reset}, v...))
+	warnLogger.Println(v...)
 
 }
 
 func Error(v ...interface{}) {
-	log.Println(append([]any{_redbold, "[ERROR]", _reset}, v...))
+	errorLogger.Println(v...)
 
 }
 
 func Fatal(v ...interface{}) {
-	log.Println(append([]any{_magentabold, "[FATAL]", _reset}, v...))
+	fatalLogger.Println(v...)
 	os.Exit(1)
 }
 
 func Panic(v ...interface{}) {
-	log.Println(append([]any{_magentabold, "[PANIC]", _reset}, v...))
+	panicLogger.Println(v...)
 	panic(v)
 }
