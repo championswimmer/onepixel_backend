@@ -56,3 +56,35 @@ services:
     ports:
       - "8123:8123"
       - "9000:9000"
+
+  metabase:
+    container_name: metabase
+    build:
+      dockerfile: metabase/Dockerfile
+      context: .
+      args:
+        METABASE_VERSION: "v0.48.6"
+        METABASE_CLICKHOUSE_DRIVER_VERSION: "1.3.2"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabase
+      MB_DB_HOST: postgres
+      MB_EMOJI_IN_LOGS: "true"
+      MB_JETTY_PORT: 3232
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres metabase" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    expose:
+      - "3232"
+    ports:
+      - "3232:3232"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy

@@ -109,3 +109,18 @@ func (c *EventsController) GetRedirectsCountForUserId(userId uint64) ([]models.E
 	}
 	return data, nil
 }
+
+/*
+```clickhouse
+select count(id)                                 as redirects,
+       location_city || ', ' || location_country as city,
+       short_url
+from events_redirect
+where created_at >= '2024-02-18'
+  and created_at <= '2024-02-19'
+group by short_url,
+         location_city,
+         location_country
+order by redirects desc
+```
+*/
