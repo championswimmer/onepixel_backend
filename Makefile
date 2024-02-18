@@ -41,11 +41,20 @@ build_all: $(BUILDDEPS)
 	@echo "Building windows amd64 binary..."
 	@GOOS=windows GOARCH=amd64 go build -o "bin/$(BINARY_NAME)-windows-amd64.exe" src/main.go
 
-test_unit:
+test_clean:
+	@echo "Cleaning test databases..."
+	@rm -f app.db
+	@rm -f events.db
+	@rm -f events.db.wal
+	@echo "Cleaning test results..."
+	@rm -f coverage.unit.out
+	@rm -f coverage.e2e.out
+
+test_unit: test_clean
 	@echo "Running unit tests..."
 	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.unit.out -covermode=atomic -v -coverpkg=./src/...  ./src/...
 
-test_e2e:
+test_e2e: test_clean
 	@echo "Running end-to-end tests..."
 	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.e2e.out -covermode=atomic -v -coverpkg=./src/...  ./tests/...
 

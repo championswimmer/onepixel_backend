@@ -15,22 +15,23 @@ import (
 	"time"
 )
 
-var removeDbOnce sync.Once
+var warnDbExistOnce sync.Once
 
 func init() {
 	db.InjectDBProvider("sqlite", ProvideSqliteDB)
 	db.InjectDBProvider("duckdb", ProvideDuckDB)
 
 	// Remove existing test databases
-	removeDbOnce.Do(func() {
+	warnDbExistOnce.Do(func() {
 		cwd := lo.Must(os.Getwd())
 		appDbPath := path.Join(cwd, config.DBUrl)
 		eventDbPath := path.Join(cwd, config.EventDBUrl)
-		applogger.Debug("App: Removing existing test database file at", appDbPath)
-		lo.Must0(os.RemoveAll(appDbPath))
-		applogger.Debug("Events: Removing existing test database file at", eventDbPath)
-		lo.Must0(os.RemoveAll(eventDbPath))
-		lo.Must0(os.RemoveAll(eventDbPath + ".wal"))
+		if _, err := os.Stat(appDbPath); err == nil {
+			applogger.Error("Test: app.db already exists")
+		}
+		if _, err := os.Stat(eventDbPath); err == nil {
+			applogger.Error("Test: event.db already exists")
+		}
 		time.Sleep(1 * time.Second)
 	})
 
