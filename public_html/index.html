@@ -19,7 +19,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-51J34YD93D"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
         gtag('config', 'G-51J34YD93D');
@@ -31,6 +31,11 @@
     <!-- Header -->
     <header>
         <div class="container-fluid p-4 bg-body-tertiary">
+            <div class="position-absolute top-0 end-0 m-2 m-md-4">
+                <button id="theme-switch" class="btn btn-secondary" type="button" onclick="changeTheme()">
+                    <i id="mode-icon" class="bi bi-sun-fill"></i>
+                </button>
+            </div>
             <h1 class="display-1 text-center fw-bold text-body-tertiary">1px.li</h1>
             <p class="lead text-center text-secondary-emphasis">
                 onepixel·link - a no nonsense API-first URL shortener for geeks
