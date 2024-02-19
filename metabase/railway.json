@@ -1,0 +1,14 @@
+{
+  "build": {
+    "builder": "DOCKERFILE",
+    "watchPatterns": [
+      "/metabase/**"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "restartPolicyMaxRetries": 3,
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 300
+  }
+}

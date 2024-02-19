@@ -1,0 +1,17 @@
+{
+  "build": {
+    "builder": "DOCKERFILE",
+    "watchPatterns": [
+      "Dockerfile",
+      "go.mod",
+      "go.sum",
+      "src/**",
+      "public_html/**",
+      "*.env"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "restartPolicyMaxRetries": 3
+  }
+}

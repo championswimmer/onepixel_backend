@@ -74,11 +74,6 @@ services:
       MB_DB_HOST: postgres
       MB_EMOJI_IN_LOGS: "true"
       MB_JETTY_PORT: 3232
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres metabase" ]
-      interval: 3s
-      timeout: 3s
-      retries: 3
     expose:
       - "3232"
     ports:
