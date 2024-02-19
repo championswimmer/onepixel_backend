@@ -9,6 +9,7 @@
     "numReplicas": 1,
     "restartPolicyMaxRetries": 3,
     "healthcheckPath": "/api/health",
-    "healthcheckTimeout": 300
+    "healthcheckTimeout": 300,
+    "sleepApplication": true
   }
 }
