@@ -2,7 +2,8 @@
   "build": {
     "builder": "DOCKERFILE",
     "watchPatterns": [
-      "/metabase/**"
+      "/metabase/**",
+      "/metabase/railway.json"
     ]
   },
   "deploy": {

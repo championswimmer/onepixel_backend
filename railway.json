@@ -7,7 +7,8 @@
       "go.sum",
       "src/**",
       "public_html/**",
-      "*.env"
+      "*.env",
+      "/railway.json"
     ]
   },
   "deploy": {
