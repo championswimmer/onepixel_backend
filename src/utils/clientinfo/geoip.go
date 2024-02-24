@@ -24,7 +24,7 @@ func GetGeoIpDataFromIP(geoipDB *geoip2.Reader, ipAddr string) (*models.GeoIpDat
 		geoIpData.LocationCountry = fmt.Sprintf("%s (%s)", city.Country.Names["en"], city.Country.IsoCode)
 	}
 
-	if city.Subdivisions[0].Names["en"] != "" {
+	if len(city.Subdivisions) > 0 && city.Subdivisions[0].Names["en"] != "" {
 		geoIpData.LocationRegion = fmt.Sprintf("%s (%s)", city.Subdivisions[0].Names["en"], city.Subdivisions[0].IsoCode)
 	}
 

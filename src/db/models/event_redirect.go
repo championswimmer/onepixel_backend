@@ -6,9 +6,9 @@ import (
 )
 
 type GeoIpData struct {
-	LocationCity    string `gorm:"type:string"`
-	LocationRegion  string `gorm:"type:string"`
-	LocationCountry string `gorm:"type:string"`
+	LocationCity    string `gorm:"type:LowCardinality(String)"`
+	LocationRegion  string `gorm:"type:LowCardinality(String)"`
+	LocationCountry string `gorm:"type:LowCardinality(String)"`
 }
 
 // EventRedirect event db entity
@@ -24,7 +24,7 @@ type EventRedirect struct {
 	CreatorID  uint64 `gorm:"bigint,not null"`
 	// user agent
 	UserAgent string `gorm:"type:string"`
-	// ip address
+	// ip address // TODO: have IPV4 and IPV6 columns
 	IPAddress string `gorm:"type:string"`
 	GeoIpData
 	// referer

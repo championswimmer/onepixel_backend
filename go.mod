@@ -3,7 +3,8 @@ module onepixel_backend
 go 1.21
 
 require (
-	github.com/championswimmer/duckdb-driver v0.2.1
+	github.com/championswimmer/duckdb-driver v0.2.2
+	github.com/flashlabs/rootpath v1.1.1
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gofiber/swagger v0.1.14
 	github.com/golang-jwt/jwt/v5 v5.2.0
@@ -26,7 +27,6 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/flashlabs/rootpath v1.1.1 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-openapi/jsonpointer v0.20.0 // indirect
