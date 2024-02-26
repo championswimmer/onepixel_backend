@@ -3,16 +3,18 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/samber/lo"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http/httptest"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils/applogger"
 	"onepixel_backend/tests"
 	"testing"
 	"time"
+
+	"github.com/samber/lo"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
@@ -38,7 +40,7 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
 	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
-	assert.Equal(t, "http://0.0.0.0:3000/my_code", urlResponseBody.ShortURL)
+	assert.Equal(t, config.RedirPath+"my_code", urlResponseBody.ShortURL)
 
 	// ------ CHECK REDIRECT ------
 	chans := lo.Times(3, func(i int) <-chan string {
