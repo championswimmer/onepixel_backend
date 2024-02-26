@@ -36,7 +36,11 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 	if urlErr != nil {
 		var e *controllers.UrlError
 		if errors.As(urlErr, &e) {
-			return ctx.Status(fiber.StatusNotFound).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
+			if errors.Is(e, controllers.SpecificShortUrlLengthError) {
+				return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
+			} else {
+				return ctx.Status(fiber.StatusNotFound).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
+			}
 		}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, urlErr.Error()))
 	}

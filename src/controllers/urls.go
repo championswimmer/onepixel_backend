@@ -54,6 +54,10 @@ var (
 		status:  fiber.ErrForbidden.Code,
 		message: "this shortURL is not allowed to be created",
 	}
+	SpecificShortUrlLengthError = &UrlError{
+		status: 400,
+		message: "String longer than 10 characters",
+	}
 )
 
 var initDefaultUrlGroupOnce sync.Once
@@ -92,7 +96,7 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 
 	if err != nil {
 		applogger.Error("CreateSpecificShortUrl: ", err)
-		return nil, err
+		return nil, SpecificShortUrlLengthError
 	}
 	
 	url = &models.Url{
@@ -145,9 +149,9 @@ func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url,
 
 	if err != nil {
 		applogger.Error("GetUrlWithShortCode: ", err)
-		return nil, err
+		return nil, SpecificShortUrlLengthError
 	}
-	
+
 	res := c.db.First(url, id)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
