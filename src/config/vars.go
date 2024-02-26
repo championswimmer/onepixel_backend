@@ -18,6 +18,7 @@ var EventDBDialect string
 var Port string
 var MainHost string
 var AdminHost string
+var RedirPath string
 
 var AdminApiKey string
 var AdminUserEmail string
@@ -46,6 +47,10 @@ func init() {
 	Port = os.Getenv("PORT")
 	MainHost = os.Getenv("MAIN_SITE_HOST")
 	AdminHost = os.Getenv("ADMIN_SITE_HOST")
+	RedirPath = "https://" + MainHost + "/"
+	if Env == "local" {
+		RedirPath = "http://" + MainHost + ":" + Port + "/"
+	}
 	AdminApiKey = os.Getenv("ADMIN_API_KEY")
 	AdminUserEmail = os.Getenv("ADMIN_USER_EMAIL")
 	JwtSigningKey = os.Getenv("JWT_SIGNING_KEY")
