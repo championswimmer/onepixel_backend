@@ -38,12 +38,12 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
 	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
-	assert.Equal(t, "my_code", urlResponseBody.ShortURL)
+	assert.Equal(t, "http://0.0.0.0:3000/my_code", urlResponseBody.ShortURL)
 
 	// ------ CHECK REDIRECT ------
 	chans := lo.Times(3, func(i int) <-chan string {
 		return lo.Async(func() string {
-			req := httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
+			req := httptest.NewRequest("GET", urlResponseBody.ShortURL, nil)
 			req.Header.Set("User-Agent", "Mozilla/5.0 (iPhone14,3; U; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/19A346 Safari/602.1")
 			req.Header.Set("X-Forwarded-For", "2406:7400:63:66d8:48f5:9eed:2a3b:f286")
 

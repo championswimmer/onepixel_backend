@@ -21,7 +21,7 @@ func Test_GeoIPResolutionIPV4(t *testing.T) {
 
 	assert.Equal(t, "India (IN)", geoIpData.LocationCountry)
 	assert.Equal(t, "National Capital Territory of Delhi (DL)", geoIpData.LocationRegion)
-	assert.Equal(t, "Delhi", geoIpData.LocationCity)
+	assert.Equal(t, "New Delhi", geoIpData.LocationCity)
 
 }
 
