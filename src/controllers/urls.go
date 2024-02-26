@@ -88,8 +88,15 @@ func CreateUrlsController() *UrlsController {
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {
+	id, err := utils.Radix64Decode(shortUrl)
+
+	if err != nil {
+		applogger.Error("CreateSpecificShortUrl: ", err)
+		return nil, err
+	}
+	
 	url = &models.Url{
-		ID:         lo.Must(utils.Radix64Decode(shortUrl)),
+		ID:         id,
 		ShortURL:   shortUrl,
 		LongURL:    longUrl,
 		CreatorID:  userId,
@@ -134,7 +141,13 @@ func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (ur
 
 func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url, err error) {
 	url = &models.Url{}
-	id := lo.Must(utils.Radix64Decode(shortcode))
+	id, err := utils.Radix64Decode(shortcode)
+
+	if err != nil {
+		applogger.Error("GetUrlWithShortCode: ", err)
+		return nil, err
+	}
+	
 	res := c.db.First(url, id)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
