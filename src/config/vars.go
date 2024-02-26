@@ -47,9 +47,9 @@ func init() {
 	Port = os.Getenv("PORT")
 	MainHost = os.Getenv("MAIN_SITE_HOST")
 	AdminHost = os.Getenv("ADMIN_SITE_HOST")
-	RedirPath = "https://" + MainHost + "/"
-	if Env == "local" {
-		RedirPath = "http://" + MainHost + ":" + Port + "/"
+	RedirPath = "http://" + MainHost + ":" + Port + "/"
+	if Env == "production" {
+		RedirPath = "https://" + MainHost + "/"
 	}
 	AdminApiKey = os.Getenv("ADMIN_API_KEY")
 	AdminUserEmail = os.Getenv("ADMIN_USER_EMAIL")
