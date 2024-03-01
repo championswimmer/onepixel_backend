@@ -145,3 +145,18 @@ func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url,
 
 	return
 }
+
+func (c *UrlsController) CreateUrlGroup(groupName string, userId uint64) (urlGroup *models.UrlGroup, err error) {
+	urlGroup = &models.UrlGroup{
+		Name:      groupName,
+		ID:        lo.Must(utils.Radix64Decode(groupName)),
+		CreatorID: userId,
+	}
+
+	res := c.db.Create(urlGroup)
+	if res.Error != nil {
+
+	}
+	return
+
+}
