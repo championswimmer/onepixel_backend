@@ -43,7 +43,7 @@ func (e *UrlError) ErrorDetails() (int, string) {
 
 var (
 	UrlNotFound = &UrlError{
-		status:  404,
+		status:  fiber.StatusNotFound,
 		message: "URL not found",
 	}
 	UrlExistsError = &UrlError{
@@ -55,7 +55,7 @@ var (
 		message: "this shortURL is not allowed to be created",
 	}
 	SpecificShortUrlLengthError = &UrlError{
-		status: 400,
+		status: fiber.StatusBadRequest,
 		message: "String longer than 10 characters",
 	}
 )
@@ -95,8 +95,13 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 	id, err := utils.Radix64Decode(shortUrl)
 
 	if err != nil {
-		applogger.Error("CreateSpecificShortUrl: ", err)
-		return nil, SpecificShortUrlLengthError
+		if err.Error() == SpecificShortUrlLengthError.message {
+			applogger.Error("CreateSpecificShortUrl: ", err)
+			return nil, SpecificShortUrlLengthError
+		} else {
+			applogger.Error("CreateSpecificShortUrl: ", err)
+			return nil, err
+		}
 	}
 	
 	url = &models.Url{
@@ -148,8 +153,13 @@ func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url,
 	id, err := utils.Radix64Decode(shortcode)
 
 	if err != nil {
-		applogger.Error("GetUrlWithShortCode: ", err)
-		return nil, SpecificShortUrlLengthError
+		if err.Error() == SpecificShortUrlLengthError.message {
+			applogger.Error("GetUrlWithShortCode: ", err)
+			return nil, SpecificShortUrlLengthError
+		} else {
+			applogger.Error("GetUrlWithShortCode: ", err)
+			return nil, err
+		}
 	}
 
 	res := c.db.First(url, id)
