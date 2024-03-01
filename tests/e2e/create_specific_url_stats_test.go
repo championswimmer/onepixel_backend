@@ -40,7 +40,7 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 		t.Fatalf("Error unmarshalling response body: %v", err)
 	}
 	assert.Equal(t, responseBody.ID, urlResponseBody.CreatorID)
-	assert.Equal(t, config.RedirPath+"my_code", urlResponseBody.ShortURL)
+	assert.Equal(t, config.RedirUrlBase+"my_code", urlResponseBody.ShortURL)
 
 	// ------ CHECK REDIRECT ------
 	chans := lo.Times(3, func(i int) <-chan string {

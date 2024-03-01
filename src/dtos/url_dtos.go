@@ -23,7 +23,7 @@ type UrlResponse struct {
 
 func CreateUrlResponse(url *models.Url) UrlResponse {
 	return UrlResponse{
-		ShortURL:  config.RedirPath + url.ShortURL,
+		ShortURL:  config.RedirUrlBase + url.ShortURL,
 		LongURL:   url.LongURL,
 		CreatorID: url.CreatorID,
 	}

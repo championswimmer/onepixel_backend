@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/samber/lo"
 	"os"
 	"strconv"
+
+	"github.com/samber/lo"
 )
 
 var Env string
@@ -18,7 +19,7 @@ var EventDBDialect string
 var Port string
 var MainHost string
 var AdminHost string
-var RedirPath string
+var RedirUrlBase string
 
 var AdminApiKey string
 var AdminUserEmail string
@@ -47,9 +48,9 @@ func init() {
 	Port = os.Getenv("PORT")
 	MainHost = os.Getenv("MAIN_SITE_HOST")
 	AdminHost = os.Getenv("ADMIN_SITE_HOST")
-	RedirPath = "http://" + MainHost + ":" + Port + "/"
+	RedirUrlBase = "http://" + MainHost + ":" + Port + "/"
 	if Env == "production" {
-		RedirPath = "https://" + MainHost + "/"
+		RedirUrlBase = "https://" + MainHost + "/"
 	}
 	AdminApiKey = os.Getenv("ADMIN_API_KEY")
 	AdminUserEmail = os.Getenv("ADMIN_USER_EMAIL")

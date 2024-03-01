@@ -2,8 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/swagger"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/controllers"
 	"onepixel_backend/src/docs"
@@ -13,6 +11,9 @@ import (
 	"onepixel_backend/src/utils/applogger"
 	"strings"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 )
 
 // CreateAdminApp creates the fiber app
@@ -70,9 +71,9 @@ func CreateMainApp() *fiber.App {
 
 	app.Route("/", redirect.RedirectRoute())
 	app.Get("/", func(c *fiber.Ctx) error {
-		redirPath := c.Protocol() + "://" + config.AdminHost
+		RedirUrlBase := c.Protocol() + "://" + config.AdminHost
 		if config.Env == "local" {
-			redirPath += ":" + config.Port
+			RedirUrlBase += ":" + config.Port
 		}
 		applogger.Info("redirect: root: " + c.OriginalURL())
 		eventsController.LogRedirectAsync(&controllers.EventRedirectData{
@@ -83,7 +84,7 @@ func CreateMainApp() *fiber.App {
 			UserAgent:  c.Get("User-Agent"),
 			Referer:    c.Get("Referer"),
 		})
-		return c.Redirect(redirPath, fiber.StatusMovedPermanently)
+		return c.Redirect(RedirUrlBase, fiber.StatusMovedPermanently)
 	})
 
 	return app
