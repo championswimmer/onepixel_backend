@@ -95,7 +95,7 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 	id, err := utils.Radix64Decode(shortUrl)
 
 	if err != nil {
-		if err.Error() == SpecificShortUrlLengthError.message {
+		if errors.Is(err, utils.Radix64StringTooLongError) {
 			applogger.Error("CreateSpecificShortUrl: ", err)
 			return nil, SpecificShortUrlLengthError
 		} else {
@@ -153,7 +153,7 @@ func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url,
 	id, err := utils.Radix64Decode(shortcode)
 
 	if err != nil {
-		if err.Error() == SpecificShortUrlLengthError.message {
+		if errors.Is(err, utils.Radix64StringTooLongError) {
 			applogger.Error("GetUrlWithShortCode: ", err)
 			return nil, SpecificShortUrlLengthError
 		} else {
