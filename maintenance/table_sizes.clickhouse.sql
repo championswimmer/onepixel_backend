@@ -8,8 +8,11 @@ FROM (
     ORDER BY rows DESC
     );
 
-SELECT * from system.disks;
-SHOW TABLE status;
+SELECT
+    formatReadableDecimalSize(free_space) as free,
+    formatReadableDecimalSize(total_space) as total,
+    *
+from system.disks;
 
 SELECT name, table, removal_state, bytes, last_removal_attemp_time, min_date, max_date FROM system.parts
 WHERE min_date < '2024-01-01'
