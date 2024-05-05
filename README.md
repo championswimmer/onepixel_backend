@@ -10,7 +10,7 @@ So `1px.li` stands for `one pixel links` - i.e. smallest possible links :)
 
 #### Status Badges 
 [![codecov](https://codecov.io/gh/championswimmer/onepixel_backend/graph/badge.svg?token=DL3DR6CS40)](https://codecov.io/gh/championswimmer/onepixel_backend)
-[![Build and test](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml/badge.svg)](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test.yaml)
+[![Build and test](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test_release.yaml/badge.svg)](https://github.com/championswimmer/onepixel_backend/actions/workflows/build_test_release.yaml)
 
 ## Hosted Instance (1px.li) 
 The latest version of the code is automatically deployed via [Railway](https://railway.app?referralCode=T4g5xz)
