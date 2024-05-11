@@ -43,7 +43,7 @@ func (e *UrlError) ErrorDetails() (int, string) {
 
 var (
 	UrlNotFound = &UrlError{
-		status:  404,
+		status:  fiber.StatusNotFound,
 		message: "URL not found",
 	}
 	UrlExistsError = &UrlError{
@@ -53,6 +53,10 @@ var (
 	UrlForbiddenError = &UrlError{
 		status:  fiber.ErrForbidden.Code,
 		message: "this shortURL is not allowed to be created",
+	}
+	SpecificShortUrlLengthError = &UrlError{
+		status: fiber.StatusBadRequest,
+		message: "String longer than 10 characters",
 	}
 )
 
@@ -88,8 +92,20 @@ func CreateUrlsController() *UrlsController {
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {
+	id, err := utils.Radix64Decode(shortUrl)
+
+	if err != nil {
+		if errors.Is(err, utils.Radix64StringTooLongError) {
+			applogger.Error("CreateSpecificShortUrl: ", err)
+			return nil, SpecificShortUrlLengthError
+		} else {
+			applogger.Error("CreateSpecificShortUrl: ", err)
+			return nil, err
+		}
+	}
+	
 	url = &models.Url{
-		ID:         lo.Must(utils.Radix64Decode(shortUrl)),
+		ID:         id,
 		ShortURL:   shortUrl,
 		LongURL:    longUrl,
 		CreatorID:  userId,
@@ -134,7 +150,18 @@ func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (ur
 
 func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url, err error) {
 	url = &models.Url{}
-	id := lo.Must(utils.Radix64Decode(shortcode))
+	id, err := utils.Radix64Decode(shortcode)
+
+	if err != nil {
+		if errors.Is(err, utils.Radix64StringTooLongError) {
+			applogger.Error("GetUrlWithShortCode: ", err)
+			return nil, SpecificShortUrlLengthError
+		} else {
+			applogger.Error("GetUrlWithShortCode: ", err)
+			return nil, err
+		}
+	}
+
 	res := c.db.First(url, id)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
