@@ -107,20 +107,21 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	}
 
 	shortcode := ctx.Params("shortcode")
-	if shortcode == "" {
-		// TODO: handle unacceptable/reserved shortcodes properly in controller
-		panic("shortcode is empty")
-	}
 
 	createdUrl, createErr := urlsController.CreateSpecificShortUrl(shortcode, cur.LongUrl, user.ID)
 	if createErr != nil {
 		var e *controllers.UrlError
+		var validErr *validators.ValidationError
 		if errors.As(createErr, &e) {
 			if errors.Is(e, controllers.UrlExistsError) {
 				return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
 			}
 			if errors.Is(e, controllers.UrlForbiddenError) {
 				return ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
+			}
+		} else if errors.As(createErr, &validErr) {
+			if errors.Is(validErr, validators.ShortcodeEmptyError) || errors.Is(validErr, validators.ShortcodeTooLongError) {
+				return validators.SendValidationError(ctx, validErr)
 			}
 		} else {
 			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
