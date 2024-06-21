@@ -89,12 +89,12 @@ func CreateUrlsController() *UrlsController {
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {
-	
+
 	validErr := validators.ValidateSpecificShortCodeRequest(shortUrl)
 	if validErr != nil {
 		return nil, validErr
 	}
-	
+
 	url = &models.Url{
 		ID:         lo.Must(utils.Radix64Decode(shortUrl)),
 		ShortURL:   shortUrl,

@@ -112,7 +112,7 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	if createErr != nil {
 		var urlErr *controllers.UrlError
 		var validErr *validators.ValidationError
-		
+
 		if errors.As(createErr, &validErr) {
 			if errors.Is(validErr, validators.ShortcodeEmptyError) || errors.Is(validErr, validators.ShortcodeTooLongError) {
 				return validators.SendValidationError(ctx, validErr)
