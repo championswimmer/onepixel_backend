@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
+	"onepixel_backend/src/server/validators"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
 	"sync"
@@ -88,6 +89,12 @@ func CreateUrlsController() *UrlsController {
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {
+
+	validErr := validators.ValidateSpecificShortCodeRequest(shortUrl)
+	if validErr != nil {
+		return nil, validErr
+	}
+
 	url = &models.Url{
 		ID:         lo.Must(utils.Radix64Decode(shortUrl)),
 		ShortURL:   shortUrl,

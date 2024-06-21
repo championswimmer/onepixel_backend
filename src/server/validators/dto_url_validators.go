@@ -1,20 +1,36 @@
 package validators
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"fmt"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-var mandatoryUrlDtoFieldError = &ValidationError{
-	status:  fiber.StatusUnprocessableEntity,
-	message: "long_url is required",
-}
+var (
+	mandatoryUrlDtoFieldError = &ValidationError{
+		status:  fiber.StatusUnprocessableEntity,
+		message: "long_url is required",
+	}
 
-var invalidShortCodeError = &ValidationError{
-	status:  fiber.StatusNotFound,
-	message: "Invalid short code",
-}
+	invalidShortCodeError = &ValidationError{
+		status:  fiber.StatusNotFound,
+		message: "Invalid short code",
+	}
+)
+
+var (
+	ShortcodeTooLongError = &ValidationError{
+		status:  fiber.ErrBadRequest.Code,
+		message: fmt.Sprintf("Shortcode exceeds the maximum allowed length of %d characters", utils.MaxSafeStringLength),
+	}
+
+	ShortcodeEmptyError = &ValidationError{
+		status:  fiber.ErrBadRequest.Code,
+		message: "Shortcode cannot be empty",
+	}
+)
 
 func ValidateCreateUrlRequest(dto *dtos.CreateUrlRequest) *ValidationError {
 	if dto.LongUrl == "" {
@@ -29,6 +45,17 @@ func ValidateRedirectShortCodeRequest(shortcode string) *ValidationError {
 	}
 	if len(shortcode) > utils.MaxSafeStringLength {
 		return invalidShortCodeError
+	}
+	return nil
+}
+
+// Validates the request by user to create a specific short URL
+func ValidateSpecificShortCodeRequest(shortcode string) *ValidationError {
+	if shortcode == "" {
+		return ShortcodeEmptyError
+	}
+	if len(shortcode) > utils.MaxSafeStringLength {
+		return ShortcodeTooLongError
 	}
 	return nil
 }
