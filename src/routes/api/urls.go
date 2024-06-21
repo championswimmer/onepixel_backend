@@ -110,18 +110,20 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 
 	createdUrl, createErr := urlsController.CreateSpecificShortUrl(shortcode, cur.LongUrl, user.ID)
 	if createErr != nil {
-		var e *controllers.UrlError
+		var urlErr *controllers.UrlError
 		var validErr *validators.ValidationError
-		if errors.As(createErr, &e) {
-			if errors.Is(e, controllers.UrlExistsError) {
-				return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
-			}
-			if errors.Is(e, controllers.UrlForbiddenError) {
-				return ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
-			}
-		} else if errors.As(createErr, &validErr) {
+		
+		if errors.As(createErr, &validErr) {
 			if errors.Is(validErr, validators.ShortcodeEmptyError) || errors.Is(validErr, validators.ShortcodeTooLongError) {
 				return validators.SendValidationError(ctx, validErr)
+			}
+		}
+		if errors.As(createErr, &urlErr) {
+			if errors.Is(urlErr, controllers.UrlExistsError) {
+				return ctx.Status(fiber.StatusConflict).JSON(dtos.CreateErrorResponse(urlErr.ErrorDetails()))
+			}
+			if errors.Is(urlErr, controllers.UrlForbiddenError) {
+				return ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(urlErr.ErrorDetails()))
 			}
 		} else {
 			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))

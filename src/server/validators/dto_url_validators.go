@@ -1,9 +1,11 @@
 package validators
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"fmt"
 	"onepixel_backend/src/dtos"
 	"onepixel_backend/src/utils"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 var (
@@ -21,12 +23,12 @@ var (
 var (
 	ShortcodeTooLongError = &ValidationError{
 		status:  fiber.ErrBadRequest.Code,
-		message: "Shortcode exceeds the maximum allowed length of 10 characters",
+		message: fmt.Sprintf("Shortcode exceeds the maximum allowed length of %d characters", utils.MaxSafeStringLength),
 	}
 
 	ShortcodeEmptyError = &ValidationError{
 		status:  fiber.ErrBadRequest.Code,
-		message: "Shortcode is empty",
+		message: "Shortcode cannot be empty",
 	}
 )
 
@@ -47,6 +49,7 @@ func ValidateRedirectShortCodeRequest(shortcode string) *ValidationError {
 	return nil
 }
 
+// Validates the request by user to create a specific short URL
 func ValidateSpecificShortCodeRequest(shortcode string) *ValidationError {
 	if shortcode == "" {
 		return ShortcodeEmptyError
