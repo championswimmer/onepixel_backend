@@ -28,3 +28,11 @@ func CreateUrlResponse(url *models.Url) UrlResponse {
 		CreatorID: url.CreatorID,
 	}
 }
+
+func CreateUrlsResponse(urls []models.Url) []UrlResponse {
+	response := make([]UrlResponse, len(urls))
+	for i, url := range urls {
+		response[i] = CreateUrlResponse(&url)
+	}
+	return response
+}

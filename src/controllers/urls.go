@@ -2,9 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
-	"gorm.io/gorm"
 	"math"
 	"math/rand"
 	"onepixel_backend/src/db"
@@ -12,6 +9,10 @@ import (
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
 	"sync"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
+	"gorm.io/gorm"
 )
 
 // the current max length of the short url
@@ -159,4 +160,22 @@ func (c *UrlsController) CreateUrlGroup(groupName string, userId uint64) (urlGro
 	}
 	return
 
+}
+
+func (c *UrlsController) GetAllUrls(userId *uint64) ([]models.Url, error) {
+	var urls []models.Url
+	query := c.db
+
+	if userId != nil {
+		query = query.Where("creator_id = ?", *userId)
+	}
+
+	res := query.Find(&urls)
+	if res.Error != nil {
+		applogger.Error("Failed to fetch URLs from database", "user_id", userId, "error", res.Error)
+		return nil, res.Error
+	}
+
+	applogger.Info("Successfully fetched URLs", "user_id", userId, "url_count", len(urls))
+	return urls, nil
 }

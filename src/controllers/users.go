@@ -2,14 +2,15 @@ package controllers
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/utils/applogger"
 	"sync"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AuthError struct {
@@ -105,4 +106,13 @@ func (c *UsersController) VerifyEmailAndPassword(email string, password string) 
 		return nil, PasswordInvalidLoginError
 	}
 	return user, nil
+}
+
+func (c *UrlsController) GetUrlsByUserId(userId uint64) ([]models.Url, error) {
+	var urls []models.Url
+	res := c.db.Where("creator_id =?", userId).Find(&urls)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return urls, nil
 }
