@@ -2,6 +2,11 @@ package controllers
 
 import (
 	"errors"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/samber/lo"
+	"gorm.io/gorm"
+
 	"math"
 	"math/rand"
 	"onepixel_backend/src/db"
@@ -9,10 +14,6 @@ import (
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
 	"sync"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/samber/lo"
-	"gorm.io/gorm"
 )
 
 // the current max length of the short url
