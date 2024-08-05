@@ -45,6 +45,9 @@ func UrlsRoute() func(router fiber.Router) {
 //	@Security		BearerToken
 //	@Security		ApiKeyAuth
 func getAllUrls(ctx *fiber.Ctx) error {
+	if ctx.Get("Authorization") == "" || ctx.Get("X-API-Key") == "" {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Missing JWT or API key"))
+	}
 	apiKey := ctx.Get("X-API-Key")
 	isAdmin := apiKey == config.AdminApiKey
 
