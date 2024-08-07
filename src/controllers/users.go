@@ -107,12 +107,3 @@ func (c *UsersController) VerifyEmailAndPassword(email string, password string) 
 	}
 	return user, nil
 }
-
-func (c *UrlsController) GetUrlsByUserId(userId uint64) ([]models.Url, error) {
-	var urls []models.Url
-	res := c.db.Where("creator_id =?", userId).Find(&urls)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	return urls, nil
-}

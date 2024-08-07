@@ -180,3 +180,12 @@ func (c *UrlsController) GetAllUrls(userId *uint64) ([]models.Url, error) {
 	applogger.Info("Successfully fetched URLs", "user_id", userId, "url_count", len(urls))
 	return urls, nil
 }
+
+func (c *UrlsController) GetUrlsByUserId(userId uint64) ([]models.Url, error) {
+	var urls []models.Url
+	res := c.db.Where("creator_id =?", userId).Find(&urls)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return urls, nil
+}

@@ -45,37 +45,36 @@ func UrlsRoute() func(router fiber.Router) {
 //	@Security		BearerToken
 //	@Security		ApiKeyAuth
 func getAllUrls(ctx *fiber.Ctx) error {
-	if ctx.Get("Authorization") == "" || ctx.Get("X-API-Key") == "" {
+	if ctx.Get("Authorization") == "" && ctx.Get("X-API-Key") == "" {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Missing JWT or API key"))
 	}
 	apiKey := ctx.Get("X-API-Key")
 	isAdmin := apiKey == config.AdminApiKey
 
-	var userId *uint64
+	var userId uint64
 	var err error
+	var urls []models.Url
 
 	if isAdmin {
 		userIdStr := ctx.Query("userid")
 		if userIdStr != "" {
-			parsedId, parseErr := strconv.ParseUint(userIdStr, 10, 64)
-			if parseErr != nil {
+			userId, err = strconv.ParseUint(userIdStr, 10, 64)
+			if err != nil {
 				return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(fiber.StatusBadRequest, "Invalid user ID"))
 			}
-			userId = &parsedId
 		}
 	} else {
 		user, ok := ctx.Locals(config.LOCALS_USER).(*models.User)
 		if !ok {
 			return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Unauthorized"))
 		}
-		userId = &user.ID
+		userId = user.ID
 	}
 
-	var urls []models.Url
-	if isAdmin {
-		urls, err = urlsController.GetAllUrls(userId)
+	if userId > 0 {
+		urls, err = urlsController.GetUrlsByUserId(userId)
 	} else {
-		urls, err = urlsController.GetUrlsByUserId(*userId)
+		urls, err = urlsController.GetAllUrls(nil)
 	}
 
 	if err != nil {
