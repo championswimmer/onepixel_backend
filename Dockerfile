@@ -1,9 +1,5 @@
-FROM golang:1.20-alpine AS builder
+FROM golang:1.22 AS builder
 
-RUN apk add --no-cache make
-RUN apk add --no-cache ca-certificates
-RUN apk add --no-cache gcc musl-dev libstdc++ g++
-RUN update-ca-certificates
 
 # Move to working directory (/build).
 WORKDIR /build
