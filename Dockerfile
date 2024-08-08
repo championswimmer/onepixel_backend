@@ -1,5 +1,7 @@
 FROM golang:1.22 AS builder
 
+# Install CA certificates
+RUN apt-get update && apt-get install -y ca-certificates
 
 # Move to working directory (/build).
 WORKDIR /build
