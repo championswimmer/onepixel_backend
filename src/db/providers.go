@@ -1,12 +1,15 @@
 package db
 
 import (
+	"time"
+
+	"github.com/championswimmer/duckdb-driver/duckdb"
 	"github.com/samber/lo"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"onepixel_backend/src/utils/applogger"
-	"time"
 )
 
 var (
@@ -42,4 +45,14 @@ func ProvideClickhouseDB(dbUrl string, config *gorm.Config) *gorm.DB {
 	return attemptToOpen(func() (*gorm.DB, error) {
 		return gorm.Open(clickhouse.Open(dbUrl), config)
 	})
+}
+
+func ProvideSqliteDB(dbUrl string, config *gorm.Config) *gorm.DB {
+	applogger.Warn("Test: Using sqlite db")
+	return lo.Must(gorm.Open(sqlite.Open(dbUrl), config))
+}
+
+func ProvideDuckDB(dbUrl string, config *gorm.Config) *gorm.DB {
+	applogger.Warn("Test: Using duckdb db")
+	return lo.Must(gorm.Open(duckdb.Open(dbUrl), config))
 }
