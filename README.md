@@ -63,6 +63,8 @@ Simplest way to get it running is
 
 ### Run with hot-reload for local development 
 
+### With Docker
+
 We will use docker to run an instance of our databases, but we will run the project using [air](https://github.com/cosmtrek/air) locally  
 
 1. make the following directories where your database will be stored
@@ -72,5 +74,19 @@ We will use docker to run an instance of our databases, but we will run the proj
 2. run `docker-compose up -d postgres clickhouse`
 3. run `air` in the root directory of the project <sup>1</sup>
 
+### Without Docker
+
+We will be using the embedded databases for local development without docker
+
+1. Make the following changes in `.onepixel.local.env`
+   ```env
+   DB_DIALECT=sqlite
+   DATABASE_URL="app.db"
+   USE_FILE_DB=true
+   
+   EVENTS_DB_DIALECT=duckdb
+   EVENTDB_URL="events.db"
+   ```
+2. run `air` in the root directory of the project <sup>1</sup>
 
 > Note[1]: you can also run `go run src/main.go` but it will not reload on changes

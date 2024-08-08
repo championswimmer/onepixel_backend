@@ -1,13 +1,14 @@
 package db
 
 import (
+	"os"
+	"sync"
+
 	"github.com/oschwald/geoip2-golang"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
-	"os"
-	"sync"
 
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -44,8 +45,13 @@ func InjectDBProvider(name string, provider DatabaseProvider) {
 }
 
 func init() {
-	InjectDBProvider("postgres", ProvidePostgresDB)
-	InjectDBProvider("clickhouse", ProvideClickhouseDB)
+	if config.UseFileDB {
+		InjectDBProvider("sqlite", ProvideSqliteDB)
+		InjectDBProvider("duckdb", ProvideDuckDB)
+	} else {
+		InjectDBProvider("postgres", ProvidePostgresDB)
+		InjectDBProvider("clickhouse", ProvideClickhouseDB)
+	}
 }
 
 func GetAppDB() *gorm.DB {
