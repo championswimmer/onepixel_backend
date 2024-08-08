@@ -48,11 +48,11 @@ func ProvideClickhouseDB(dbUrl string, config *gorm.Config) *gorm.DB {
 }
 
 func ProvideSqliteDB(dbUrl string, config *gorm.Config) *gorm.DB {
-	applogger.Warn("Test: Using sqlite db")
+	applogger.Warn("App: Using sqlite db")
 	return lo.Must(gorm.Open(sqlite.Open(dbUrl), config))
 }
 
 func ProvideDuckDB(dbUrl string, config *gorm.Config) *gorm.DB {
-	applogger.Warn("Test: Using duckdb db")
+	applogger.Warn("App: Using duckdb db")
 	return lo.Must(gorm.Open(duckdb.Open(dbUrl), config))
 }
