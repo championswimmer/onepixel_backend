@@ -1,11 +1,12 @@
 package clientinfo
 
 import (
+	"onepixel_backend/src/db"
+	"testing"
+
 	"github.com/oschwald/geoip2-golang"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
-	"onepixel_backend/src/db"
-	"testing"
 )
 
 var geoipDB *geoip2.Reader
@@ -17,11 +18,11 @@ func init() {
 func Test_GeoIPResolutionIPV4(t *testing.T) {
 
 	// Test IPV4
-	geoIpData := lo.Must(GetGeoIpDataFromIP(geoipDB, "42.108.28.82"))
+	geoIpData := lo.Must(GetGeoIpDataFromIP(geoipDB, "202.83.26.113"))
 
 	assert.Equal(t, "India (IN)", geoIpData.LocationCountry)
-	assert.Equal(t, "National Capital Territory of Delhi (DL)", geoIpData.LocationRegion)
-	assert.Equal(t, "Delhi", geoIpData.LocationCity)
+	assert.Equal(t, "Karnataka (KA)", geoIpData.LocationRegion)
+	assert.Equal(t, "Bengaluru", geoIpData.LocationCity)
 
 }
 
