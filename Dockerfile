@@ -20,17 +20,19 @@ ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 # RUN go build -ldflags="-s -w" -o onepixel ./src/main.go
 RUN make build DOCS=false
 
-FROM gcr.io/distroless/static-debian12
+FROM debian:bookworm-slim
 
 LABEL maintainer="Arnav Gupta <championswimmer@gmail.com> (https://arnav.tech)"
 LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics tool"
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
+RUN mkdir /app
+
 # Copy binary and config files from /build to root folder of scratch container.
-COPY --from=builder ["/build/*.env", "/"]
-COPY --from=builder ["/build/bin/onepixel", "/"]
-COPY --from=builder ["/build/public_html", "/public_html"]
+COPY --from=builder ["/build/*.env", "/app/"]
+COPY --from=builder ["/build/bin/onepixel", "/app/"]
+COPY --from=builder ["/build/public_html", "/app/public_html"]
 
 # Command to run when starting the container.
-CMD ["/onepixel"]
+CMD ["/app/onepixel"]
