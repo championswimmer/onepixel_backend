@@ -12,6 +12,7 @@ var Env string
 var DBLogging string
 var DBDialect string
 var DBUrl string
+var UseFileDB bool
 
 var EventDBUrl string
 var EventDBDialect string
@@ -40,6 +41,7 @@ func init() {
 		os.Getenv("DATABASE_PRIVATE_URL"),
 		os.Getenv("DATABASE_URL"),
 	)
+	UseFileDB, _ = strconv.ParseBool(os.Getenv("USE_FILE_DB"))
 	EventDBDialect = os.Getenv("EVENTDB_DIALECT")
 	EventDBUrl, _ = lo.Coalesce(
 		os.Getenv("EVENTDB_PRIVATE_URL"),
