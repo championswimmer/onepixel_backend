@@ -3,7 +3,9 @@ FROM golang:1.22 AS builder
 # Install CA certificates
 RUN apt-get update && apt-get install -y ca-certificates
 
+
 # Move to working directory (/build).
+RUN mkdir /build
 WORKDIR /build
 
 # Copy and download dependency using go mod.
@@ -18,7 +20,7 @@ ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 # RUN go build -ldflags="-s -w" -o onepixel ./src/main.go
 RUN make build DOCS=false
 
-FROM scratch
+FROM gcr.io/distroless/static-debian12
 
 LABEL maintainer="Arnav Gupta <championswimmer@gmail.com> (https://arnav.tech)"
 LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics tool"
@@ -31,4 +33,4 @@ COPY --from=builder ["/build/bin/onepixel", "/"]
 COPY --from=builder ["/build/public_html", "/public_html"]
 
 # Command to run when starting the container.
-ENTRYPOINT ["/onepixel"]
+CMD ["/onepixel"]
