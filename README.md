@@ -64,6 +64,7 @@ Simplest way to get it running is
 ### Run with hot-reload for local development 
 
 ### With Docker
+
 We will use docker to run an instance of our databases, but we will run the project using [air](https://github.com/cosmtrek/air) locally  
 
 1. make the following directories where your database will be stored
