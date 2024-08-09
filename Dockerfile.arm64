@@ -37,4 +37,4 @@ COPY --from=builder ["/build/public_html", "/app/public_html"]
 
 # Command to run when starting the container.
 WORKDIR /app 
-CMD [ "onepixel" ]
+CMD [ "./onepixel" ]
