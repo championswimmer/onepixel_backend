@@ -1,7 +1,8 @@
-FROM golang:1.22 AS builder
+FROM --platform=amd64 golang:1.22 AS builder
 
 # Install CA certificates
 RUN apt-get update && apt-get install -y ca-certificates
+RUN apt-get install -y build-essential
 
 
 # Move to working directory (/build).
@@ -20,7 +21,7 @@ ENV CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 # RUN go build -ldflags="-s -w" -o onepixel ./src/main.go
 RUN make build DOCS=false
 
-FROM debian:bookworm-slim
+FROM --platform=amd64 debian:bookworm-slim
 
 LABEL maintainer="Arnav Gupta <championswimmer@gmail.com> (https://arnav.tech)"
 LABEL description="OnePixel is a simple, self-hosted, one pixel web analytics tool"
