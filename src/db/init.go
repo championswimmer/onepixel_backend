@@ -4,11 +4,12 @@ import (
 	"os"
 	"sync"
 
-	"github.com/oschwald/geoip2-golang"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils"
 	"onepixel_backend/src/utils/applogger"
+
+	"github.com/oschwald/geoip2-golang"
 
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -110,17 +111,17 @@ func GetGeoIPDB() *geoip2.Reader {
 	// download file : https://git.io/GeoLite2-City.mmdb
 	createGeoIPDbOnce.Do(func() {
 		applogger.Warn("GeoIP: Initialising database")
-		fresh := utils.IsFileFresh(30, "GeoLite2-City.mmdb")
+		fresh := utils.IsFileFresh(30, "/app/GeoLite2-City.mmdb")
 		if !fresh {
 			applogger.Error("GeoIP: GeoLite2-City.mmdb is not fresh; downloading again")
 			lo.Try(func() error {
-				return os.Remove("GeoLite2-City.mmdb")
+				return os.Remove("/app/GeoLite2-City.mmdb")
 			})
-			lo.Must0(utils.DownloadFile("https://git.io/GeoLite2-City.mmdb", "GeoLite2-City.mmdb"))
+			lo.Must0(utils.DownloadFile("https://git.io/GeoLite2-City.mmdb", "/app/GeoLite2-City.mmdb"))
 			applogger.Info("GeoIP: GeoLite2-City.mmdb downloaded")
 		}
 
-		reader = lo.Must(geoip2.Open("GeoLite2-City.mmdb"))
+		reader = lo.Must(geoip2.Open("/app/GeoLite2-City.mmdb"))
 
 	})
 
