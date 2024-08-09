@@ -749,8 +749,6 @@ github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghf
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/cespare/xxhash/v2 v2.1.2/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/cespare/xxhash/v2 v2.2.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/championswimmer/duckdb-driver v0.2.1 h1:1wjIhRLE3NQjwMLntAPRXw5IdkxdMPkDxxr7i3vW4vE=
-github.com/championswimmer/duckdb-driver v0.2.1/go.mod h1:zoGrzT9RpdOfCEOCDx4fZ1s87Rpx3D1QUIEzwxHWGLo=
 github.com/championswimmer/duckdb-driver v0.2.2 h1:XG3La7Utu5ta25dK0XbKzKTTHcDI68QPmi+5rdeEox0=
 github.com/championswimmer/duckdb-driver v0.2.2/go.mod h1:zoGrzT9RpdOfCEOCDx4fZ1s87Rpx3D1QUIEzwxHWGLo=
 github.com/checkpoint-restore/go-criu/v4 v4.1.0/go.mod h1:xUQBLp4RLc5zJtWY++yjOoMoB5lihDt7fai+75m+rGw=
