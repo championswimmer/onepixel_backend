@@ -122,6 +122,9 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 			if errors.Is(e, controllers.UrlForbiddenError) {
 				return ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
 			}
+			if errors.Is(e, controllers.SpecificShortUrlLengthError) {
+				return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(e.ErrorDetails()))
+			}
 		} else {
 			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
 		}
