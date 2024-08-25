@@ -51,28 +51,31 @@ func getAllUrls(ctx *fiber.Ctx) error {
 	apiKey := ctx.Get("X-API-Key")
 	isAdmin := apiKey == config.AdminApiKey
 
-	var userId uint64
+	var userId *uint64
 	var err error
 	var urls []models.Url
 
 	if isAdmin {
 		userIdStr := ctx.Query("userid")
 		if userIdStr != "" {
-			userId, err = strconv.ParseUint(userIdStr, 10, 64)
+			parsedId, err := strconv.ParseUint(userIdStr, 10, 64)
 			if err != nil {
 				return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(fiber.StatusBadRequest, "Invalid user ID"))
 			}
+			userId = &parsedId
+		} else {
+			userId = nil
 		}
 	} else {
 		user, ok := ctx.Locals(config.LOCALS_USER).(*models.User)
 		if !ok {
 			return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Unauthorized"))
 		}
-		userId = user.ID
+		userId = &user.ID
 	}
 
-	if userId > 0 {
-		urls, err = urlsController.GetUrlsByUserId(userId)
+	if userId != nil {
+		urls, err = urlsController.GetUrlsByUserId(*userId)
 	} else {
 		urls, err = urlsController.GetAllUrls(nil)
 	}
