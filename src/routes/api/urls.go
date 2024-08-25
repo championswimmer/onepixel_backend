@@ -9,6 +9,7 @@ import (
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,7 +22,7 @@ func UrlsRoute() func(router fiber.Router) {
 	urlsController = controllers.CreateUrlsController()
 
 	return func(router fiber.Router) {
-		router.Get("/", getAllUrls)
+		router.Get("/", security.OptionalJwtAuthMiddleware, getAllUrls)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 	}
@@ -29,16 +30,61 @@ func UrlsRoute() func(router fiber.Router) {
 
 // getAllUrls
 //
-//	@Summary		Get all urls
-//	@Description	Get all urls
+//	@Summary		Get all urls (for users or admins)
+//	@Description	Get all urls for the current user or all URLs for admins
 //	@Tags			urls
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{string}	string	"GetAllUsers"
+//	@Param			X-API-Key	header		string	false	"Admin API Key (optional)"
+//	@Param			userid		query		string	false	"Filter URLs by user ID (admin only)"
+//	@Success		200			{array}		dtos.UrlResponse
+//	@Failure		400			{object}	dtos.ErrorResponse	"Invalid user ID"
+//	@Failure		401			{object}	dtos.ErrorResponse	"Unauthorized"
+//	@Failure		500			{object}	dtos.ErrorResponse	"Failed to fetch URLs"
 //	@Router			/urls [get]
-//	@security		BearerToken
+//	@Security		BearerToken
+//	@Security		ApiKeyAuth
 func getAllUrls(ctx *fiber.Ctx) error {
-	return ctx.SendString("GetAllUsers")
+	if ctx.Get("Authorization") == "" && ctx.Get("X-API-Key") == "" {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Missing JWT or API key"))
+	}
+	apiKey := ctx.Get("X-API-Key")
+	isAdmin := apiKey == config.AdminApiKey
+
+	var userId *uint64
+	var err error
+	var urls []models.Url
+
+	if isAdmin {
+		userIdStr := ctx.Query("userid")
+		if userIdStr != "" {
+			parsedId, err := strconv.ParseUint(userIdStr, 10, 64)
+			if err != nil {
+				return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(fiber.StatusBadRequest, "Invalid user ID"))
+			}
+			userId = &parsedId
+		} else {
+			userId = nil
+		}
+	} else {
+		user, ok := ctx.Locals(config.LOCALS_USER).(*models.User)
+		if !ok {
+			return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "Unauthorized"))
+		}
+		userId = &user.ID
+	}
+
+	if userId != nil {
+		urls, err = urlsController.GetUrlsByUserId(*userId)
+	} else {
+		urls, err = urlsController.GetAllUrls(nil)
+	}
+
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "Failed to fetch URLs"))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUrlsResponse(urls))
 }
 
 // createRandomUrl

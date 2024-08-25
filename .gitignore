@@ -196,3 +196,7 @@ fabric.properties
 /events.db.wal
 /duckdb-driver
 /GeoLite2-City.mmdb
+
+index.html.fiber.gz
+script.js.fiber.gz
+style.css.fiber.gz

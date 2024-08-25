@@ -2,14 +2,15 @@ package controllers
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"onepixel_backend/src/config"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/utils/applogger"
 	"sync"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AuthError struct {
