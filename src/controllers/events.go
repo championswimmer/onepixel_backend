@@ -89,16 +89,17 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 				applogger.Error("LogRedirectAsync: failed to create event redirect: ", tx.Error)
 			}
 			return tx.Error
-			// Log event to Posthog
-			c.posthogClient.Enqueue(posthog.Capture{
-				DistinctId: redirData.IPAddress,
-				Event:      "$pageview",
-				Properties: posthog.NewProperties().
-					Set("path", redirData.ShortURL).
-					Set("user_agent", redirData.UserAgent).
-					Set("referer", redirData.Referer),
-			})
 		})
+		// Log event to Posthog
+		c.posthogClient.Enqueue(posthog.Capture{
+			DistinctId: redirData.IPAddress,
+			Event:      "$pageview",
+			Properties: posthog.NewProperties().
+				Set("path", redirData.ShortURL).
+				Set("user_agent", redirData.UserAgent).
+				Set("referer", redirData.Referer),
+		})
+
 		return event.ID
 	})
 
