@@ -15,6 +15,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
+	"github.com/posthog/posthog-go"
 )
 
 func main() {
@@ -22,6 +23,10 @@ func main() {
 	appDb := db.GetAppDB()
 	eventDb := db.GetEventsDB()
 	geoipDb := db.GetGeoIPDB()
+
+	// Initialize Posthog client
+	posthogClient := posthog.New(config.PosthogApiKey)
+	defer posthogClient.Close()
 
 	// Create the app
 	adminApp := server.CreateAdminApp()

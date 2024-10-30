@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.9.0
+	github.com/posthog/posthog-go v1.2.1
 	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/swag v1.16.2

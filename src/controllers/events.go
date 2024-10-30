@@ -6,22 +6,26 @@ import (
 	"github.com/oschwald/geoip2-golang"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
+	"onepixel_backend/src/config"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
 	"onepixel_backend/src/utils/clientinfo"
+	"github.com/posthog/posthog-go"
 )
 
 type EventsController struct {
 	// event logging eventDb (not the main app eventDb)
 	eventDb *gorm.DB
 	geoipDB *geoip2.Reader
+	posthogClient posthog.Client
 }
 
 func CreateEventsController() *EventsController {
 	return &EventsController{
 		eventDb: db.GetEventsDB(),
 		geoipDB: db.GetGeoIPDB(),
+		posthogClient: posthog.New(config.PosthogApiKey),
 	}
 }
 
@@ -86,6 +90,16 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 			}
 			return tx.Error
 		})
+		// Log event to Posthog
+		c.posthogClient.Enqueue(posthog.Capture{
+			DistinctId: redirData.IPAddress,
+			Event:      "$pageview",
+			Properties: posthog.NewProperties().
+				Set("path", redirData.ShortURL).
+				Set("user_agent", redirData.UserAgent).
+				Set("referer", redirData.Referer),
+		})
+
 		return event.ID
 	})
 

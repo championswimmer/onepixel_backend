@@ -8,6 +8,7 @@ import (
 	"onepixel_backend/src/server/validators"
 	"onepixel_backend/src/utils/applogger"
 	"strings"
+	"github.com/posthog/posthog-go"
 )
 
 var urlsController *controllers.UrlsController
@@ -48,6 +49,17 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 		IPAddress:  strings.Split(ctx.Get("X-Forwarded-For"), ",")[0],
 		UserAgent:  ctx.Get("User-Agent"),
 		Referer:    ctx.Get("Referer"),
+	})
+	// Log event to Posthog
+	client := posthog.New("your-posthog-api-key-here")
+	defer client.Close()
+	client.Enqueue(posthog.Capture{
+		DistinctId: strings.Split(ctx.Get("X-Forwarded-For"), ",")[0],
+		Event:      "$pageview",
+		Properties: posthog.NewProperties().
+			Set("path", url.ShortURL).
+			Set("user_agent", ctx.Get("User-Agent")).
+			Set("referer", ctx.Get("Referer")),
 	})
 	// cache for 1 min only
 	ctx.Response().Header.Set("Cache-Control", "public, max-age=60")
