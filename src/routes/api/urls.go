@@ -24,6 +24,7 @@ func UrlsRoute() func(router fiber.Router) {
 		router.Get("/", getAllUrls)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
+		router.Get("/:shortcode", getUrlInfo)
 	}
 }
 
@@ -136,4 +137,29 @@ func createGroupedRandomUrl(ctx *fiber.Ctx) error {
 
 func createGroupedSpecificUrl(ctx *fiber.Ctx) error {
 	return ctx.SendString("createGroupedSpecificUrl")
+}
+
+// getUrlInfo
+//
+//	@Summary		Get URL info
+//	@Description	Get URL info
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			shortcode	path		string	true	"Shortcode"
+//	@Success		200			{object}	dtos.UrlInfoResponse
+//	@Failure		404			{object}	dtos.ErrorResponse	"URL not found"
+//	@Router			/urls/{shortcode} [get]
+func getUrlInfo(ctx *fiber.Ctx) error {
+	shortcode := ctx.Params("shortcode")
+	if shortcode == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dtos.CreateErrorResponse(fiber.StatusBadRequest, "shortcode is required"))
+	}
+
+	longUrl, hitCount, err := urlsController.GetUrlInfo(shortcode)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(dtos.CreateErrorResponse(fiber.StatusNotFound, "URL not found"))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUrlInfoResponse(longUrl, hitCount))
 }

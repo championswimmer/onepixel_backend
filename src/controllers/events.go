@@ -111,6 +111,16 @@ func (c *EventsController) GetRedirectsCountForUserId(userId uint64) ([]models.E
 	return data, nil
 }
 
+func (c *EventsController) GetRedirectsCountForShortCode(shortcode string) (int64, error) {
+	var count int64
+	err := c.eventDb.Model(&models.EventRedirect{}).Where("short_url = ?", shortcode).Count(&count).Error
+	if err != nil {
+		applogger.Error("GetRedirectsCountForShortCode: ", err)
+		return 0, err
+	}
+	return count, nil
+}
+
 /*
 ```clickhouse
 select count(id)                                 as redirects,
