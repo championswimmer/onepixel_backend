@@ -8,6 +8,7 @@ import (
 )
 
 var urlsController = CreateUrlsController()
+var eventsController = CreateEventsController()
 
 func TestUrlsController(t *testing.T) {
 	user, _, _ := userController.Create("user14612@test.com", "123456")
