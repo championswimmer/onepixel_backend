@@ -26,6 +26,7 @@ var _randMax = int(math.Pow(64, _currentMaxUrlLength))
 type UrlsController struct {
 	// db
 	db *gorm.DB
+	eventsController *EventsController
 }
 
 type UrlError struct {
@@ -82,6 +83,7 @@ func CreateUrlsController() *UrlsController {
 	appDb := db.GetAppDB()
 	ctrl := &UrlsController{
 		db: appDb,
+		eventsController: CreateEventsController(),
 	}
 	initDefaultUrlGroupOnce.Do(ctrl.initDefaultUrlGroup)
 	return ctrl
@@ -167,7 +169,7 @@ func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount 
 		return "", 0, err
 	}
 
-	hitCount, err = eventsController.GetRedirectsCountForShortCode(shortcode)
+	hitCount, err = c.eventsController.GetRedirectsCountForShortCode(shortcode)
 	if err != nil {
 		return "", 0, err
 	}
