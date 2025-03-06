@@ -5,6 +5,7 @@ import (
 	"onepixel_backend/src/utils/applogger"
 	_ "onepixel_backend/tests/providers"
 	"testing"
+	"time"
 )
 
 var urlsController = CreateUrlsController()
@@ -60,6 +61,8 @@ func TestUrlsController(t *testing.T) {
 			UserAgent:  "test-agent",
 			Referer:    "test-referer",
 		})
+
+		time.Sleep(200 * time.Millisecond)
 
 		// Fetch the URL info again
 		longUrl, hitCount, err = urlsController.GetUrlInfo("test123")
