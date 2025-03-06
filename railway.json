@@ -7,11 +7,14 @@
       "go.sum",
       "src/**",
       "public_html/**",
-      "*.env"
+      "*.env",
+      "/railway.json"
     ]
   },
   "deploy": {
     "numReplicas": 1,
-    "restartPolicyMaxRetries": 3
+    "restartPolicyType": "ALWAYS",
+    "restartPolicyMaxRetries": 5,
+    "sleepApplication": false
   }
 }

@@ -6,6 +6,10 @@
     --color-razorpay: #3395FF;
     --color-razorpay-dark: #2979D9;
     --color-razorpay-darker: #1C5FAF;
+
+    --color-lemonsqueezy: #5423e7;
+    --color-lemonsqueezy-dark: #4a1fd1;
+    --color-lemonsqueezy-darker: #3e1ab4;
 }
 
 .btn-stripe {
@@ -19,6 +23,19 @@
     --bs-btn-active-bg: var(--color-stripe-darker);
     --bs-btn-active-border-color: var(--color-stripe-darker);
 }
+
+.btn-lemonsqueezy {
+    --bs-btn-bg: var(--color-lemonsqueezy);
+    --bs-btn-border-color: var(--color-lemonsqueezy);
+    --bs-btn-hover-color: var(--bs-white);
+    --bs-btn-hover-bg: var(--color-stripe-dark);
+    --bs-btn-hover-border-color: var(--color-lemonsqueezy-dark);
+    --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: var(--color-lemonsqueezy-darker);
+    --bs-btn-active-border-color: var(--color-lemonsqueezy-darker);
+}
+
 
 .btn-razorpay {
     --bs-btn-bg: var(--color-razorpay);

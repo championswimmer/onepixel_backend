@@ -45,7 +45,7 @@ func TestUrlsRoute_CreateRandomUrl(t *testing.T) {
 	// ------ CHECK REDIRECT ------
 	chans := lo.Times(3, func(i int) <-chan string {
 		return lo.Async(func() string {
-			req := httptest.NewRequest("GET", "/"+urlResponseBody.ShortURL, nil)
+			req := httptest.NewRequest("GET", urlResponseBody.ShortURL, nil)
 			req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
 			req.Header.Set("X-Forwarded-For", "42.108.28.82")
 			resp := lo.Must(tests.MainApp.Test(req))

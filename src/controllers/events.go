@@ -71,12 +71,13 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 			IPAddress:  redirData.IPAddress,
 			Referer:    redirData.Referer,
 		}
-		geoIpData, err := clientinfo.GetGeoIpDataFromIP(c.geoipDB, redirData.IPAddress)
-		if err != nil {
-			applogger.Warn("LogRedirectAsync: failed to get geoip data: ", err)
-		} else {
+		lo.TryCatchWithErrorValue(func() error {
+			geoIpData, err := clientinfo.GetGeoIpDataFromIP(c.geoipDB, redirData.IPAddress)
 			event.GeoIpData = *geoIpData
-		}
+			return err
+		}, func(e any) {
+			applogger.Warn("LogRedirectAsync: failed to get geoip data: ", e)
+		})
 
 		lo.Try(func() error {
 			tx := c.eventDb.Create(event)
