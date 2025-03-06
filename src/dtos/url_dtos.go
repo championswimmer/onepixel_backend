@@ -19,6 +19,11 @@ type UrlResponse struct {
 	CreatorID uint64 `json:"creator_id" example:"1"`
 }
 
+type UrlInfoResponse struct {
+	LongURL  string `json:"long_url"`
+	HitCount int64  `json:"hit_count"`
+}
+
 /// Converters
 
 func CreateUrlResponse(url *models.Url) UrlResponse {
@@ -26,5 +31,12 @@ func CreateUrlResponse(url *models.Url) UrlResponse {
 		ShortURL:  config.RedirUrlBase + url.ShortURL,
 		LongURL:   url.LongURL,
 		CreatorID: url.CreatorID,
+	}
+}
+
+func CreateUrlInfoResponse(longUrl string, hitCount int64) UrlInfoResponse {
+	return UrlInfoResponse{
+		LongURL:  longUrl,
+		HitCount: hitCount,
 	}
 }

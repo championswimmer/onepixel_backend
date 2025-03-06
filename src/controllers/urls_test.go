@@ -8,6 +8,7 @@ import (
 )
 
 var urlsController = CreateUrlsController()
+var eventsController = CreateEventsController()
 
 func TestUrlsController(t *testing.T) {
 	user, _, _ := userController.Create("user14612@test.com", "123456")
@@ -37,4 +38,33 @@ func TestUrlsController(t *testing.T) {
 		assert.NotNil(t, urlGroup)
 	})
 
+	t.Run("GetUrlInfo", func(t *testing.T) {
+		// Add a new URL
+		url, err := urlsController.CreateSpecificShortUrl("test123", "https://example.com", user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+
+		// Fetch the URL info
+		longUrl, hitCount, err := urlsController.GetUrlInfo("test123")
+		assert.Nil(t, err)
+		assert.Equal(t, "https://example.com", longUrl)
+		assert.Equal(t, int64(0), hitCount)
+
+		// Simulate a hit
+		eventsController.LogRedirectAsync(&EventRedirectData{
+			ShortUrlID: url.ID,
+			UrlGroupID: url.UrlGroupID,
+			ShortURL:   url.ShortURL,
+			CreatorID:  url.CreatorID,
+			IPAddress:  "127.0.0.1",
+			UserAgent:  "test-agent",
+			Referer:    "test-referer",
+		})
+
+		// Fetch the URL info again
+		longUrl, hitCount, err = urlsController.GetUrlInfo("test123")
+		assert.Nil(t, err)
+		assert.Equal(t, "https://example.com", longUrl)
+		assert.Equal(t, int64(1), hitCount)
+	})
 }

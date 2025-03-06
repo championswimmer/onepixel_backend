@@ -28,6 +28,13 @@ definitions:
       password:
         type: string
     type: object
+  dtos.UrlInfoResponse:
+    properties:
+      hit_count:
+        type: integer
+      long_url:
+        type: string
+    type: object
   dtos.UrlResponse:
     properties:
       creator_id:
@@ -37,7 +44,9 @@ definitions:
         example: https://www.google.com
         type: string
       short_url:
-        example: nhg145
+        description: Example url will pick up host and protocol(http/https) based
+          on the env
+        example: https://1px.li/nhg145
         type: string
     type: object
   dtos.UserResponse:
@@ -121,6 +130,30 @@ paths:
       tags:
       - urls
   /urls/{shortcode}:
+    get:
+      consumes:
+      - application/json
+      description: Get URL info
+      parameters:
+      - description: Shortcode
+        in: path
+        name: shortcode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.UrlInfoResponse'
+        "404":
+          description: URL not found
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      summary: Get URL info
+      tags:
+      - urls
     put:
       consumes:
       - application/json
