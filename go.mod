@@ -1,6 +1,6 @@
 module onepixel_backend
 
-go 1.23
+go 1.22
 
 require (
 	github.com/championswimmer/duckdb-driver v0.2.2
