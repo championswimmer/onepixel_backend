@@ -1,4 +1,4 @@
-FROM --platform=amd64 golang:1.23 AS builder
+FROM --platform=amd64 golang:1.23.6 AS builder
 
 # Install CA certificates
 RUN apt-get update && apt-get install -y ca-certificates
