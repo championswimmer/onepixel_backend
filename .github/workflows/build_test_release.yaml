@@ -52,6 +52,7 @@ jobs:
       run: |
         go install github.com/swaggo/swag/cmd/swag@latest
         go get ./...
+        curl -o GeoLite2-City.mmdb -L https://git.io/GeoLite2-City.mmdb
 
     - name: Test Unit
       run: make test_unit
