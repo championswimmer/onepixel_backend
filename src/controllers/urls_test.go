@@ -70,4 +70,18 @@ func TestUrlsController(t *testing.T) {
 		assert.Equal(t, "https://example.com", longUrl)
 		assert.Equal(t, int64(1), hitCount)
 	})
+
+	t.Run("GetUrlsByUserId", func(t *testing.T) {
+		// Add a new URL
+		url, err := urlsController.CreateSpecificShortUrl("test456", "https://example.com", user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+
+		// Fetch URLs by user ID
+		urls, err := urlsController.GetUrlsByUserId(user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, urls)
+		assert.Greater(t, len(urls), 0)
+		assert.Equal(t, user.ID, urls[0].CreatorID)
+	})
 }

@@ -89,9 +89,15 @@ paths:
       - application/json
       responses:
         "200":
-          description: GetAllUsers
+          description: OK
           schema:
-            type: string
+            items:
+              $ref: '#/definitions/dtos.UrlResponse'
+            type: array
+        "500":
+          description: something went wrong
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
       security:
       - BearerToken: []
       summary: Get all urls
