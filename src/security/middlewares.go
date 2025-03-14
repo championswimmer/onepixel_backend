@@ -1,8 +1,9 @@
 package security
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"onepixel_backend/src/config"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // MandatoryJwtAuthMiddleware makes authentication mandatory
@@ -14,6 +15,10 @@ func MandatoryJwtAuthMiddleware(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Unauthorized: No Authorization header provided",
 		})
+	}
+	// Splice out the "Bearer " prefix, if it exists
+	if len(authHeader) > 7 && authHeader[:7] == "Bearer " {
+		authHeader = authHeader[7:]
 	}
 	user, err := ValidateJWT(authHeader)
 
