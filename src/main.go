@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/samber/lo"
 )
 
@@ -28,6 +29,12 @@ func main() {
 	mainApp := server.CreateMainApp()
 
 	app := fiber.New()
+
+	// Add CORS middleware
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: config.AllowedOrigins,
+	}))
+
 	app.Use(func(c *fiber.Ctx) error {
 		host := strings.Split(c.Hostname(), ":")[0]
 		switch host {
