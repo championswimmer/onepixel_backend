@@ -41,9 +41,18 @@
                 "summary": "Get all urls",
                 "responses": {
                     "200": {
-                        "description": "GetAllUsers",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.UrlResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "something went wrong",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
                         }
                     }
                 }

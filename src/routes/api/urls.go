@@ -21,7 +21,7 @@ func UrlsRoute() func(router fiber.Router) {
 	urlsController = controllers.CreateUrlsController()
 
 	return func(router fiber.Router) {
-		router.Get("/", getAllUrls)
+		router.Get("/", security.MandatoryJwtAuthMiddleware, getAllUrls)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 		router.Get("/:shortcode", getUrlInfo)
@@ -35,11 +35,24 @@ func UrlsRoute() func(router fiber.Router) {
 //	@Tags			urls
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{string}	string	"GetAllUsers"
+//	@Success		200	{array}		dtos.UrlResponse
+//	@Failure		500	{object}	dtos.ErrorResponse	"something went wrong"
 //	@Router			/urls [get]
-//	@security		BearerToken
+//	@Security		BearerToken
 func getAllUrls(ctx *fiber.Ctx) error {
-	return ctx.SendString("GetAllUsers")
+	user := ctx.Locals(config.LOCALS_USER).(*models.User)
+
+	urls, err := urlsController.GetUrlsByUserId(user.ID)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+	}
+
+	var urlResponses []dtos.UrlResponse
+	for _, url := range urls {
+		urlResponses = append(urlResponses, dtos.CreateUrlResponse(&url))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(urlResponses)
 }
 
 // createRandomUrl
