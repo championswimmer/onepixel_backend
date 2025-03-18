@@ -37,7 +37,7 @@ func main() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		host := strings.Split(c.Hostname(), ":")[0]
-		appogger.Info("host: ", host)
+		applogger.Info("host: ", host)
 		switch host {
 		case config.AdminHost:
 			adminApp.Handler()(c.Context())
