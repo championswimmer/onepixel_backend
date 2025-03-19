@@ -31,8 +31,9 @@ func main() {
 	app := fiber.New()
 
 	// Add CORS middleware
-	adminApp.Use(cors.New(cors.Config{
-		AllowOrigins: config.AllowedOrigins,
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     config.AllowedOrigins,
+		AllowCredentials: true,
 	}))
 
 	app.Use(func(c *fiber.Ctx) error {
