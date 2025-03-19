@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/championswimmer/duckdb-driver v0.2.2
 	github.com/flashlabs/rootpath v1.1.5
-	github.com/gofiber/fiber/v2 v2.52.6
+	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/gofiber/swagger v0.1.14
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0

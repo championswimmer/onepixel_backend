@@ -39,10 +39,10 @@ func main() {
 		host := strings.Split(c.Hostname(), ":")[0]
 		applogger.Info("host: ", host)
 		switch host {
-		case config.AdminHost:
+		case config.AdminHost: // API and landing pages
 			adminApp.Handler()(c.Context())
 			return nil
-		case config.MainHost:
+		case config.MainHost: // the shortener site
 			mainApp.Handler()(c.Context())
 			return nil
 		default:
