@@ -5,10 +5,17 @@ import (
 	"time"
 )
 
+// when using Clickhouse, we need to use the LowCardinality type for string columns
+//type GeoIpData struct {
+//	LocationCity    string `gorm:"type:LowCardinality(String)"`
+//	LocationRegion  string `gorm:"type:LowCardinality(String)"`
+//	LocationCountry string `gorm:"type:LowCardinality(String)"`
+//}
+
 type GeoIpData struct {
-	LocationCity    string `gorm:"type:LowCardinality(String)"`
-	LocationRegion  string `gorm:"type:LowCardinality(String)"`
-	LocationCountry string `gorm:"type:LowCardinality(String)"`
+	LocationCity    string `gorm:"string"`
+	LocationRegion  string `gorm:"string"`
+	LocationCountry string `gorm:"string"`
 }
 
 // EventRedirect event db entity
