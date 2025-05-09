@@ -86,6 +86,9 @@ func GetEventsDB() *gorm.DB {
 		case "clickhouse":
 			eventsDb = dbProviders["clickhouse"](config.EventDBUrl, getGormConfig())
 			break
+		case "postgres":
+			eventsDb = dbProviders["postgres"](config.EventDBUrl, getGormConfig())
+			break
 		case "duckdb":
 			eventsDb = dbProviders["duckdb"](config.EventDBUrl, getGormConfig())
 			break

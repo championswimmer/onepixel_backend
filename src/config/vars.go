@@ -13,6 +13,7 @@ var DBLogging string
 var DBDialect string
 var DBUrl string
 var UseFileDB bool
+var CommonAppEventDB bool
 
 var EventDBUrl string
 var EventDBDialect string
@@ -28,7 +29,7 @@ var AdminUserEmail string
 var JwtSigningKey string
 var JwtDurationDays int
 
-var AllowedOrigins string // P8bfd
+var AllowedOrigins string
 
 // should run after env.go#init as this `vars` is alphabetically after `env`
 func init() {
@@ -44,11 +45,17 @@ func init() {
 		os.Getenv("DATABASE_URL"),
 	)
 	UseFileDB, _ = strconv.ParseBool(os.Getenv("USE_FILE_DB"))
+	CommonAppEventDB, _ = strconv.ParseBool(os.Getenv("COMMON_APP_EVENT_DB"))
+
 	EventDBDialect = os.Getenv("EVENTDB_DIALECT")
-	EventDBUrl, _ = lo.Coalesce(
-		os.Getenv("EVENTDB_PRIVATE_URL"),
-		os.Getenv("EVENTDB_URL"),
-	)
+	if CommonAppEventDB {
+		EventDBUrl = DBUrl
+	} else {
+		EventDBUrl, _ = lo.Coalesce(
+			os.Getenv("EVENTDB_PRIVATE_URL"),
+			os.Getenv("EVENTDB_URL"),
+		)
+	}
 	Port = os.Getenv("PORT")
 	MainHost = os.Getenv("MAIN_SITE_HOST")
 	AdminHost = os.Getenv("ADMIN_SITE_HOST")
