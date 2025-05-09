@@ -1,3 +1,5 @@
+DESCRIBE system.parts;
+
 SELECT table, formatReadableSize(size) as size, rows, days, formatReadableSize(avgDaySize) as avgDaySize
 FROM (
     SELECT
@@ -14,7 +16,8 @@ SELECT
     *
 from system.disks;
 
-SELECT name, table, removal_state, bytes, last_removal_attemp_time, min_date, max_date FROM system.parts
+SELECT name, table, partition, removal_state, bytes, last_removal_attemp_time, min_date, max_date FROM system.parts
 WHERE min_date < '2024-01-01'
 LIMIT 30;
 
+ALTER TABLE onepixel.events_redirect DROP PART 'all_1_32779_24367_5657';

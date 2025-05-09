@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/samber/lo"
 )
 
@@ -28,13 +29,21 @@ func main() {
 	mainApp := server.CreateMainApp()
 
 	app := fiber.New()
+
+	// Add CORS middleware
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     config.AllowedOrigins,
+		AllowCredentials: true,
+	}))
+
 	app.Use(func(c *fiber.Ctx) error {
 		host := strings.Split(c.Hostname(), ":")[0]
+		applogger.Info("host: ", host)
 		switch host {
-		case config.AdminHost:
+		case config.AdminHost: // API and landing pages
 			adminApp.Handler()(c.Context())
 			return nil
-		case config.MainHost:
+		case config.MainHost: // the shortener site
 			mainApp.Handler()(c.Context())
 			return nil
 		default:

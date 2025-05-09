@@ -186,6 +186,7 @@ fabric.properties
 # Built files
 /bin/
 /tmp/
+/public_html/*.fiber.gz
 
 # DB Data Files
 /data/

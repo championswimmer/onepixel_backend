@@ -5,9 +5,11 @@ import (
 	"onepixel_backend/src/utils/applogger"
 	_ "onepixel_backend/tests/providers"
 	"testing"
+	"time"
 )
 
 var urlsController = CreateUrlsController()
+var eventsController = CreateEventsController()
 
 func TestUrlsController(t *testing.T) {
 	user, _, _ := userController.Create("user14612@test.com", "123456")
@@ -37,4 +39,49 @@ func TestUrlsController(t *testing.T) {
 		assert.NotNil(t, urlGroup)
 	})
 
+	t.Run("GetUrlInfo", func(t *testing.T) {
+		// Add a new URL
+		url, err := urlsController.CreateSpecificShortUrl("test123", "https://example.com", user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+
+		// Fetch the URL info
+		longUrl, hitCount, err := urlsController.GetUrlInfo("test123")
+		assert.Nil(t, err)
+		assert.Equal(t, "https://example.com", longUrl)
+		assert.Equal(t, int64(0), hitCount)
+
+		// Simulate a hit
+		eventsController.LogRedirectAsync(&EventRedirectData{
+			ShortUrlID: url.ID,
+			UrlGroupID: url.UrlGroupID,
+			ShortURL:   url.ShortURL,
+			CreatorID:  url.CreatorID,
+			IPAddress:  "127.0.0.1",
+			UserAgent:  "test-agent",
+			Referer:    "test-referer",
+		})
+
+		time.Sleep(200 * time.Millisecond)
+
+		// Fetch the URL info again
+		longUrl, hitCount, err = urlsController.GetUrlInfo("test123")
+		assert.Nil(t, err)
+		assert.Equal(t, "https://example.com", longUrl)
+		assert.Equal(t, int64(1), hitCount)
+	})
+
+	t.Run("GetUrlsByUserId", func(t *testing.T) {
+		// Add a new URL
+		url, err := urlsController.CreateSpecificShortUrl("test456", "https://example.com", user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+
+		// Fetch URLs by user ID
+		urls, err := urlsController.GetUrlsByUserId(user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, urls)
+		assert.Greater(t, len(urls), 0)
+		assert.Equal(t, user.ID, urls[0].CreatorID)
+	})
 }

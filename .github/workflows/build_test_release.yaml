@@ -24,7 +24,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20.x'
+        go-version: '1.22.x'
 
     - name: Install dependencies
       run: |
@@ -46,12 +46,13 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20.x'
+        go-version: '1.22.x'
 
     - name: Install dependencies
       run: |
         go install github.com/swaggo/swag/cmd/swag@latest
         go get ./...
+        curl -o GeoLite2-City.mmdb -L https://git.io/GeoLite2-City.mmdb
 
     - name: Test Unit
       run: make test_unit
@@ -76,7 +77,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20.x'
+        go-version: '1.22.x'
 
     - name: Install dependencies
       run: |

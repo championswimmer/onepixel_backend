@@ -101,4 +101,23 @@ func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 	}
 	assert.GreaterOrEqual(t, len(statsResponseBody), 1)
 
+	// ------ CHECK URLS ------
+	req = httptest.NewRequest("GET", "/api/v1/urls", nil)
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("Authorization", *responseBody.Token)
+	resp = lo.Must(tests.App.Test(req))
+
+	assert.Equal(t, 200, resp.StatusCode)
+
+	var urlsResponseBody []dtos.UrlResponse
+
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &urlsResponseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+	assert.GreaterOrEqual(t, len(urlsResponseBody), 1)
+	assert.Equal(t, urlResponseBody.ShortURL, urlsResponseBody[0].ShortURL)
 }

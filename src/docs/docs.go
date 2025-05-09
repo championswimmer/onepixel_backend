@@ -43,9 +43,18 @@ const docTemplate = `{
                 "summary": "Get all urls",
                 "responses": {
                     "200": {
-                        "description": "GetAllUsers",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.UrlResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "something went wrong",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
                         }
                     }
                 }
@@ -102,6 +111,42 @@ const docTemplate = `{
             }
         },
         "/urls/{shortcode}": {
+            "get": {
+                "description": "Get URL info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Get URL info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Shortcode",
+                        "name": "shortcode",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UrlInfoResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "URL not found",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -366,6 +411,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.UrlInfoResponse": {
+            "type": "object",
+            "properties": {
+                "hit_count": {
+                    "type": "integer"
+                },
+                "long_url": {
+                    "type": "string"
+                }
+            }
+        },
         "dtos.UrlResponse": {
             "type": "object",
             "properties": {
@@ -378,8 +434,9 @@ const docTemplate = `{
                     "example": "https://www.google.com"
                 },
                 "short_url": {
+                    "description": "Example url will pick up host and protocol(http/https) based on the env",
                     "type": "string",
-                    "example": "nhg145"
+                    "example": "https://1px.li/nhg145"
                 }
             }
         },

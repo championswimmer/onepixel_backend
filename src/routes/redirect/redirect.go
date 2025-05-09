@@ -50,7 +50,7 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 		Referer:    ctx.Get("Referer"),
 	})
 	// cache for 1 min only
-	ctx.Response().Header.Set("Cache-Control", "public, max-age=60")
+	// ctx.Response().Header.Set("Cache-Control", "public, max-age=60")
 	return ctx.Redirect(url.LongURL, fiber.StatusMovedPermanently)
 }
 

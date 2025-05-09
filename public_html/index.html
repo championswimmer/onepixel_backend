@@ -25,7 +25,7 @@
         gtag('config', 'G-51J34YD93D');
     </script>
 
-    <!-- Posthog Analytics --> 
+    <!-- Posthog Analytics -->
     <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
     posthog.init('phc_WGRuEy3l7sZYnMW0zZEwuyZTo5maZQPqh9tqAStCNgE',{api_host:'https://us.i.posthog.com'})
@@ -57,11 +57,16 @@
                 <div class="col-md p-4">
                     <h3 class="display-6 text-center">Getting Started</h3>
                     <p class="px-4 py-2">
-                        Currently the only way to use 1px.li is via the REST API.
-                        Please read the API docs to get started.
+                        Open the dashboard to manage your shortlinks, or read the API docs to integrate with your
+                        application. <br>
                     </p>
                     <div class="text-center m-2">
-                        <a class="btn btn-lg btn-success align-items-center justify-content-center fw-bold fs-4 px-4"
+                        <a class="btn btn-lg btn-outline-primary align-items-center justify-content-center fw-bold fs-4 px-4 mx-2"
+                            href="https://app.onepixel.link">
+                            <i class="bi bi-window-desktop"></i>
+                            Dashboard
+                        </a>
+                        <a class="btn btn-lg btn-outline-success align-items-center justify-content-center fw-bold fs-4 px-4 mx-2"
                             href="./docs">
                             <i class="bi bi-book-half"></i>
                             API Docs
@@ -69,8 +74,9 @@
                     </div>
                     <p class="px-4 py-2">
                         <span class="badge bg-warning text-dark">NOTE:</span>
-                        <span class="text-secondary text-warning-emphasis">You need to subscribe to get an account to
-                            use the API</span>
+                        <span class="text-secondary text-warning-emphasis">
+                            A subscription is required for both API and Dashboard
+                        </span>
                     </p>
 
                 </div>

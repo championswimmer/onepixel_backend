@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "build": "make build",
+    "test": "make test_unit && make test_e2e"
+  }
+}
