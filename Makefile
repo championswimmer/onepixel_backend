@@ -46,15 +46,16 @@ test_clean:
 	@rm -f app.db
 	@rm -f events.db
 	@rm -f events.db.wal
-	@echo "Cleaning test results..."
-	@rm -f coverage.unit.out
-	@rm -f coverage.e2e.out
 
 test_unit: test_clean
+	@echo "Cleaning test results..."
+	@rm -f coverage.unit.out
 	@echo "Running unit tests..."
 	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.unit.out -covermode=atomic -v -coverpkg=./src/...  ./src/...
 
 test_e2e: test_clean
+	@echo "Cleaning test results..."
+	@rm -f coverage.e2e.out
 	@echo "Running end-to-end tests..."
 	@@GOOS=$(OS) GOARCH=$(ARCH) ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.e2e.out -covermode=atomic -v -coverpkg=./src/...  ./tests/...
 
