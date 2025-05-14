@@ -54,6 +54,19 @@ instead of spinning up a full database server.
 
 ## Development 
 
+### Pre-requisites
+
+#### Install air
+
+```bash
+go install github.com/air-verse/air@latest
+```
+#### Install swag
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
 ### Deploy everything (with Docker)
 
 Simplest way to get it running is 
@@ -84,7 +97,7 @@ We will be using the embedded databases for local development without docker
    DATABASE_URL="app.db"
    USE_FILE_DB=true
    
-   EVENTS_DB_DIALECT=duckdb
+   EVENTDB_DIALECT=duckdb
    EVENTDB_URL="events.db"
    ```
 2. run `air` in the root directory of the project <sup>1</sup>
