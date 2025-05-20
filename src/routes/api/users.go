@@ -9,6 +9,7 @@ import (
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
+	"strconv"
 )
 
 var usersController *controllers.UsersController
@@ -120,7 +121,28 @@ func getUserInfo(ctx *fiber.Ctx) error {
 // @Accept			json
 // @Produce		json
 // @Param			userid	path	uint	true	"User ID"
+// @Param			user	body		dtos.UpdateUserRequest true	"User"
 // @Router			/users/{userid} [patch]
 func updateUserInfo(ctx *fiber.Ctx) error {
-	return ctx.SendString("UpdateUserInfo")
+
+	u, parseError := parsers.ParseBody[dtos.UpdateUserRequest](ctx)
+	if parseError != nil {
+		return parsers.SendParsingError(ctx, parseError)
+	}
+
+	validateErr := validators.ValidatUpdateUserRequest(u)
+	if validateErr != nil {
+		return validators.SendValidationError(ctx, validateErr)
+	}
+
+	userID, err := strconv.ParseUint(ctx.Params("userid"), 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+	}
+	updatedUser, token, err := usersController.Update(userID, u.Password)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUserResponseFromUser(updatedUser, &token))
 }

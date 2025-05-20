@@ -17,6 +17,13 @@ func ValidateCreateUserRequest(dto *dtos.CreateUserRequest) *ValidationError {
 	return nil
 }
 
+func ValidatUpdateUserRequest(dto *dtos.UpdateUserRequest) *ValidationError {
+	if dto.Password == "" {
+		return mandatoryUserDtoFieldsError
+	}
+	return nil
+}
+
 func ValidateLoginUserRequest(dto *dtos.LoginUserRequest) *ValidationError {
 	if dto.Email == "" || dto.Password == "" {
 		return mandatoryUserDtoFieldsError
