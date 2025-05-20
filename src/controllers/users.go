@@ -106,3 +106,21 @@ func (c *UsersController) VerifyEmailAndPassword(email string, password string) 
 	}
 	return user, nil
 }
+
+// Update existing user
+func (c *UsersController) Update(userID uint64, password string) (user *models.User, token string, err error) {
+	user = &models.User{
+		ID: userID,
+	}
+	res := c.db.Where(user).First(user)
+	user.Password = security.HashPassword(password)
+	if res.Error != nil {
+		return nil, "", res.Error
+	}
+	res = c.db.Save(user)
+	if res.Error != nil {
+		return nil, "", res.Error
+	}
+	token = security.CreateJWTFromUser(user)
+	return
+}
