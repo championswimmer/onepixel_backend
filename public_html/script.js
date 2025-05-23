@@ -17,3 +17,18 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
     htmlElement.setAttribute("data-bs-theme", colorScheme);
   }
 });
+
+function changeTheme() {
+  const currentTheme = htmlElement.getAttribute("data-bs-theme");
+  if (currentTheme === "dark") {
+    document.getElementById("mode-icon").className = "bi bi-moon-stars-fill";
+    if (htmlElement) {
+      htmlElement.setAttribute("data-bs-theme", "light");
+    }
+  } else {
+    document.getElementById("mode-icon").className = "bi bi-sun-fill";
+    if (htmlElement) {
+      htmlElement.setAttribute("data-bs-theme", "dark");
+    }
+  }
+}
