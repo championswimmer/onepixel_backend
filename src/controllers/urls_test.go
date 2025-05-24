@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
 	_ "onepixel_backend/tests/providers"
 	"testing"
@@ -71,17 +73,34 @@ func TestUrlsController(t *testing.T) {
 		assert.Equal(t, int64(1), hitCount)
 	})
 
-	t.Run("GetUrlsByUserId", func(t *testing.T) {
+	t.Run("GetUrls", func(t *testing.T) {
 		// Add a new URL
 		url, err := urlsController.CreateSpecificShortUrl("test456", "https://example.com", user.ID)
 		assert.Nil(t, err)
 		assert.NotNil(t, url)
 
 		// Fetch URLs by user ID
-		urls, err := urlsController.GetUrlsByUserId(user.ID)
+		urls, err := urlsController.GetUrls(&user.ID)
 		assert.Nil(t, err)
 		assert.NotNil(t, urls)
 		assert.Greater(t, len(urls), 0)
 		assert.Equal(t, user.ID, urls[0].CreatorID)
+	})
+
+	t.Run("GetAllUrlsByAdmin", func(t *testing.T) {
+		// Add a new URL
+		url, err := urlsController.CreateSpecificShortUrl("test777", "https://example.com", user.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+
+		// Fetch all URLs
+		var u *uint64
+		urls, err := urlsController.GetUrls(u)
+		assert.Nil(t, err)
+		assert.Greater(t, len(urls), 0)
+		_, found := lo.Find(urls, func(item models.Url) bool {
+			return item.ShortURL == "test777"
+		})
+		assert.True(t, found)
 	})
 }

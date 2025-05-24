@@ -9,6 +9,7 @@ import (
 	"onepixel_backend/src/security"
 	"onepixel_backend/src/server/parsers"
 	"onepixel_backend/src/server/validators"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,7 +22,7 @@ func UrlsRoute() func(router fiber.Router) {
 	urlsController = controllers.CreateUrlsController()
 
 	return func(router fiber.Router) {
-		router.Get("/", security.MandatoryJwtAuthMiddleware, getAllUrls)
+		router.Get("/", security.OptionalJwtAuthMiddleware, security.OptionalAdminApiKeyAuthMiddleware, getAllUrls)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 		router.Get("/:shortcode", getUrlInfo)
@@ -40,14 +41,44 @@ func UrlsRoute() func(router fiber.Router) {
 //	@Router			/urls [get]
 //	@Security		BearerToken
 func getAllUrls(ctx *fiber.Ctx) error {
-	user := ctx.Locals(config.LOCALS_USER).(*models.User)
-
-	urls, err := urlsController.GetUrlsByUserId(user.ID)
-	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+	userObj := ctx.Locals(config.LOCALS_USER)
+	admin := ctx.Locals(config.LOCALS_ADMIN)
+	if userObj == nil && admin == nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dtos.CreateErrorResponse(fiber.StatusUnauthorized, "unauthorised: neither admin key nor auth header provided"))
 	}
 
-	var urlResponses []dtos.UrlResponse
+	var urls []models.Url
+	if admin != nil && admin.(bool) {
+		u := ctx.Query("userid")
+		var (
+			userID *uint64
+			err    error
+		)
+		if u != "" {
+			uID, err := strconv.ParseUint(u, 10, 64)
+			if err != nil {
+				return ctx.Status(fiber.StatusNotFound).JSON(dtos.CreateErrorResponse(fiber.StatusNotFound, "invalid user id"))
+			}
+			userID = &uID
+		}
+
+		urls, err = urlsController.GetUrls(userID)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+		}
+	}
+
+	// for user who is not admin
+	if userObj != nil && admin == nil {
+		var err error
+		user := *userObj.(*models.User)
+		urls, err = urlsController.GetUrls(&user.ID)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+		}
+	}
+
+	urlResponses := make([]dtos.UrlResponse, 0)
 	for _, url := range urls {
 		urlResponses = append(urlResponses, dtos.CreateUrlResponse(&url))
 	}

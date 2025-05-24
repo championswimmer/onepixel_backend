@@ -25,7 +25,7 @@ var _randMax = int(math.Pow(64, _currentMaxUrlLength))
 
 type UrlsController struct {
 	// db
-	db *gorm.DB
+	db               *gorm.DB
 	eventsController *EventsController
 }
 
@@ -82,7 +82,7 @@ func (c *UrlsController) initDefaultUrlGroup() {
 func CreateUrlsController() *UrlsController {
 	appDb := db.GetAppDB()
 	ctrl := &UrlsController{
-		db: appDb,
+		db:               appDb,
 		eventsController: CreateEventsController(),
 	}
 	initDefaultUrlGroupOnce.Do(ctrl.initDefaultUrlGroup)
@@ -177,9 +177,13 @@ func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount 
 	return url.LongURL, hitCount, nil
 }
 
-func (c *UrlsController) GetUrlsByUserId(userId uint64) ([]models.Url, error) {
+func (c *UrlsController) GetUrls(userId *uint64) ([]models.Url, error) {
 	var urls []models.Url
-	res := c.db.Where("creator_id = ?", userId).Find(&urls)
+	query := c.db
+	if userId != nil {
+		query = query.Where("creator_id=?", *userId)
+	}
+	res := query.Find(&urls)
 	if res.Error != nil {
 		return nil, res.Error
 	}
