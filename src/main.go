@@ -7,6 +7,7 @@ import (
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/server"
 	"onepixel_backend/src/utils/applogger"
+	posthogutil "onepixel_backend/src/utils/posthog"
 	"os"
 	"os/signal"
 	"strings"
@@ -70,6 +71,9 @@ func main() {
 		lo.Must0(lo.Must(appDb.DB()).Close())
 		lo.Must0(lo.Must(eventDb.DB()).Close())
 		lo.Must0(geoipDb.Close())
+
+		// Close PostHog client
+		posthogutil.Close()
 
 		lo.Must0(adminApp.ShutdownWithContext(ctx))
 		lo.Must0(mainApp.ShutdownWithContext(ctx))

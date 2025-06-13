@@ -29,6 +29,8 @@ var AdminUserEmail string
 var JwtSigningKey string
 var JwtDurationDays int
 
+var PosthogApiKey string
+
 var AllowedOrigins string
 
 // should run after env.go#init as this `vars` is alphabetically after `env`
@@ -67,5 +69,6 @@ func init() {
 	AdminUserEmail = os.Getenv("ADMIN_USER_EMAIL")
 	JwtSigningKey = os.Getenv("JWT_SIGNING_KEY")
 	JwtDurationDays, _ = strconv.Atoi(os.Getenv("JWT_DURATION_DAYS"))
+	PosthogApiKey = os.Getenv("POSTHOG_API_KEY")
 	AllowedOrigins = os.Getenv("ALLOWED_ORIGINS") // P8bfd
 }

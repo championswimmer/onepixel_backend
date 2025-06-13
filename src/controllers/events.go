@@ -2,14 +2,17 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/oschwald/geoip2-golang"
-	"github.com/samber/lo"
-	"gorm.io/gorm"
 	"onepixel_backend/src/db"
 	"onepixel_backend/src/db/models"
 	"onepixel_backend/src/utils/applogger"
 	"onepixel_backend/src/utils/clientinfo"
+	posthogutil "onepixel_backend/src/utils/posthog"
+	"strconv"
+
+	"github.com/google/uuid"
+	"github.com/oschwald/geoip2-golang"
+	"github.com/samber/lo"
+	"gorm.io/gorm"
 )
 
 type EventsController struct {
@@ -86,6 +89,35 @@ func (c *EventsController) LogRedirectAsync(redirData *EventRedirectData) {
 			}
 			return tx.Error
 		})
+
+		// Fire PostHog redirect event
+		go (func() {
+			properties := map[string]interface{}{
+				"short_url":    redirData.ShortURL,
+				"short_url_id": redirData.ShortUrlID,
+				"url_group_id": redirData.UrlGroupID,
+				"user_agent":   redirData.UserAgent,
+				"ip_address":   redirData.IPAddress,
+				"referer":      redirData.Referer,
+			}
+
+			// Add geo data if available
+			if event.GeoIpData.LocationCity != "" {
+				properties["city"] = event.GeoIpData.LocationCity
+			}
+			if event.GeoIpData.LocationCountry != "" {
+				properties["country"] = event.GeoIpData.LocationCountry
+			}
+
+			// Use creator ID as distinct ID, fallback to IP if not available
+			distinctId := strconv.FormatUint(redirData.CreatorID, 10)
+			if distinctId == "0" {
+				distinctId = redirData.IPAddress
+			}
+
+			posthogutil.TrackEvent(distinctId, "redirect", properties)
+		})()
+
 		return event.ID
 	})
 

@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.11.0
+	github.com/posthog/posthog-go v1.5.12
 	github.com/samber/lo v1.49.1
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/swag v1.16.4
@@ -34,6 +35,7 @@ require (
 	github.com/go-openapi/spec v0.20.11 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
