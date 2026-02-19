@@ -84,5 +84,5 @@ This repository is a Go backend for **onepixel (1px.li)**, an API-first URL shor
 - Keep generated Swagger files in sync only when endpoint annotations change.
 - Be careful with test/runtime code paths that trigger GeoIP download in network-restricted environments.
 - For build and test workflows, see dedicated skills:
-  - `/home/runner/work/onepixel_backend/onepixel_backend/.agents/skills/build`
-  - `/home/runner/work/onepixel_backend/onepixel_backend/.agents/skills/test`
+  - `/home/runner/work/onepixel_backend/onepixel_backend/.agents/skills/build/SKILL.md`
+  - `/home/runner/work/onepixel_backend/onepixel_backend/.agents/skills/test/SKILL.md`
