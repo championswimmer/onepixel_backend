@@ -197,3 +197,4 @@ fabric.properties
 /events.db.wal
 /duckdb-driver
 /GeoLite2-City.mmdb
+/db_backups
