@@ -16,6 +16,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/samber/lo"
 )
 
@@ -30,6 +31,11 @@ func main() {
 	mainApp := server.CreateMainApp()
 
 	app := fiber.New()
+
+	// Add logger middleware for non-production environments
+	if config.Env != "production" {
+		app.Use(logger.New())
+	}
 
 	// Add CORS middleware
 	app.Use(cors.New(cors.Config{
