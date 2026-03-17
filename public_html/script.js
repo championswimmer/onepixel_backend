@@ -43,7 +43,11 @@
       return
     }
 
-    const iconOfActiveBtn = btnToActive.querySelector('i').className
+    const iconEl = btnToActive.querySelector('i')
+    if (!iconEl) {
+      return
+    }
+    const iconOfActiveBtn = iconEl.className
 
     document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
       element.classList.remove('active')
