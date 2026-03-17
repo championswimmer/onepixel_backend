@@ -16,6 +16,11 @@ var invalidShortCodeError = &ValidationError{
 	message: "Invalid short code",
 }
 
+var shortCodeTooLongError = &ValidationError{
+	status:  fiber.StatusUnprocessableEntity,
+	message: "shortcode must be at most 10 characters long",
+}
+
 func ValidateCreateUrlRequest(dto *dtos.CreateUrlRequest) *ValidationError {
 	if dto.LongUrl == "" {
 		return mandatoryUrlDtoFieldError
@@ -29,6 +34,16 @@ func ValidateRedirectShortCodeRequest(shortcode string) *ValidationError {
 	}
 	if len(shortcode) > utils.MaxSafeStringLength {
 		return invalidShortCodeError
+	}
+	return nil
+}
+
+func ValidateShortCode(shortcode string) *ValidationError {
+	if shortcode == "" {
+		return invalidShortCodeError
+	}
+	if len(shortcode) > utils.MaxSafeStringLength {
+		return shortCodeTooLongError
 	}
 	return nil
 }

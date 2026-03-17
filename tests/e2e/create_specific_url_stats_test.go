@@ -17,6 +17,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUrlsRoute_CreateSpecificUrl_ShortcodeTooLong(t *testing.T) {
+	// ------ REGISTER USER ------
+	responseBody := tests.TestUtil_CreateUser(t, "user_longcode@test.com", "123456")
+
+	// ------ CREATE URL WITH SHORTCODE > 10 CHARS ------
+	reqBody := []byte(`{"long_url": "https://example.com"}`)
+	req := httptest.NewRequest("PUT", "/api/v1/urls/abcdefghijk", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("Authorization", *responseBody.Token)
+	resp := lo.Must(tests.App.Test(req))
+
+	assert.Equal(t, 422, resp.StatusCode)
+	var errorResponseBody dtos.ErrorResponse
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response body: %v", err)
+	}
+	if err := json.Unmarshal(body, &errorResponseBody); err != nil {
+		t.Fatalf("Error unmarshalling response body: %v", err)
+	}
+
+	assert.Equal(t, "shortcode must be at most 10 characters long", errorResponseBody.Message)
+}
+
 func TestUrlsRoute_CreateSpecificUrl(t *testing.T) {
 	t.Cleanup(tests.TestUtil_FlushEventsDb)
 

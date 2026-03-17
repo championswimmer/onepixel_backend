@@ -152,9 +152,9 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	}
 
 	shortcode := ctx.Params("shortcode")
-	if shortcode == "" {
-		// TODO: handle unacceptable/reserved shortcodes properly in controller
-		panic("shortcode is empty")
+	shortcodeValidErr := validators.ValidateShortCode(shortcode)
+	if shortcodeValidErr != nil {
+		return validators.SendValidationError(ctx, shortcodeValidErr)
 	}
 
 	createdUrl, createErr := urlsController.CreateSpecificShortUrl(shortcode, cur.LongUrl, user.ID)
