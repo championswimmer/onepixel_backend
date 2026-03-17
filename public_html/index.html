@@ -36,7 +36,37 @@
 <body>
     <!-- Header -->
     <header>
-        <div class="container-fluid p-4 bg-body-tertiary">
+        <div class="container-fluid p-4 bg-body-tertiary position-relative">
+            <div class="position-absolute top-0 end-0 p-3">
+                <div class="dropdown">
+                    <button class="btn btn-link text-decoration-none text-body-secondary dropdown-toggle d-flex align-items-center"
+                        id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                        aria-label="Toggle theme (auto)">
+                        <i class="bi bi-circle-half me-1" id="bd-theme-icon"></i>
+                        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                data-bs-theme-value="light" aria-pressed="false">
+                                <i class="bi bi-sun-fill me-2 opacity-50"></i> Light
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                data-bs-theme-value="dark" aria-pressed="false">
+                                <i class="bi bi-moon-stars-fill me-2 opacity-50"></i> Dark
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center active"
+                                data-bs-theme-value="auto" aria-pressed="true">
+                                <i class="bi bi-circle-half me-2 opacity-50"></i> Auto
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <h1 class="display-1 text-center fw-bold text-body-tertiary">1px.li</h1>
             <p class="lead text-center text-secondary-emphasis">
                 onepixel·link - a no nonsense API-first URL shortener for geeks
