@@ -1,52 +1,74 @@
+---
+name: build
+description: Build and run onepixel binaries, generate Swagger docs when needed, and produce cross-platform release artifacts.
+---
+
 # Build Skill
 
-Use this skill when building binaries, running the app, or preparing docs artifacts.
+Use this skill when you need to compile, run, or package the onepixel backend.
 
-## Primary build command
+## Quick commands
 
-- Preferred build command (skip Swagger regeneration):
+- Fast local build (recommended default):
   - `make build DOCS=false`
-- This compiles `src/main.go` into `bin/onepixel` for current OS/arch.
+- CI-like verbose build:
+  - `make build DOCS=false ARGS="-v"`
+- Build all release artifacts:
+  - `make build_all DOCS=false ARGS="-v"`
+- Run app via built binary:
+  - `make run DOCS=false`
+- Regenerate Swagger docs (only when API annotations changed):
+  - `make docs`
 
-## Make targets and behavior
+## Current Makefile behavior
 
-Defined in `/home/runner/work/onepixel_backend/onepixel_backend/Makefile`:
+Defined in `Makefile` at repo root:
 
-- `docs`:
-  - runs `swag init --pd -g server/server.go -d src --md src/docs -o src/docs`
-  - regenerates files in `src/docs`
-- `build`:
-  - builds one binary with detected/current `GOOS`/`GOARCH`
-- `build_all`:
-  - produces linux/darwin/windows artifacts under `bin/`
-- `run`:
+- `docs`
+  - runs: `swag init --pd -g server/server.go -d src --md src/docs -o src/docs`
+  - writes generated docs into `src/docs/`
+- `build`
+  - output: `bin/onepixel`
+  - compiles `src/main.go`
+  - default dependency: `docs` (unless `DOCS=false`)
+- `build_all`
+  - outputs:
+    - `bin/onepixel-linux-amd64`
+    - `bin/onepixel-darwin-amd64`
+    - `bin/onepixel-darwin-arm64`
+    - `bin/onepixel-windows-amd64.exe`
+- `run`
   - depends on `build`, then executes `./bin/onepixel`
-- `clean`:
-  - `go clean` and removes `bin/*`
+- `clean`
+  - `go clean` and remove `bin/*`
 
-`DOCS=false` clears build dependency on `docs`; use it for faster/local CI-safe builds.
+## OS/arch resolution details
+
+The Makefile normalizes platform values:
+
+- OS: Darwin/macOS → `darwin`, Linux → `linux`, otherwise `windows`
+- ARCH: `x86_64` → `amd64`, `i386` → `386`
+
+You can still override by exporting `GOOS`/`GOARCH` before running `make`.
 
 ## Prerequisites
 
-- Go toolchain compatible with `go.mod` (Go 1.22 target).
-- Optional (only if generating docs):
-  - `swag` CLI (`go install github.com/swaggo/swag/cmd/swag@latest`)
-- Optional local dev hot-reload:
-  - `air` (`go install github.com/air-verse/air@latest`)
+- Go 1.22 (matches `go.mod` and CI workflow)
+- `swag` CLI only if docs generation is needed:
+  - `go install github.com/swaggo/swag/cmd/swag@latest`
+- Optional local dev hot reload:
+  - `go install github.com/air-verse/air@latest`
 
-## Build verification checklist
+## Recommended agent workflow
 
-1. From repo root, run `make build DOCS=false`.
+1. Build with `make build DOCS=false`.
 2. Confirm binary exists at `bin/onepixel`.
-3. If API annotations changed, regenerate docs (`make docs`) and verify `src/docs/*` updates are intentional.
-
-## Local runtime options
-
-- `make run` for binary run flow.
-- `air` for hot-reload using `.air.toml`.
-- `docker-compose up` for containerized stack (app + postgres + clickhouse + metabase).
+3. Only run `make docs` if endpoint annotations or Swagger comments changed.
+4. If docs changed intentionally, include updated files under `src/docs/`.
 
 ## Common pitfalls
 
-- Running plain `make` executes first target (`docs`), which requires `swag`.
-- Host-based routing needs correct env values (`ADMIN_SITE_HOST`, `MAIN_SITE_HOST`) to hit expected app path.
+- Running plain `make` executes the first target (`docs`) and fails if `swag` is missing.
+- `run` also triggers docs unless `DOCS=false` is passed.
+- If `GOOS`/`GOARCH` are set in the shell, builds may target an unexpected platform.
+- Host-based routing at runtime depends on env vars (`ADMIN_SITE_HOST`, `MAIN_SITE_HOST`).

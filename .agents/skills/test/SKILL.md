@@ -1,53 +1,73 @@
+---
+name: test
+description: Run onepixel unit and e2e tests with correct env setup, coverage artifacts, and troubleshooting guidance for GeoIP/network-related failures.
+---
+
 # Test Skill
 
-Use this skill for unit/e2e test execution, targeted package tests, and test troubleshooting.
+Use this skill for unit tests, e2e tests, targeted test runs, and test triage.
 
-## Primary test targets
+## Quick commands
 
-Defined in `/home/runner/work/onepixel_backend/onepixel_backend/Makefile`:
+- Full unit suite:
+  - `make test_unit`
+- Full e2e suite:
+  - `make test_e2e`
+- Full test pipeline:
+  - `make test`
+- Targeted package tests (fast feedback):
+  - `ENV=test go test -count 1 ./src/security/...`
+  - `ENV=test go test -count 1 ./src/controllers/...`
+- Single e2e test:
+  - `ENV=test go test -count 1 ./tests/e2e -run TestRegisterUser`
 
-- `make test_unit`
-  - Cleans `app.db`, `events.db`, `events.db.wal`
-  - Runs `go test` over `./src/...` with race + coverage output `coverage.unit.out`
-- `make test_e2e`
-  - Cleans DB files
-  - Runs `go test` over `./tests/...` with race + coverage output `coverage.e2e.out`
-- `make test`
-  - Runs `test_unit` then `test_e2e`
+## Current Makefile test behavior
 
-## Test environment mechanics
+Defined in `Makefile` at repo root:
 
-- Tests are expected to run with `ENV=test` (set by Makefile test targets).
-- `src/config/env.go` under `ENV=test`:
-  - changes directory to project root
+- `test_clean`
+  - removes `app.db`, `events.db`, `events.db.wal`
+- `test_unit` (depends on `test_clean`)
+  - removes `coverage.unit.out`
+  - runs:
+    - `ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.unit.out -covermode=atomic -v -coverpkg=./src/... ./src/...`
+- `test_e2e` (depends on `test_clean`)
+  - removes `coverage.e2e.out`
+  - runs:
+    - `ENV=test go test -count 1 -timeout 10s -race -coverprofile=coverage.e2e.out -covermode=atomic -v -coverpkg=./src/... ./tests/...`
+- `test`
+  - runs `test_unit` then `test_e2e`
+
+## Environment mechanics to remember
+
+- `ENV=test` triggers `src/config/env.go` logic:
+  - changes cwd to repo root
   - loads `onepixel.test.env`
-- `tests/providers/test_db_providers.go` injects sqlite + duckdb providers for tests.
+  - then loads `onepixel.local.env` as fallback defaults
+- `onepixel.test.env` sets sqlite/duckdb dialects.
+- `USE_FILE_DB` comes from fallback local env by default (`true` in `onepixel.local.env`).
 
-## Recommended execution flow for agents
+## GeoIP/network caveat (important)
 
-1. Run targeted tests for touched package(s) first.
-2. Then run broader target (`make test_unit` or `make test`) as needed.
-3. Keep changes minimal and avoid altering unrelated flaky tests.
+`db.GetGeoIPDB()` checks `./GeoLite2-City.mmdb` freshness (30 days). If stale/missing, it downloads from:
+- `https://git.io/GeoLite2-City.mmdb`
 
-## Known failure mode in restricted environments
+In restricted/offline environments, tests touching GeoIP can fail due to network/DNS.
 
-- Some tests initialize `db.GetGeoIPDB()` which may attempt to download:
-  - `https://git.io/GeoLite2-City.mmdb`
-- In network-restricted environments this can fail with DNS/network errors and panic.
-- If this occurs, treat it as environment-related unless your change touched GeoIP behavior.
+Mitigation before running tests:
+- `curl -L https://git.io/GeoLite2-City.mmdb -o GeoLite2-City.mmdb`
 
-## Useful targeted commands
+## Recommended agent workflow
 
-- Package-level unit tests:
-  - `go test ./src/security/...`
-  - `go test ./src/controllers/...`
-- Single test run example:
-  - `go test ./tests/e2e -run TestRegisterUser`
+1. Run targeted tests for changed packages first.
+2. Run `make test_unit`.
+3. Run `make test_e2e` when API/integration behavior changed.
+4. Use `make test` before final handoff when feasible.
 
-## Test artifacts and cleanup
+## Troubleshooting notes
 
-- Coverage outputs:
+- If tests time out, remember Makefile uses `-timeout 10s`; for debugging, rerun failing package with a longer timeout manually.
+- If local env has been modified to non-file DB settings, tests may accidentally try postgres/clickhouse; restore test-friendly env values.
+- Coverage artifacts are written to:
   - `coverage.unit.out`
   - `coverage.e2e.out`
-- DB files used/cleaned:
-  - `app.db`, `events.db`, `events.db.wal`
