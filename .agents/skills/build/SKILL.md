@@ -72,3 +72,8 @@ You can still override by exporting `GOOS`/`GOARCH` before running `make`.
 - `run` also triggers docs unless `DOCS=false` is passed.
 - If `GOOS`/`GOARCH` are set in the shell, builds may target an unexpected platform.
 - Host-based routing at runtime depends on env vars (`ADMIN_SITE_HOST`, `MAIN_SITE_HOST`).
+
+## Canonical build default
+
+- Prefer `make build DOCS=false` for normal agent loops.
+- Legacy shorthand `make DOCS=false` is not the intended default in this repo because plain `make` resolves to the first Makefile target; use the explicit `build` target.
