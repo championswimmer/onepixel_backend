@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getUrlInfo } from '../api/urls'
+import { getUrlInfo, getGroupedUrlInfo } from '../api/urls'
 import type { UrlInfoResponse } from '../types'
 
-const props = defineProps<{ shortcode: string }>()
+const props = defineProps<{ shortcode: string; group?: string }>()
 
 const urlInfo = ref<UrlInfoResponse | null>(null)
 const loading = ref(true)
 const error = ref('')
 
+const displayPath = props.group ? `/${props.group}/${props.shortcode}` : `/${props.shortcode}`
+
 onMounted(async () => {
   try {
-    urlInfo.value = await getUrlInfo(props.shortcode)
+    if (props.group) {
+      urlInfo.value = await getGroupedUrlInfo(props.group, props.shortcode)
+    } else {
+      urlInfo.value = await getUrlInfo(props.shortcode)
+    }
   } catch (e: any) {
     error.value = e.message || 'Failed to load URL info'
   } finally {
@@ -28,7 +34,7 @@ onMounted(async () => {
       </router-link>
     </div>
 
-    <h4 class="mb-4 font-monospace">/{{ shortcode }}</h4>
+    <h4 class="mb-4 font-monospace">{{ displayPath }}</h4>
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 

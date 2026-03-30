@@ -226,7 +226,11 @@ func (c *UrlsController) GetUrlGroupsByCreator(userId uint64) ([]models.UrlGroup
 }
 
 func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount int64, err error) {
-	url, err := c.GetUrlWithShortCode(shortcode)
+	return c.GetUrlInfoInGroup(shortcode, _defaultUrlGroupId)
+}
+
+func (c *UrlsController) GetUrlInfoInGroup(shortcode string, urlGroupID uint64) (longUrl string, hitCount int64, err error) {
+	url, err := c.GetUrlWithShortCodeInGroup(shortcode, urlGroupID)
 	if err != nil {
 		return "", 0, err
 	}

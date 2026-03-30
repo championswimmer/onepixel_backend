@@ -38,6 +38,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/urls/:group/:shortcode',
+    name: 'grouped-url-detail',
+    component: UrlDetailView,
+    props: true,
+  },
+  {
     path: '/groups/new',
     name: 'create-group',
     component: CreateGroupView,

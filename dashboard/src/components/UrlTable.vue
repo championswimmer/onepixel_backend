@@ -22,6 +22,11 @@ function extractShortcode(path: string): string {
   return parts[parts.length - 1]
 }
 
+function detailLink(shortUrl: string): string {
+  const path = extractPath(shortUrl)
+  return `/urls/${path}`
+}
+
 function truncate(str: string, len: number): string {
   return str.length > len ? str.slice(0, len) + '…' : str
 }
@@ -41,12 +46,13 @@ function truncate(str: string, len: number): string {
         <tr v-for="url in urls" :key="url.short_url">
           <td>
             <router-link
-              :to="`/urls/${extractShortcode(extractPath(url.short_url))}`"
+              :to="detailLink(url.short_url)"
               class="font-monospace text-decoration-none"
             >
-              <span v-if="extractGroup(extractPath(url.short_url))" class="badge bg-secondary me-1">
-                {{ extractGroup(extractPath(url.short_url)) }}
-              </span>
+              <template v-if="extractGroup(extractPath(url.short_url))">
+                <span class="badge bg-secondary">{{ extractGroup(extractPath(url.short_url)) }}</span>
+                <span class="text-body-secondary mx-1">/</span>
+              </template>
               {{ extractShortcode(extractPath(url.short_url)) }}
             </router-link>
           </td>
@@ -63,7 +69,7 @@ function truncate(str: string, len: number): string {
           </td>
           <td class="text-end">
             <router-link
-              :to="`/urls/${extractShortcode(extractPath(url.short_url))}`"
+              :to="detailLink(url.short_url)"
               class="btn btn-outline-secondary btn-sm"
               title="View details"
             >

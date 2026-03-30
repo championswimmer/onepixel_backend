@@ -32,3 +32,7 @@ export function getUrlGroups(): Promise<UrlGroupResponse[]> {
 export function getUrlInfo(shortcode: string): Promise<UrlInfoResponse> {
   return get<UrlInfoResponse>(`/urls/${shortcode}`)
 }
+
+export function getGroupedUrlInfo(group: string, shortcode: string): Promise<UrlInfoResponse> {
+  return get<UrlInfoResponse>(`/urls/groups/${group}/${shortcode}`)
+}

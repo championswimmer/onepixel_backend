@@ -27,6 +27,7 @@ func UrlsRoute() func(router fiber.Router) {
 		router.Post("/groups", security.MandatoryAdminApiKeyAuthMiddleware, createUrlGroup)
 		router.Post("/groups/:group/shorten", security.MandatoryJwtAuthMiddleware, createGroupedRandomUrl)
 		router.Post("/groups/:group/shorten/:shortcode", security.MandatoryJwtAuthMiddleware, createGroupedSpecificUrl)
+		router.Get("/groups/:group/:shortcode", getGroupedUrlInfo)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 		router.Get("/:shortcode", getUrlInfo)
@@ -328,6 +329,35 @@ func createGroupedRandomUrl(ctx *fiber.Ctx) error {
 
 	createdUrl.UrlGroup = *urlGroup
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
+}
+
+// getGroupedUrlInfo
+//
+//	@Summary		Get grouped URL info
+//	@Description	Get URL info for a URL in a specific group
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			group		path		string	true	"URL group"
+//	@Param			shortcode	path		string	true	"Shortcode"
+//	@Success		200			{object}	dtos.UrlInfoResponse
+//	@Failure		404			{object}	dtos.ErrorResponse	"URL or group not found"
+//	@Router			/urls/groups/{group}/{shortcode} [get]
+func getGroupedUrlInfo(ctx *fiber.Ctx) error {
+	group := ctx.Params("group")
+	shortcode := ctx.Params("shortcode")
+
+	urlGroup, groupErr := urlsController.GetUrlGroupByShortPath(group)
+	if groupErr != nil {
+		return sendUrlControllerError(ctx, groupErr)
+	}
+
+	longUrl, hitCount, err := urlsController.GetUrlInfoInGroup(shortcode, urlGroup.ID)
+	if err != nil {
+		return sendUrlControllerError(ctx, err)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUrlInfoResponse(longUrl, hitCount))
 }
 
 // getUrlInfo
