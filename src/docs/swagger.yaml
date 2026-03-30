@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  dtos.CreateUrlGroupRequest:
+    properties:
+      creator_id:
+        type: integer
+      short_path:
+        type: string
+    type: object
   dtos.CreateUrlRequest:
     properties:
       long_url:
@@ -26,6 +33,20 @@ definitions:
       email:
         type: string
       password:
+        type: string
+    type: object
+  dtos.UpdateUserRequest:
+    properties:
+      password:
+        type: string
+    type: object
+  dtos.UrlGroupResponse:
+    properties:
+      creator_id:
+        example: 1
+        type: integer
+      short_path:
+        example: teamA
         type: string
     type: object
   dtos.UrlInfoResponse:
@@ -205,6 +226,146 @@ paths:
       summary: Create specific short url
       tags:
       - urls
+  /urls/groups:
+    post:
+      consumes:
+      - application/json
+      description: Create a URL group for a specific user
+      operationId: create-url-group
+      parameters:
+      - description: URL group
+        in: body
+        name: urlGroup
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUrlGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UrlGroupResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "409":
+          description: URL group already exists
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: invalid group
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - APIKeyAuth: []
+      summary: Create URL group
+      tags:
+      - urls
+  /urls/groups/{group}/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Create a grouped short URL for a URL group owned by the authenticated
+        user
+      operationId: create-grouped-random-url
+      parameters:
+      - description: URL group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: Url
+        in: body
+        name: url
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUrlRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UrlResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "403":
+          description: URL group does not belong to the user
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "404":
+          description: URL group not found
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: invalid group
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Create grouped short URL with random shortcode
+      tags:
+      - urls
+  /urls/groups/{group}/shorten/{shortcode}:
+    post:
+      consumes:
+      - application/json
+      description: Create a grouped short URL for a URL group owned by the authenticated
+        user
+      operationId: create-grouped-specific-url
+      parameters:
+      - description: URL group
+        in: path
+        name: group
+        required: true
+        type: string
+      - description: Shortcode
+        in: path
+        name: shortcode
+        required: true
+        type: string
+      - description: Url
+        in: body
+        name: url
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateUrlRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.UrlResponse'
+        "400":
+          description: The request body is not valid
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "403":
+          description: URL group does not belong to the user
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "404":
+          description: URL group not found
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "409":
+          description: URL already exists
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+        "422":
+          description: invalid shortcode
+          schema:
+            $ref: '#/definitions/dtos.ErrorResponse'
+      security:
+      - BearerToken: []
+      summary: Create grouped short URL with specific shortcode
+      tags:
+      - urls
   /users:
     post:
       consumes:
@@ -271,6 +432,12 @@ paths:
         name: userid
         required: true
         type: integer
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateUserRequest'
       produces:
       - application/json
       responses: {}

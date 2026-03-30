@@ -12,7 +12,7 @@ steps:
   - step: "Update redirect resolution for `/short` and `/group/short` paths"
     done: true
   - step: "Add/adjust unit + e2e tests and finalize docs"
-    done: false
+    done: true
 ---
 
 # 01 - URL Groups
