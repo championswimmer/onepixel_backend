@@ -18,8 +18,8 @@ func RedirectRoute() func(router fiber.Router) {
 	eventsController = controllers.CreateEventsController()
 
 	return func(router fiber.Router) {
-		router.Get("/:shortcode", redirectShortCode)
 		router.Get("/:group/:shortcode", redirectGroupedShortCode)
+		router.Get("/:shortcode", redirectShortCode)
 	}
 
 }
@@ -55,5 +55,17 @@ func redirectShortCode(ctx *fiber.Ctx) error {
 }
 
 func redirectGroupedShortCode(ctx *fiber.Ctx) error {
-	return ctx.SendString("Redirect")
+	group := ctx.Params("group")
+	validErr := validators.ValidateRedirectGroupRequest(group)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+
+	shortcode := ctx.Params("shortcode")
+	validErr = validators.ValidateRedirectShortCodeRequest(shortcode)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+
+	return ctx.Status(fiber.StatusNotFound).JSON(dtos.CreateErrorResponse(fiber.StatusNotFound, "URL not found"))
 }
