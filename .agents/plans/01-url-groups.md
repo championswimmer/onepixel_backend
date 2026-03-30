@@ -2,7 +2,7 @@
 title: "01 - URL Groups"
 steps:
   - step: "Align route + API contracts for grouped and ungrouped URLs"
-    done: false
+    done: true
   - step: "Update models, constraints, and migration/index strategy"
     done: false
   - step: "Implement controller logic for group ownership and scoped URL operations"

@@ -16,6 +16,21 @@ var invalidShortCodeError = &ValidationError{
 	message: "Invalid short code",
 }
 
+var invalidUrlGroupError = &ValidationError{
+	status:  fiber.StatusNotFound,
+	message: "Invalid url group",
+}
+
+var invalidCreateShortCodeError = &ValidationError{
+	status:  fiber.StatusUnprocessableEntity,
+	message: "invalid shortcode",
+}
+
+var invalidCreateUrlGroupError = &ValidationError{
+	status:  fiber.StatusUnprocessableEntity,
+	message: "invalid group",
+}
+
 func ValidateCreateUrlRequest(dto *dtos.CreateUrlRequest) *ValidationError {
 	if dto.LongUrl == "" {
 		return mandatoryUrlDtoFieldError
@@ -24,11 +39,32 @@ func ValidateCreateUrlRequest(dto *dtos.CreateUrlRequest) *ValidationError {
 }
 
 func ValidateRedirectShortCodeRequest(shortcode string) *ValidationError {
-	if shortcode == "" {
-		return invalidShortCodeError
+	return validateRadix64Token(shortcode, invalidShortCodeError)
+}
+
+func ValidateRedirectGroupRequest(group string) *ValidationError {
+	return validateRadix64Token(group, invalidUrlGroupError)
+}
+
+func ValidateCreateShortCodeRequest(shortcode string) *ValidationError {
+	return validateRadix64Token(shortcode, invalidCreateShortCodeError)
+}
+
+func ValidateCreateUrlGroupRequest(group string) *ValidationError {
+	return validateRadix64Token(group, invalidCreateUrlGroupError)
+}
+
+func validateRadix64Token(token string, err *ValidationError) *ValidationError {
+	if token == "" {
+		return err
 	}
-	if len(shortcode) > utils.MaxSafeStringLength {
-		return invalidShortCodeError
+	if len(token) > utils.MaxSafeStringLength {
+		return err
+	}
+	for _, char := range token {
+		if _, ok := utils.AlphabetIndex[char]; !ok {
+			return err
+		}
 	}
 	return nil
 }

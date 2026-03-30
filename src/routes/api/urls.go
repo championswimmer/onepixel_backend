@@ -23,6 +23,9 @@ func UrlsRoute() func(router fiber.Router) {
 
 	return func(router fiber.Router) {
 		router.Get("/", security.OptionalJwtAuthMiddleware, security.OptionalAdminApiKeyAuthMiddleware, getAllUrls)
+		router.Post("/groups", security.MandatoryAdminApiKeyAuthMiddleware, createUrlGroup)
+		router.Post("/groups/:group/shorten", security.MandatoryJwtAuthMiddleware, createGroupedRandomUrl)
+		router.Post("/groups/:group/shorten/:shortcode", security.MandatoryJwtAuthMiddleware, createGroupedSpecificUrl)
 		router.Post("/", security.MandatoryJwtAuthMiddleware, createRandomUrl)
 		router.Put("/:shortcode", security.MandatoryJwtAuthMiddleware, createSpecificUrl)
 		router.Get("/:shortcode", getUrlInfo)
@@ -152,9 +155,9 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	}
 
 	shortcode := ctx.Params("shortcode")
-	if shortcode == "" {
-		// TODO: handle unacceptable/reserved shortcodes properly in controller
-		panic("shortcode is empty")
+	validErr = validators.ValidateCreateShortCodeRequest(shortcode)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
 	}
 
 	createdUrl, createErr := urlsController.CreateSpecificShortUrl(shortcode, cur.LongUrl, user.ID)
@@ -175,12 +178,33 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
 }
 
+func createUrlGroup(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusNotImplemented).JSON(dtos.CreateErrorResponse(fiber.StatusNotImplemented, "URL group creation is not implemented yet"))
+}
+
 func createGroupedRandomUrl(ctx *fiber.Ctx) error {
-	return ctx.SendString("createGroupedRandomUrl")
+	group := ctx.Params("group")
+	validErr := validators.ValidateCreateUrlGroupRequest(group)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+	return ctx.Status(fiber.StatusNotImplemented).JSON(dtos.CreateErrorResponse(fiber.StatusNotImplemented, "Grouped URL creation is not implemented yet"))
 }
 
 func createGroupedSpecificUrl(ctx *fiber.Ctx) error {
-	return ctx.SendString("createGroupedSpecificUrl")
+	group := ctx.Params("group")
+	validErr := validators.ValidateCreateUrlGroupRequest(group)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+
+	shortcode := ctx.Params("shortcode")
+	validErr = validators.ValidateCreateShortCodeRequest(shortcode)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+
+	return ctx.Status(fiber.StatusNotImplemented).JSON(dtos.CreateErrorResponse(fiber.StatusNotImplemented, "Grouped URL creation is not implemented yet"))
 }
 
 // getUrlInfo
