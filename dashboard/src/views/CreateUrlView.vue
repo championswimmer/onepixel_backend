@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { createRandomUrl, createCustomUrl, createGroupedRandomUrl, createGroupedCustomUrl } from '../api/urls'
-import type { UrlResponse } from '../types'
+import { ref, computed, onMounted, watch } from 'vue'
+import { createRandomUrl, createCustomUrl, createGroupedRandomUrl, createGroupedCustomUrl, getUrlGroups } from '../api/urls'
+import type { UrlResponse, UrlGroupResponse } from '../types'
 
 const longUrl = ref('')
 const customShortcode = ref('')
@@ -12,6 +12,56 @@ const loading = ref(false)
 const error = ref('')
 const result = ref<UrlResponse | null>(null)
 const copied = ref(false)
+
+const availableGroups = ref<UrlGroupResponse[]>([])
+const groupSearch = ref('')
+const showGroupDropdown = ref(false)
+
+const filteredGroups = computed(() => {
+  const query = groupSearch.value.toLowerCase()
+  if (!query) return availableGroups.value
+  return availableGroups.value.filter(g =>
+    g.short_path.toLowerCase().includes(query)
+  )
+})
+
+async function fetchGroups() {
+  try {
+    availableGroups.value = await getUrlGroups()
+  } catch {
+    availableGroups.value = []
+  }
+}
+
+function selectGroup(group: UrlGroupResponse) {
+  groupName.value = group.short_path
+  groupSearch.value = group.short_path
+  showGroupDropdown.value = false
+}
+
+function onGroupInput() {
+  groupName.value = groupSearch.value
+  showGroupDropdown.value = true
+}
+
+function onGroupFocus() {
+  showGroupDropdown.value = true
+}
+
+function onGroupBlur() {
+  // Delay to allow click on dropdown item
+  setTimeout(() => { showGroupDropdown.value = false }, 200)
+}
+
+watch(useGroup, (val) => {
+  if (val && availableGroups.value.length === 0) {
+    fetchGroups()
+  }
+})
+
+onMounted(() => {
+  fetchGroups()
+})
 
 async function handleSubmit() {
   error.value = ''
@@ -59,6 +109,7 @@ function resetForm() {
   customShortcode.value = ''
   useCustom.value = false
   groupName.value = ''
+  groupSearch.value = ''
   useGroup.value = false
   result.value = null
   error.value = ''
@@ -122,15 +173,39 @@ function resetForm() {
 
       <div v-if="useGroup" class="mb-3">
         <label for="groupName" class="form-label">Group name</label>
-        <input
-          id="groupName"
-          v-model="groupName"
-          type="text"
-          class="form-control font-monospace"
-          placeholder="my-team"
-          :required="useGroup"
-        />
-        <div class="form-text">The group must already exist. The short URL will be <code>group/shortcode</code>.</div>
+        <div class="position-relative">
+          <input
+            id="groupName"
+            v-model="groupSearch"
+            type="text"
+            class="form-control font-monospace"
+            placeholder="Search or type group name..."
+            autocomplete="off"
+            :required="useGroup"
+            @input="onGroupInput"
+            @focus="onGroupFocus"
+            @blur="onGroupBlur"
+          />
+          <ul
+            v-if="showGroupDropdown && filteredGroups.length > 0"
+            class="list-group position-absolute w-100 shadow-sm"
+            style="z-index: 10; max-height: 200px; overflow-y: auto;"
+          >
+            <li
+              v-for="group in filteredGroups"
+              :key="group.short_path"
+              class="list-group-item list-group-item-action font-monospace py-2"
+              style="cursor: pointer;"
+              @mousedown.prevent="selectGroup(group)"
+            >
+              {{ group.short_path }}
+            </li>
+          </ul>
+          <div v-if="showGroupDropdown && groupSearch && filteredGroups.length === 0" class="position-absolute w-100 shadow-sm" style="z-index: 10;">
+            <div class="list-group-item text-body-secondary small">No matching groups found</div>
+          </div>
+        </div>
+        <div class="form-text">Select a group you own. The short URL will be <code>group/shortcode</code>.</div>
       </div>
 
       <div class="mb-3 form-check">

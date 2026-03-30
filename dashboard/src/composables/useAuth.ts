@@ -7,10 +7,12 @@ const user = ref<{ id: number; email: string } | null>(
   JSON.parse(localStorage.getItem('user') || 'null')
 )
 const adminKey = ref<string | null>(localStorage.getItem('adminKey'))
+const adminKeyEnabled = ref<boolean>(localStorage.getItem('adminKeyEnabled') !== 'false')
 
 export function useAuth() {
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin = computed(() => !!adminKey.value)
+  const isAdminKeyActive = computed(() => !!adminKey.value && adminKeyEnabled.value)
 
   async function login(credentials: LoginRequest): Promise<void> {
     const response: UserResponse = await loginUser(credentials)
@@ -31,23 +33,35 @@ export function useAuth() {
 
   function setAdminKey(key: string): void {
     adminKey.value = key
+    adminKeyEnabled.value = true
     localStorage.setItem('adminKey', key)
+    localStorage.setItem('adminKeyEnabled', 'true')
   }
 
   function clearAdminKey(): void {
     adminKey.value = null
+    adminKeyEnabled.value = true
     localStorage.removeItem('adminKey')
+    localStorage.removeItem('adminKeyEnabled')
+  }
+
+  function toggleAdminKey(enabled: boolean): void {
+    adminKeyEnabled.value = enabled
+    localStorage.setItem('adminKeyEnabled', enabled ? 'true' : 'false')
   }
 
   return {
     token,
     user,
     adminKey,
+    adminKeyEnabled,
     isAuthenticated,
     isAdmin,
+    isAdminKeyActive,
     login,
     logout,
     setAdminKey,
     clearAdminKey,
+    toggleAdminKey,
   }
 }

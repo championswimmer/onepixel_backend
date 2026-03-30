@@ -216,6 +216,15 @@ func (c *UrlsController) GetUrlGroupByShortPath(groupName string) (urlGroup *mod
 	return urlGroup, nil
 }
 
+func (c *UrlsController) GetUrlGroupsByCreator(userId uint64) ([]models.UrlGroup, error) {
+	var groups []models.UrlGroup
+	res := c.db.Where("creator_id = ? AND id != ?", userId, _defaultUrlGroupId).Find(&groups)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return groups, nil
+}
+
 func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount int64, err error) {
 	url, err := c.GetUrlWithShortCode(shortcode)
 	if err != nil {

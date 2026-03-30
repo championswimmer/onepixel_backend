@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const route = useRoute()
-const { user, isAdmin, logout } = useAuth()
+const { user, isAdmin, isAdminKeyActive, adminKeyEnabled, logout, toggleAdminKey } = useAuth()
 
 function handleLogout() {
   logout()
@@ -50,6 +50,25 @@ function handleLogout() {
         </ul>
 
         <ul class="navbar-nav">
+          <li v-if="isAdmin" class="nav-item d-flex align-items-center me-3">
+            <div class="form-check form-switch mb-0">
+              <input
+                id="adminKeyToggle"
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                :checked="adminKeyEnabled"
+                @change="toggleAdminKey(!adminKeyEnabled)"
+              />
+              <label
+                class="form-check-label small"
+                for="adminKeyToggle"
+                :class="isAdminKeyActive ? 'text-warning' : 'text-body-secondary'"
+              >
+                <i class="bi bi-key-fill me-1"></i>Admin Key
+              </label>
+            </div>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
               <i class="bi bi-person-circle me-1"></i> {{ user?.email }}

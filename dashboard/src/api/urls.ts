@@ -25,6 +25,10 @@ export function createUrlGroup(data: CreateUrlGroupRequest): Promise<UrlGroupRes
   return post<UrlGroupResponse>('/urls/groups', data)
 }
 
+export function getUrlGroups(): Promise<UrlGroupResponse[]> {
+  return get<UrlGroupResponse[]>('/urls/groups')
+}
+
 export function getUrlInfo(shortcode: string): Promise<UrlInfoResponse> {
   return get<UrlInfoResponse>(`/urls/${shortcode}`)
 }

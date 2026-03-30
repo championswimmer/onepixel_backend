@@ -24,7 +24,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   if (adminKey) {
-    headers['X-API-Key'] = adminKey
+    const adminKeyEnabled = localStorage.getItem('adminKeyEnabled') !== 'false'
+    if (adminKeyEnabled) {
+      headers['X-API-Key'] = adminKey
+    }
   }
 
   const response = await fetch(`${API_BASE}${path}`, {

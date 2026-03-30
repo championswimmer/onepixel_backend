@@ -23,6 +23,7 @@ func UrlsRoute() func(router fiber.Router) {
 
 	return func(router fiber.Router) {
 		router.Get("/", security.OptionalJwtAuthMiddleware, security.OptionalAdminApiKeyAuthMiddleware, getAllUrls)
+		router.Get("/groups", security.MandatoryJwtAuthMiddleware, getUrlGroups)
 		router.Post("/groups", security.MandatoryAdminApiKeyAuthMiddleware, createUrlGroup)
 		router.Post("/groups/:group/shorten", security.MandatoryJwtAuthMiddleware, createGroupedRandomUrl)
 		router.Post("/groups/:group/shorten/:shortcode", security.MandatoryJwtAuthMiddleware, createGroupedSpecificUrl)
@@ -87,6 +88,33 @@ func getAllUrls(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(urlResponses)
+}
+
+// getUrlGroups
+//
+//	@Summary		Get URL groups for the current user
+//	@Description	Get all URL groups created by the authenticated user
+//	@ID				get-url-groups
+//	@Tags			urls
+//	@Produce		json
+//	@Success		200	{array}		dtos.UrlGroupResponse
+//	@Failure		500	{object}	dtos.ErrorResponse	"something went wrong"
+//	@Router			/urls/groups [get]
+//	@Security		BearerToken
+func getUrlGroups(ctx *fiber.Ctx) error {
+	user := ctx.Locals(config.LOCALS_USER).(*models.User)
+
+	groups, err := urlsController.GetUrlGroupsByCreator(user.ID)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(dtos.CreateErrorResponse(fiber.StatusInternalServerError, "something went wrong"))
+	}
+
+	groupResponses := make([]dtos.UrlGroupResponse, 0)
+	for _, group := range groups {
+		groupResponses = append(groupResponses, dtos.CreateUrlGroupResponse(&group))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(groupResponses)
 }
 
 // createRandomUrl
