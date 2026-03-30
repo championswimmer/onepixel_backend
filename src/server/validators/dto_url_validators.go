@@ -11,6 +11,11 @@ var mandatoryUrlDtoFieldError = &ValidationError{
 	message: "long_url is required",
 }
 
+var mandatoryUrlGroupCreatorFieldError = &ValidationError{
+	status:  fiber.StatusUnprocessableEntity,
+	message: "creator_id is required",
+}
+
 var invalidShortCodeError = &ValidationError{
 	status:  fiber.StatusNotFound,
 	message: "Invalid short code",
@@ -36,6 +41,13 @@ func ValidateCreateUrlRequest(dto *dtos.CreateUrlRequest) *ValidationError {
 		return mandatoryUrlDtoFieldError
 	}
 	return nil
+}
+
+func ValidateCreateUrlGroupDtoRequest(dto *dtos.CreateUrlGroupRequest) *ValidationError {
+	if dto.CreatorID == 0 {
+		return mandatoryUrlGroupCreatorFieldError
+	}
+	return ValidateCreateUrlGroupRequest(dto.ShortPath)
 }
 
 func ValidateRedirectShortCodeRequest(shortcode string) *ValidationError {

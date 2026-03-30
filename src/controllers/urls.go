@@ -60,6 +60,10 @@ var (
 		status:  fiber.ErrForbidden.Code,
 		message: "this shortURL is not allowed to be created",
 	}
+	UrlGroupForbiddenError = &UrlError{
+		status:  fiber.ErrForbidden.Code,
+		message: "URL group does not belong to the user",
+	}
 	UrlGroupNotFound = &UrlError{
 		status:  fiber.StatusNotFound,
 		message: "URL group not found",
@@ -228,7 +232,7 @@ func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount 
 
 func (c *UrlsController) GetUrls(userId *uint64) ([]models.Url, error) {
 	var urls []models.Url
-	query := c.db
+	query := c.db.Preload("UrlGroup")
 	if userId != nil {
 		query = query.Where("creator_id=?", *userId)
 	}
@@ -253,7 +257,7 @@ func (c *UrlsController) ensureUrlGroupOwnership(urlGroupID uint64, userID uint6
 		return res.Error
 	}
 	if urlGroup.CreatorID != userID {
-		return UrlForbiddenError
+		return UrlGroupForbiddenError
 	}
 	return nil
 }

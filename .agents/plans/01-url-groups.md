@@ -8,7 +8,7 @@ steps:
   - step: "Implement controller logic for group ownership and scoped URL operations"
     done: true
   - step: "Wire API handlers, auth checks, validators, and DTOs"
-    done: false
+    done: true
   - step: "Update redirect resolution for `/short` and `/group/short` paths"
     done: false
   - step: "Add/adjust unit + e2e tests and finalize docs"
