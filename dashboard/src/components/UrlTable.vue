@@ -3,13 +3,23 @@ import type { UrlResponse } from '../types'
 
 defineProps<{ urls: UrlResponse[] }>()
 
-function extractShortcode(shortUrl: string): string {
+function extractPath(shortUrl: string): string {
   try {
     const url = new URL(shortUrl)
     return url.pathname.slice(1)
   } catch {
     return shortUrl
   }
+}
+
+function extractGroup(path: string): string | null {
+  const parts = path.split('/')
+  return parts.length > 1 ? parts[0] : null
+}
+
+function extractShortcode(path: string): string {
+  const parts = path.split('/')
+  return parts[parts.length - 1]
 }
 
 function truncate(str: string, len: number): string {
@@ -31,10 +41,13 @@ function truncate(str: string, len: number): string {
         <tr v-for="url in urls" :key="url.short_url">
           <td>
             <router-link
-              :to="`/urls/${extractShortcode(url.short_url)}`"
+              :to="`/urls/${extractShortcode(extractPath(url.short_url))}`"
               class="font-monospace text-decoration-none"
             >
-              {{ extractShortcode(url.short_url) }}
+              <span v-if="extractGroup(extractPath(url.short_url))" class="badge bg-secondary me-1">
+                {{ extractGroup(extractPath(url.short_url)) }}
+              </span>
+              {{ extractShortcode(extractPath(url.short_url)) }}
             </router-link>
           </td>
           <td>
@@ -50,7 +63,7 @@ function truncate(str: string, len: number): string {
           </td>
           <td class="text-end">
             <router-link
-              :to="`/urls/${extractShortcode(url.short_url)}`"
+              :to="`/urls/${extractShortcode(extractPath(url.short_url))}`"
               class="btn btn-outline-secondary btn-sm"
               title="View details"
             >

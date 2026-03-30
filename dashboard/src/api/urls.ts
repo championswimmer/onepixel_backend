@@ -13,6 +13,14 @@ export function createCustomUrl(shortcode: string, data: CreateUrlRequest): Prom
   return put<UrlResponse>(`/urls/${shortcode}`, data)
 }
 
+export function createGroupedRandomUrl(group: string, data: CreateUrlRequest): Promise<UrlResponse> {
+  return post<UrlResponse>(`/urls/groups/${group}/shorten`, data)
+}
+
+export function createGroupedCustomUrl(group: string, shortcode: string, data: CreateUrlRequest): Promise<UrlResponse> {
+  return post<UrlResponse>(`/urls/groups/${group}/shorten/${shortcode}`, data)
+}
+
 export function getUrlInfo(shortcode: string): Promise<UrlInfoResponse> {
   return get<UrlInfoResponse>(`/urls/${shortcode}`)
 }

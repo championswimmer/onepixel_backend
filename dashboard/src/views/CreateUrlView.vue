@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { createRandomUrl, createCustomUrl } from '../api/urls'
+import { createRandomUrl, createCustomUrl, createGroupedRandomUrl, createGroupedCustomUrl } from '../api/urls'
 import type { UrlResponse } from '../types'
 
 const longUrl = ref('')
 const customShortcode = ref('')
 const useCustom = ref(false)
+const groupName = ref('')
+const useGroup = ref(false)
 const loading = ref(false)
 const error = ref('')
 const result = ref<UrlResponse | null>(null)
@@ -16,11 +18,23 @@ async function handleSubmit() {
   result.value = null
   loading.value = true
 
+  const payload = { long_url: longUrl.value }
+  const group = groupName.value.trim()
+  const shortcode = customShortcode.value.trim()
+
   try {
-    if (useCustom.value && customShortcode.value) {
-      result.value = await createCustomUrl(customShortcode.value, { long_url: longUrl.value })
+    if (useGroup.value && group) {
+      if (useCustom.value && shortcode) {
+        result.value = await createGroupedCustomUrl(group, shortcode, payload)
+      } else {
+        result.value = await createGroupedRandomUrl(group, payload)
+      }
     } else {
-      result.value = await createRandomUrl({ long_url: longUrl.value })
+      if (useCustom.value && shortcode) {
+        result.value = await createCustomUrl(shortcode, payload)
+      } else {
+        result.value = await createRandomUrl(payload)
+      }
     }
   } catch (e: any) {
     error.value = e.message || 'Failed to create URL'
@@ -44,6 +58,8 @@ function resetForm() {
   longUrl.value = ''
   customShortcode.value = ''
   useCustom.value = false
+  groupName.value = ''
+  useGroup.value = false
   result.value = null
   error.value = ''
 }
@@ -92,6 +108,29 @@ function resetForm() {
           placeholder="https://example.com/very/long/url"
           required
         />
+      </div>
+
+      <div class="mb-3 form-check">
+        <input
+          id="useGroup"
+          v-model="useGroup"
+          type="checkbox"
+          class="form-check-input"
+        />
+        <label for="useGroup" class="form-check-label">Add to a URL group</label>
+      </div>
+
+      <div v-if="useGroup" class="mb-3">
+        <label for="groupName" class="form-label">Group name</label>
+        <input
+          id="groupName"
+          v-model="groupName"
+          type="text"
+          class="form-control font-monospace"
+          placeholder="my-team"
+          :required="useGroup"
+        />
+        <div class="form-text">The group must already exist. The short URL will be <code>group/shortcode</code>.</div>
       </div>
 
       <div class="mb-3 form-check">
