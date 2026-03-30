@@ -168,6 +168,21 @@ func createSpecificUrl(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
 }
 
+// createUrlGroup
+//
+//	@Summary		Create URL group
+//	@Description	Create a URL group for a specific user
+//	@ID				create-url-group
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			urlGroup	body		dtos.CreateUrlGroupRequest	true	"URL group"
+//	@Success		201			{object}	dtos.UrlGroupResponse
+//	@Failure		400			{object}	dtos.ErrorResponse	"The request body is not valid"
+//	@Failure		409			{object}	dtos.ErrorResponse	"URL group already exists"
+//	@Failure		422			{object}	dtos.ErrorResponse	"invalid group"
+//	@Router			/urls/groups [post]
+//	@Security		APIKeyAuth
 func createUrlGroup(ctx *fiber.Ctx) error {
 	cur, parseErr := parsers.ParseBody[dtos.CreateUrlGroupRequest](ctx)
 	if parseErr != nil {
@@ -187,37 +202,33 @@ func createUrlGroup(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlGroupResponse(urlGroup))
 }
 
-func createGroupedRandomUrl(ctx *fiber.Ctx) error {
-	user := ctx.Locals(config.LOCALS_USER).(*models.User)
-	urlGroup, groupErr := getOwnedUrlGroup(ctx, user)
-	if groupErr != nil {
-		return groupErr
-	}
-
-	cur, parseErr := parsers.ParseBody[dtos.CreateUrlRequest](ctx)
-	if parseErr != nil {
-		return parsers.SendParsingError(ctx, parseErr)
-	}
-
-	validErr := validators.ValidateCreateUrlRequest(cur)
-	if validErr != nil {
-		return validators.SendValidationError(ctx, validErr)
-	}
-
-	createdUrl, createErr := urlsController.CreateRandomShortUrlInGroup(cur.LongUrl, user.ID, urlGroup.ID)
-	if createErr != nil {
-		return sendUrlControllerError(ctx, createErr)
-	}
-
-	createdUrl.UrlGroup = *urlGroup
-	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
-}
-
+// createGroupedSpecificUrl
+//
+//	@Summary		Create grouped short URL with specific shortcode
+//	@Description	Create a grouped short URL for a URL group owned by the authenticated user
+//	@ID				create-grouped-specific-url
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			group		path		string					true	"URL group"
+//	@Param			shortcode	path		string					true	"Shortcode"
+//	@Param			url			body		dtos.CreateUrlRequest	true	"Url"
+//	@Success		201			{object}	dtos.UrlResponse
+//	@Failure		400			{object}	dtos.ErrorResponse	"The request body is not valid"
+//	@Failure		403			{object}	dtos.ErrorResponse	"URL group does not belong to the user"
+//	@Failure		404			{object}	dtos.ErrorResponse	"URL group not found"
+//	@Failure		409			{object}	dtos.ErrorResponse	"URL already exists"
+//	@Failure		422			{object}	dtos.ErrorResponse	"invalid shortcode"
+//	@Router			/urls/groups/{group}/shorten/{shortcode} [post]
+//	@Security		BearerToken
 func createGroupedSpecificUrl(ctx *fiber.Ctx) error {
 	user := ctx.Locals(config.LOCALS_USER).(*models.User)
-	urlGroup, groupErr := getOwnedUrlGroup(ctx, user)
+	urlGroup, handled, groupErr := getOwnedUrlGroup(ctx, user)
 	if groupErr != nil {
 		return groupErr
+	}
+	if handled {
+		return nil
 	}
 
 	cur, parseErr := parsers.ParseBody[dtos.CreateUrlRequest](ctx)
@@ -237,6 +248,52 @@ func createGroupedSpecificUrl(ctx *fiber.Ctx) error {
 	}
 
 	createdUrl, createErr := urlsController.CreateSpecificShortUrlInGroup(shortcode, cur.LongUrl, user.ID, urlGroup.ID)
+	if createErr != nil {
+		return sendUrlControllerError(ctx, createErr)
+	}
+
+	createdUrl.UrlGroup = *urlGroup
+	return ctx.Status(fiber.StatusCreated).JSON(dtos.CreateUrlResponse(createdUrl))
+}
+
+// createGroupedRandomUrl
+//
+//	@Summary		Create grouped short URL with random shortcode
+//	@Description	Create a grouped short URL for a URL group owned by the authenticated user
+//	@ID				create-grouped-random-url
+//	@Tags			urls
+//	@Accept			json
+//	@Produce		json
+//	@Param			group	path		string					true	"URL group"
+//	@Param			url		body		dtos.CreateUrlRequest	true	"Url"
+//	@Success		201		{object}	dtos.UrlResponse
+//	@Failure		400		{object}	dtos.ErrorResponse	"The request body is not valid"
+//	@Failure		403		{object}	dtos.ErrorResponse	"URL group does not belong to the user"
+//	@Failure		404		{object}	dtos.ErrorResponse	"URL group not found"
+//	@Failure		422		{object}	dtos.ErrorResponse	"invalid group"
+//	@Router			/urls/groups/{group}/shorten [post]
+//	@Security		BearerToken
+func createGroupedRandomUrl(ctx *fiber.Ctx) error {
+	user := ctx.Locals(config.LOCALS_USER).(*models.User)
+	urlGroup, handled, groupErr := getOwnedUrlGroup(ctx, user)
+	if groupErr != nil {
+		return groupErr
+	}
+	if handled {
+		return nil
+	}
+
+	cur, parseErr := parsers.ParseBody[dtos.CreateUrlRequest](ctx)
+	if parseErr != nil {
+		return parsers.SendParsingError(ctx, parseErr)
+	}
+
+	validErr := validators.ValidateCreateUrlRequest(cur)
+	if validErr != nil {
+		return validators.SendValidationError(ctx, validErr)
+	}
+
+	createdUrl, createErr := urlsController.CreateRandomShortUrlInGroup(cur.LongUrl, user.ID, urlGroup.ID)
 	if createErr != nil {
 		return sendUrlControllerError(ctx, createErr)
 	}
@@ -271,22 +328,22 @@ func getUrlInfo(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(dtos.CreateUrlInfoResponse(longUrl, hitCount))
 }
 
-func getOwnedUrlGroup(ctx *fiber.Ctx, user *models.User) (*models.UrlGroup, error) {
+func getOwnedUrlGroup(ctx *fiber.Ctx, user *models.User) (*models.UrlGroup, bool, error) {
 	group := ctx.Params("group")
 	validErr := validators.ValidateCreateUrlGroupRequest(group)
 	if validErr != nil {
-		return nil, validators.SendValidationError(ctx, validErr)
+		return nil, true, validators.SendValidationError(ctx, validErr)
 	}
 
 	urlGroup, groupErr := urlsController.GetUrlGroupByShortPath(group)
 	if groupErr != nil {
-		return nil, sendUrlControllerError(ctx, groupErr)
+		return nil, true, sendUrlControllerError(ctx, groupErr)
 	}
 	if urlGroup.CreatorID != user.ID {
-		return nil, ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(controllers.UrlGroupForbiddenError.ErrorDetails()))
+		return nil, true, ctx.Status(fiber.StatusForbidden).JSON(dtos.CreateErrorResponse(controllers.UrlGroupForbiddenError.ErrorDetails()))
 	}
 
-	return urlGroup, nil
+	return urlGroup, false, nil
 }
 
 func sendUrlControllerError(ctx *fiber.Ctx, err error) error {

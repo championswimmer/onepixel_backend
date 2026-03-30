@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"onepixel_backend/src/db/models"
@@ -39,6 +40,61 @@ func TestUrlsController(t *testing.T) {
 		urlGroup, err := urlsController.CreateUrlGroup("grp", user.ID)
 		assert.Nil(t, err)
 		assert.NotNil(t, urlGroup)
+	})
+
+	t.Run("CreateUrlGroupDuplicateFail", func(t *testing.T) {
+		_, err := urlsController.CreateUrlGroup("dupgrp", user.ID)
+		assert.Nil(t, err)
+
+		_, err = urlsController.CreateUrlGroup("dupgrp", user.ID)
+		assert.ErrorIs(t, err, UrlGroupExistsError)
+	})
+
+	t.Run("GroupedUrlsRequireOwnership", func(t *testing.T) {
+		otherUser, _, err := userController.Create("user24680@test.com", "123456")
+		assert.Nil(t, err)
+
+		urlGroup, err := urlsController.CreateUrlGroup("grpown", user.ID)
+		assert.Nil(t, err)
+
+		groupedUrl, err := urlsController.CreateSpecificShortUrlInGroup("ownabc", "https://owner.example.com", user.ID, urlGroup.ID)
+		assert.Nil(t, err)
+		assert.EqualValues(t, urlGroup.ID, groupedUrl.UrlGroupID)
+
+		_, err = urlsController.CreateRandomShortUrlInGroup("https://forbidden.example.com", otherUser.ID, urlGroup.ID)
+		assert.ErrorIs(t, err, UrlGroupForbiddenError)
+	})
+
+	t.Run("GroupedAndUngroupedLookupsAreScoped", func(t *testing.T) {
+		urlGroup, err := urlsController.CreateUrlGroup("grpdup", user.ID)
+		assert.Nil(t, err)
+
+		groupedUrl, err := urlsController.CreateSpecificShortUrlInGroup("same01", "https://group.example.com", user.ID, urlGroup.ID)
+		assert.Nil(t, err)
+		assert.EqualValues(t, urlGroup.ID, groupedUrl.UrlGroupID)
+
+		ungroupedUrl, err := urlsController.CreateSpecificShortUrl("same01", "https://default.example.com", user.ID)
+		assert.Nil(t, err)
+		assert.EqualValues(t, uint64(0), ungroupedUrl.UrlGroupID)
+
+		defaultLookup, err := urlsController.GetUrlWithShortCode("same01")
+		assert.Nil(t, err)
+		assert.Equal(t, "https://default.example.com", defaultLookup.LongURL)
+		assert.EqualValues(t, uint64(0), defaultLookup.UrlGroupID)
+
+		groupedLookup, err := urlsController.GetUrlWithShortCodeInGroup("same01", urlGroup.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, "https://group.example.com", groupedLookup.LongURL)
+		assert.EqualValues(t, urlGroup.ID, groupedLookup.UrlGroupID)
+
+		lookupGroup, err := urlsController.GetUrlGroupByShortPath("grpdup")
+		assert.Nil(t, err)
+		assert.EqualValues(t, urlGroup.ID, lookupGroup.ID)
+	})
+
+	t.Run("MissingUrlGroupReturnsTypedError", func(t *testing.T) {
+		_, err := urlsController.GetUrlGroupByShortPath("missinggrp")
+		assert.True(t, errors.Is(err, UrlGroupNotFound))
 	})
 
 	t.Run("GetUrlInfo", func(t *testing.T) {
@@ -102,5 +158,10 @@ func TestUrlsController(t *testing.T) {
 			return item.ShortURL == "test777"
 		})
 		assert.True(t, found)
+		groupedUrl, ok := lo.Find(urls, func(item models.Url) bool {
+			return item.UrlGroupID != 0
+		})
+		assert.True(t, ok)
+		assert.NotEmpty(t, groupedUrl.UrlGroup.ShortPath)
 	})
 }
