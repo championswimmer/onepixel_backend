@@ -10,7 +10,7 @@ steps:
   - step: "Wire API handlers, auth checks, validators, and DTOs"
     done: true
   - step: "Update redirect resolution for `/short` and `/group/short` paths"
-    done: false
+    done: true
   - step: "Add/adjust unit + e2e tests and finalize docs"
     done: false
 ---

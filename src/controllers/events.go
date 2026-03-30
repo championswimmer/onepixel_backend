@@ -38,6 +38,13 @@ type EventRedirectData struct {
 	Referer    string
 }
 
+func CanonicalShortURL(urlGroup *models.UrlGroup, shortCode string) string {
+	if urlGroup == nil || urlGroup.ID == 0 || urlGroup.ShortPath == "" {
+		return shortCode
+	}
+	return urlGroup.ShortPath + "/" + shortCode
+}
+
 // synced is a synchronized locker to access user-specific views
 var synced = lo.Synchronize()
 
