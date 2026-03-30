@@ -20,6 +20,7 @@ import (
 //   - 6: 64^6 = 68,719,476,736
 const _currentMaxUrlLength = 6
 const _defaultUrlGroupId = 0
+const _maxRandomShortUrlRetries = 10
 
 var _randMax = int(math.Pow(64, _currentMaxUrlLength))
 
@@ -51,9 +52,21 @@ var (
 		status:  fiber.ErrConflict.Code,
 		message: "URL already exists",
 	}
+	UrlGroupExistsError = &UrlError{
+		status:  fiber.ErrConflict.Code,
+		message: "URL group already exists",
+	}
 	UrlForbiddenError = &UrlError{
 		status:  fiber.ErrForbidden.Code,
 		message: "this shortURL is not allowed to be created",
+	}
+	UrlGroupNotFound = &UrlError{
+		status:  fiber.StatusNotFound,
+		message: "URL group not found",
+	}
+	RandomShortUrlExhaustedError = &UrlError{
+		status:  fiber.StatusInternalServerError,
+		message: "failed to generate a unique short URL",
 	}
 )
 
@@ -90,12 +103,20 @@ func CreateUrlsController() *UrlsController {
 }
 
 func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string, userId uint64) (url *models.Url, err error) {
+	return c.CreateSpecificShortUrlInGroup(shortUrl, longUrl, userId, _defaultUrlGroupId)
+}
+
+func (c *UrlsController) CreateSpecificShortUrlInGroup(shortUrl string, longUrl string, userId uint64, urlGroupID uint64) (url *models.Url, err error) {
+	if err := c.ensureUrlGroupOwnership(urlGroupID, userId); err != nil {
+		return nil, err
+	}
+
 	url = &models.Url{
 		ID:         lo.Must(utils.Radix64Decode(shortUrl)),
 		ShortURL:   shortUrl,
 		LongURL:    longUrl,
 		CreatorID:  userId,
-		UrlGroupID: 0,
+		UrlGroupID: urlGroupID,
 	}
 
 	res := c.db.Create(url)
@@ -111,33 +132,46 @@ func (c *UrlsController) CreateSpecificShortUrl(shortUrl string, longUrl string,
 }
 
 func (c *UrlsController) CreateRandomShortUrl(longUrl string, userId uint64) (url *models.Url, err error) {
-	newShortCode := uint64(rand.Intn(_randMax))
-	newShortUrl := lo.Must(utils.Radix64Encode(newShortCode))
+	return c.CreateRandomShortUrlInGroup(longUrl, userId, _defaultUrlGroupId)
+}
 
-	url = &models.Url{
-		ID:         newShortCode,
-		ShortURL:   newShortUrl,
-		LongURL:    longUrl,
-		CreatorID:  userId,
-		UrlGroupID: 0,
+func (c *UrlsController) CreateRandomShortUrlInGroup(longUrl string, userId uint64, urlGroupID uint64) (url *models.Url, err error) {
+	if err := c.ensureUrlGroupOwnership(urlGroupID, userId); err != nil {
+		return nil, err
 	}
-	res := c.db.Create(url)
-	if res.Error != nil {
+
+	for attempt := 0; attempt < _maxRandomShortUrlRetries; attempt++ {
+		newShortCode := uint64(rand.Intn(_randMax))
+		newShortUrl := lo.Must(utils.Radix64Encode(newShortCode))
+
+		url = &models.Url{
+			ID:         newShortCode,
+			ShortURL:   newShortUrl,
+			LongURL:    longUrl,
+			CreatorID:  userId,
+			UrlGroupID: urlGroupID,
+		}
+
+		res := c.db.Create(url)
+		if res.Error == nil {
+			return url, nil
+		}
 		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
-			// Having a collision is very unlikely, but if it happens
-			// we just try again (TODO: we should have a limit of retries)
-			return c.CreateRandomShortUrl(longUrl, userId)
+			continue
 		}
 		return nil, res.Error
 	}
 
-	return
+	return nil, RandomShortUrlExhaustedError
 }
 
 func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url, err error) {
+	return c.GetUrlWithShortCodeInGroup(shortcode, _defaultUrlGroupId)
+}
+
+func (c *UrlsController) GetUrlWithShortCodeInGroup(shortcode string, urlGroupID uint64) (url *models.Url, err error) {
 	url = &models.Url{}
-	id := lo.Must(utils.Radix64Decode(shortcode))
-	res := c.db.First(url, id)
+	res := c.db.Where("url_group_id = ? AND short_url = ?", urlGroupID, shortcode).First(url)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, UrlNotFound
@@ -157,10 +191,25 @@ func (c *UrlsController) CreateUrlGroup(groupName string, userId uint64) (urlGro
 
 	res := c.db.Create(urlGroup)
 	if res.Error != nil {
-
+		if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
+			return nil, UrlGroupExistsError
+		}
+		return nil, res.Error
 	}
-	return
+	return urlGroup, nil
 
+}
+
+func (c *UrlsController) GetUrlGroupByShortPath(groupName string) (urlGroup *models.UrlGroup, err error) {
+	urlGroup = &models.UrlGroup{}
+	res := c.db.Where("name = ?", groupName).First(urlGroup)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, UrlGroupNotFound
+		}
+		return nil, res.Error
+	}
+	return urlGroup, nil
 }
 
 func (c *UrlsController) GetUrlInfo(shortcode string) (longUrl string, hitCount int64, err error) {
@@ -188,4 +237,23 @@ func (c *UrlsController) GetUrls(userId *uint64) ([]models.Url, error) {
 		return nil, res.Error
 	}
 	return urls, nil
+}
+
+func (c *UrlsController) ensureUrlGroupOwnership(urlGroupID uint64, userID uint64) error {
+	if urlGroupID == _defaultUrlGroupId {
+		return nil
+	}
+
+	urlGroup := &models.UrlGroup{}
+	res := c.db.First(urlGroup, urlGroupID)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return UrlGroupNotFound
+		}
+		return res.Error
+	}
+	if urlGroup.CreatorID != userID {
+		return UrlForbiddenError
+	}
+	return nil
 }

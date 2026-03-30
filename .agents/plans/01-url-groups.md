@@ -6,7 +6,7 @@ steps:
   - step: "Update models, constraints, and migration/index strategy"
     done: true
   - step: "Implement controller logic for group ownership and scoped URL operations"
-    done: false
+    done: true
   - step: "Wire API handlers, auth checks, validators, and DTOs"
     done: false
   - step: "Update redirect resolution for `/short` and `/group/short` paths"
