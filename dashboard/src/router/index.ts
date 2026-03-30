@@ -7,6 +7,7 @@ import UrlsListView from '../views/UrlsListView.vue'
 import CreateUrlView from '../views/CreateUrlView.vue'
 import UrlDetailView from '../views/UrlDetailView.vue'
 import AccountView from '../views/AccountView.vue'
+import CreateGroupView from '../views/CreateGroupView.vue'
 
 const routes = [
   {
@@ -37,6 +38,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/groups/new',
+    name: 'create-group',
+    component: CreateGroupView,
+    meta: { admin: true },
+  },
+  {
     path: '/account',
     name: 'account',
     component: AccountView,
@@ -49,11 +56,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isAdmin } = useAuth()
   if (!to.meta.public && !isAuthenticated.value) {
     return { name: 'login' }
   }
   if (to.name === 'login' && isAuthenticated.value) {
+    return { name: 'dashboard' }
+  }
+  if (to.meta.admin && !isAdmin.value) {
     return { name: 'dashboard' }
   }
 })

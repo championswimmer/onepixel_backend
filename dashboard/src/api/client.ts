@@ -12,6 +12,7 @@ class ApiError extends Error {
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('token')
+  const adminKey = localStorage.getItem('adminKey')
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -20,6 +21,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
+  }
+
+  if (adminKey) {
+    headers['X-API-Key'] = adminKey
   }
 
   const response = await fetch(`${API_BASE}${path}`, {

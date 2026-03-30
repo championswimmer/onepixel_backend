@@ -1,5 +1,5 @@
 import { get, post, put } from './client'
-import type { CreateUrlRequest, UrlResponse, UrlInfoResponse } from '../types'
+import type { CreateUrlRequest, CreateUrlGroupRequest, UrlResponse, UrlInfoResponse, UrlGroupResponse } from '../types'
 
 export function getUrls(): Promise<UrlResponse[]> {
   return get<UrlResponse[]>('/urls')
@@ -19,6 +19,10 @@ export function createGroupedRandomUrl(group: string, data: CreateUrlRequest): P
 
 export function createGroupedCustomUrl(group: string, shortcode: string, data: CreateUrlRequest): Promise<UrlResponse> {
   return post<UrlResponse>(`/urls/groups/${group}/shorten/${shortcode}`, data)
+}
+
+export function createUrlGroup(data: CreateUrlGroupRequest): Promise<UrlGroupResponse> {
+  return post<UrlGroupResponse>('/urls/groups', data)
 }
 
 export function getUrlInfo(shortcode: string): Promise<UrlInfoResponse> {

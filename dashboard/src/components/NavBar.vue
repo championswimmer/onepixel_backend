@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const route = useRoute()
-const { user, logout } = useAuth()
+const { user, isAdmin, logout } = useAuth()
 
 function handleLogout() {
   logout()
@@ -42,12 +42,18 @@ function handleLogout() {
               <i class="bi bi-plus-circle me-1"></i> Create
             </router-link>
           </li>
+          <li v-if="isAdmin" class="nav-item">
+            <router-link to="/groups/new" class="nav-link" active-class="active">
+              <i class="bi bi-folder-plus me-1"></i> New Group
+            </router-link>
+          </li>
         </ul>
 
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
               <i class="bi bi-person-circle me-1"></i> {{ user?.email }}
+              <span v-if="isAdmin" class="badge bg-warning text-dark ms-1">Admin</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
