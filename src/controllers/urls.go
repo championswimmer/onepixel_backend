@@ -62,7 +62,7 @@ var initDefaultUrlGroupOnce sync.Once
 func (c *UrlsController) initDefaultUrlGroup() {
 	defaultUrlGroup := &models.UrlGroup{
 		ID:        _defaultUrlGroupId,
-		Name:      lo.Must(utils.Radix64Encode(_defaultUrlGroupId)), // "0",
+		ShortPath: lo.Must(utils.Radix64Encode(_defaultUrlGroupId)), // "0",
 		CreatorID: 0,
 	}
 
@@ -150,7 +150,7 @@ func (c *UrlsController) GetUrlWithShortCode(shortcode string) (url *models.Url,
 
 func (c *UrlsController) CreateUrlGroup(groupName string, userId uint64) (urlGroup *models.UrlGroup, err error) {
 	urlGroup = &models.UrlGroup{
-		Name:      groupName,
+		ShortPath: groupName,
 		ID:        lo.Must(utils.Radix64Decode(groupName)),
 		CreatorID: userId,
 	}

@@ -23,6 +23,9 @@ var createAppDbOnce sync.Once
 var createEventsDbOnce sync.Once
 var createGeoIPDbOnce sync.Once
 
+const urlGroupShortPathIndexName = "idx_url_groups_short_path"
+const urlGroupScopedShortCodeIndexName = "idx_urls_group_shortcode"
+
 func getGormConfig() (dbConfig *gorm.Config) {
 	dbConfig = &gorm.Config{
 		TranslateError: true,
@@ -73,9 +76,39 @@ func GetAppDB() *gorm.DB {
 		lo.Must0(appDb.AutoMigrate(&models.User{}))
 		lo.Must0(appDb.AutoMigrate(&models.UrlGroup{}))
 		lo.Must0(appDb.AutoMigrate(&models.Url{}))
+		lo.Must0(ensureAppIndexes(appDb))
 	})
 
 	return appDb
+}
+
+func ensureAppIndexes(appDb *gorm.DB) error {
+	migrator := appDb.Migrator()
+
+	for _, legacyIndexName := range []string{"idx_urls_short_url", "uni_urls_short_url"} {
+		if migrator.HasIndex(&models.Url{}, legacyIndexName) {
+			applogger.Warn("App: dropping legacy urls short_url index ", legacyIndexName)
+			if err := migrator.DropIndex(&models.Url{}, legacyIndexName); err != nil {
+				return err
+			}
+		}
+	}
+
+	if !migrator.HasIndex(&models.UrlGroup{}, urlGroupShortPathIndexName) {
+		applogger.Info("App: creating url_groups short path index")
+		if err := migrator.CreateIndex(&models.UrlGroup{}, urlGroupShortPathIndexName); err != nil {
+			return err
+		}
+	}
+
+	if !migrator.HasIndex(&models.Url{}, urlGroupScopedShortCodeIndexName) {
+		applogger.Info("App: creating urls scoped shortcode index")
+		if err := migrator.CreateIndex(&models.Url{}, urlGroupScopedShortCodeIndexName); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func GetEventsDB() *gorm.DB {
